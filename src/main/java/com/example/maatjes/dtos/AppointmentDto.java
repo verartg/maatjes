@@ -1,25 +1,15 @@
-package com.example.maatjes.models;
+package com.example.maatjes.dtos;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
 import java.time.LocalDateTime;
-
 import java.util.Date;
 
-@Entity
-public class Appointment {
-
-    @Id
-    @GeneratedValue
-    private Long id;
-    private Date date;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
-    private String description;
-//    private Account account; <-- dit wordt een relatie
-//    private Account createdFor; <-- dit wordt een relatie, maar moet dit onderscheid wel?
-    private boolean accepted;
+public class AppointmentDto {
+    public Long id;
+    public Date date;
+    public LocalDateTime startTime;
+    public LocalDateTime endTime;
+    public String description;
+    public boolean accepted;
 
     public Long getId() {
         return id;

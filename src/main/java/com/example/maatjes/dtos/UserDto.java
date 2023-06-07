@@ -1,6 +1,6 @@
 package com.example.maatjes.dtos;
 
-public class UserInputDto {
+public class UserDto {
     public Long id;
 
     public Long getId() {

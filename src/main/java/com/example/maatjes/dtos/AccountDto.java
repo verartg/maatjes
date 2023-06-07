@@ -1,35 +1,25 @@
-package com.example.maatjes.models;
+package com.example.maatjes.dtos;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-
-import java.util.ArrayList;
-
-@Entity
-public class Account {
-    @Id
-    @GeneratedValue
-    private Long id;
-    private String name;
-    private int age;
-    private char sex;
-    private String phoneNumber;
-    private String emailAddress;
-    private String street;
-    private String houseNumber;
-    private String postalCode;
-    private String city;
-//    private image profilePicture;
-    private String bio;
-// private pdf identification;
-    private boolean givesHelp;
-    private boolean needsHelp;
-    private String activitiesToGive;
-    private String activitiesToReceive;
-//    private ArrayList<Match> matches; <-- dit wordt een relatie
-    private String availability;
-    private String frequency;
+public class AccountDto {
+    public Long id;
+    public String name;
+    public int age;
+    public char sex;
+    public String phoneNumber;
+    public String emailAddress;
+    public String street;
+    public String houseNumber;
+    public String postalCode;
+    public String city;
+    //    private image profilePicture;
+    public String bio;
+    // private pdf identification;
+    public boolean givesHelp;
+    public boolean needsHelp;
+    public String activitiesToGive;
+    public String activitiesToReceive;
+    public String availability;
+    public String frequency;
 
     public Long getId() {
         return id;

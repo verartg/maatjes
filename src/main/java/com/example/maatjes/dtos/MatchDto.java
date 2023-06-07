@@ -1,24 +1,14 @@
-package com.example.maatjes.models;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+package com.example.maatjes.dtos;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 
-@Entity
-public class Match {
-    @Id
-    @GeneratedValue
-    private Long id;
-    private boolean accepted;
-//    private User contactperson; <-- dit wordt een relatie
-    private LocalDate startMatch;
-    private LocalDate endMatch;
-    private String frequency;
-    private String activities;
-//    private Calendar calendar; <-- ik denk dat deze er niet in hoeft, omdat in het account al een lijst met matches staat waardoor je bij het aanmaken van een afspraak in je account je gematchte kan bereiken?
+public class MatchDto {
+    public Long id;
+    public boolean accepted;
+    public LocalDate startMatch;
+    public LocalDate endMatch;
+    public String frequency;
+    public String activities;
 
     public Long getId() {
         return id;

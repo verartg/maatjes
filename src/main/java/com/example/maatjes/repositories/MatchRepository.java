@@ -1,4 +1,7 @@
 package com.example.maatjes.repositories;
 
-public interface MatchRepository {
+import com.example.maatjes.models.Match;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface MatchRepository extends JpaRepository<Match, Long> {
 }
