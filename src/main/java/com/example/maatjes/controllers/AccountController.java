@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/accounts")
@@ -19,10 +20,13 @@ public class AccountController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AccountDto>> getAccounts() {
+    public ResponseEntity<List<AccountDto>> getAccounts(@RequestParam(value = "city", required = false) Optional<String> city) {
         List<AccountDto> accountDtos;
-        accountDtos = accountService.getAccounts();
-
+        if (city.isEmpty()) {
+            accountDtos = accountService.getAccounts();
+        } else {
+            accountDtos = accountService.getAccountsByCity(city.get());
+        }
         return ResponseEntity.ok().body(accountDtos);
     }
 
@@ -38,4 +42,11 @@ public class AccountController {
         AccountDto dto = accountService.createAccount(account);
         return ResponseEntity.created(null).body(dto);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> removeAccount(@PathVariable Long id) {
+        accountService.removeAccount(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }

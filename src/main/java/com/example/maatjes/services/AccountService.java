@@ -6,6 +6,8 @@ import com.example.maatjes.exceptions.RecordNotFoundException;
 import com.example.maatjes.models.Account;
 import com.example.maatjes.repositories.AccountRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +30,15 @@ public class AccountService {
         return accountDtos;
     }
 
+    public List<AccountDto> getAccountsByCity(String city) {
+        List<Account> accounts = accountRepository.findAllAccountsByCityEqualsIgnoreCase(city);
+        List<AccountDto> accountDtos = new ArrayList<>();
+            for (Account account : accounts) {
+                accountDtos.add(transferAccountToDto(account));
+            }
+            return accountDtos;
+    }
+
     public AccountDto getAccount(Long id) {
         Optional<Account> optionalAccount = accountRepository.findById(id);
         if (optionalAccount.isEmpty()) {
@@ -42,7 +53,14 @@ public class AccountService {
         return transferAccountToDto(account);
     }
 
-
+    public void removeAccount(@RequestBody Long id) {
+        Optional<Account> optionalAccount = accountRepository.findById(id);
+        if (optionalAccount.isPresent()) {
+            accountRepository.deleteById(id);
+        } else {
+            throw new RecordNotFoundException("Cannot find account");
+        }
+    }
 
     public AccountDto transferAccountToDto(Account account) {
         AccountDto accountDto = new AccountDto();
