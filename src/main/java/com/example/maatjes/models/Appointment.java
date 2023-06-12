@@ -1,12 +1,18 @@
 package com.example.maatjes.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
 import java.util.Date;
-
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 public class Appointment {
 
@@ -21,51 +27,15 @@ public class Appointment {
 //    private Account createdFor; <-- dit wordt een relatie, maar moet dit onderscheid wel?
     private boolean accepted;
 
-    public Long getId() {
-        return id;
-    }
+//    @ManyToOne
+//    @JoinColumn(name = "calendar_id")
+//    private Calendar myCalendar;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
-    public LocalDateTime getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(LocalDateTime startTime) {
-        this.startTime = startTime;
-    }
-
-    public LocalDateTime getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(LocalDateTime endTime) {
-        this.endTime = endTime;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public boolean isAccepted() {
-        return accepted;
-    }
-
-    public void setAccepted(boolean accepted) {
-        this.accepted = accepted;
-    }
+//    public Calendar getMyCalendar() {
+//        return myCalendar;
+//    }
+//
+//    public void setMyCalendar(Calendar myCalendar) {
+//        this.myCalendar = myCalendar;
+//    }
 }

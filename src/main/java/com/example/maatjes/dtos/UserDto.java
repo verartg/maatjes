@@ -1,13 +1,14 @@
 package com.example.maatjes.dtos;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserDto {
     public Long id;
-
-    public Long getId() {
-        return id;
     }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-}

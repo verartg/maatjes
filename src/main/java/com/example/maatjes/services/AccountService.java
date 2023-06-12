@@ -7,7 +7,6 @@ import com.example.maatjes.models.Account;
 import com.example.maatjes.repositories.AccountRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,7 +103,6 @@ public class AccountService {
         account.setActivitiesToReceive(accountDto.getActivitiesToReceive());
         account.setAvailability(accountDto.getAvailability());
         account.setFrequency(accountDto.getFrequency());
-
         return account;
 
         }

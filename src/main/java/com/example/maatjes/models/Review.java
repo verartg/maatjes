@@ -13,9 +13,13 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class User {
+public class Review {
     @Id
     @GeneratedValue
     private Long id;
-//    private Role role; <-- dit leren we geloof ik nog
+    private float rating;
+    private String description;
+//    private account writtenBy; <-- dit wordt een relatie
+//    private account writtenAbout; <-- dit wordt een relatie
+    private boolean verified;
 }

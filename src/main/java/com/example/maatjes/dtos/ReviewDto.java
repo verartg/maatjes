@@ -5,18 +5,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-import java.util.Date;
-
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AppointmentDto {
+public class ReviewDto {
     public Long id;
-    public Date date;
-    public LocalDateTime startTime;
-    public LocalDateTime endTime;
+    public float rating;
     public String description;
-    public boolean accepted;
+    //    private account writtenBy; <-- dit wordt een relatie
+//    private account writtenAbout; <-- dit wordt een relatie
+    public boolean verified;
 }
