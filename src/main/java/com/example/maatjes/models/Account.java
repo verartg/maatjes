@@ -4,10 +4,7 @@ import com.example.maatjes.enums.ActivitiesToGive;
 import com.example.maatjes.enums.ActivitiesToReceive;
 import com.example.maatjes.enums.Availability;
 import com.example.maatjes.enums.Frequency;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,13 +33,13 @@ public class Account {
 // private pdf identification;
     private boolean givesHelp;
     private boolean needsHelp;
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private ActivitiesToGive activitiesToGive;
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private ActivitiesToReceive activitiesToReceive;
 //    private ArrayList<Match> matches; <-- dit wordt een relatie
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private Availability availability;
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private Frequency frequency;
 }
