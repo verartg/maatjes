@@ -27,5 +27,5 @@ public class Match {
     private LocalDate endMatch;
 //    @Enumerated
 //    private Availability frequency; <--
-    private List<String> activities;
+//    private List<String> activities;
 }

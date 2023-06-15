@@ -16,6 +16,6 @@ public class MatchInputDto {
     public boolean accepted;
     public LocalDate startMatch;
     public LocalDate endMatch;
-    public String frequency;
-    public String activities;
+//    public String frequency;
+//    public String activities;
 }

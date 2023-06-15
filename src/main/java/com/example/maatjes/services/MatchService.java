@@ -29,7 +29,7 @@ public class MatchService {
         matchDto.accepted = match.isAccepted();
         matchDto.startMatch = match.getStartMatch();
         matchDto.endMatch = match.getEndMatch();
-        matchDto.frequency = match.getFrequency();
+//        matchDto.frequency = match.getFrequency();
 
         return matchDto;
     }

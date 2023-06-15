@@ -29,14 +29,39 @@ public class AccountService {
         return accountDtos;
     }
 
-    public List<AccountDto> getAccountsByCity(String city) {
-        List<Account> accounts = accountRepository.findAllAccountsByCityEqualsIgnoreCase(city);
+//    public List<AccountDto> getAccountsByCity(String city) {
+//        List<Account> accounts = accountRepository.findAllAccountsByCityEqualsIgnoreCase(city);
+//        List<AccountDto> accountDtos = new ArrayList<>();
+//            for (Account account : accounts) {
+//                accountDtos.add(transferAccountToDto(account));
+//            }
+//            return accountDtos;
+//    }
+
+    public List<AccountDto> getAccountsByFilters(String city, Boolean givesHelp) {
+        List<Account> accounts;
+
+        if (city != null && givesHelp != null) {
+            // Filter by both city and givesHelp
+            accounts = accountRepository.findAllByCityAndGivesHelp(city, givesHelp);
+        } else if (city != null) {
+            // Filter by city only
+            accounts = accountRepository.findAllByCityEqualsIgnoreCase(city);
+        } else if (givesHelp != null) {
+            // Filter by givesHelp only
+            accounts = accountRepository.findAllByGivesHelp(givesHelp);
+        } else {
+            // No filters specified, retrieve all accounts
+            accounts = accountRepository.findAll();
+        }
+
         List<AccountDto> accountDtos = new ArrayList<>();
-            for (Account account : accounts) {
-                accountDtos.add(transferAccountToDto(account));
-            }
-            return accountDtos;
+        for (Account account : accounts) {
+            accountDtos.add(transferAccountToDto(account));
+        }
+        return accountDtos;
     }
+
 
     public AccountDto getAccount(Long id) {
         Optional<Account> optionalAccount = accountRepository.findById(id);
@@ -77,10 +102,10 @@ public class AccountService {
         accountDto.bio = account.getBio();
         accountDto.givesHelp = account.isGivesHelp();
         accountDto.needsHelp = account.isNeedsHelp();
-        accountDto.activitiesToGive = account.getActivitiesToGive();
-        accountDto.activitiesToReceive = account.getActivitiesToReceive();
-        accountDto.availability = account.getAvailability();
-        accountDto.frequency = account.getFrequency();
+//        accountDto.activitiesToGive = account.getActivitiesToGive();
+//        accountDto.activitiesToReceive = account.getActivitiesToReceive();
+//        accountDto.availability = account.getAvailability();
+//        accountDto.frequency = account.getFrequency();
         return accountDto;
         }
 
@@ -99,10 +124,10 @@ public class AccountService {
         account.setBio(accountDto.getBio());
         account.setGivesHelp(accountDto.isGivesHelp());
         account.setNeedsHelp(accountDto.isNeedsHelp());
-        account.setActivitiesToGive(accountDto.getActivitiesToGive());
-        account.setActivitiesToReceive(accountDto.getActivitiesToReceive());
-        account.setAvailability(accountDto.getAvailability());
-        account.setFrequency(accountDto.getFrequency());
+//        account.setActivitiesToGive(accountDto.getActivitiesToGive());
+//        account.setActivitiesToReceive(accountDto.getActivitiesToReceive());
+//        account.setAvailability(accountDto.getAvailability());
+//        account.setFrequency(accountDto.getFrequency());
         return account;
 
         }

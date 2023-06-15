@@ -30,9 +30,9 @@ public class AccountDto {
     // private pdf identification;
     public boolean givesHelp;
     public boolean needsHelp;
-    public ActivitiesToGive activitiesToGive;
-    public ActivitiesToReceive activitiesToReceive;
-    public Availability availability;
-    public Frequency frequency;
+//    public ActivitiesToGive activitiesToGive;
+//    public ActivitiesToReceive activitiesToReceive;
+//    public Availability availability;
+//    public Frequency frequency;
 
 }

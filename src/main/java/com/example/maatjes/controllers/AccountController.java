@@ -19,16 +19,36 @@ public class AccountController {
         this.accountService = accountService;
     }
 
+//    @GetMapping
+//    public ResponseEntity<List<AccountDto>> getAccounts(@RequestParam(value = "city", required = false) Optional<String> city) {
+//        List<AccountDto> accountDtos;
+//        if (city.isEmpty()) {
+//            accountDtos = accountService.getAccounts();
+//        } else {
+//            accountDtos = accountService.getAccountsByCity(city.get());
+//        }
+//        return ResponseEntity.ok().body(accountDtos);
+//    }
+
     @GetMapping
-    public ResponseEntity<List<AccountDto>> getAccounts(@RequestParam(value = "city", required = false) Optional<String> city) {
+    public ResponseEntity<List<AccountDto>> getAccountsByFilters(
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) Boolean givesHelp
+    ) {
         List<AccountDto> accountDtos;
-        if (city.isEmpty()) {
-            accountDtos = accountService.getAccounts();
-        } else {
-            accountDtos = accountService.getAccountsByCity(city.get());
-        }
+        accountDtos = accountService.getAccountsByFilters(city, givesHelp);
         return ResponseEntity.ok().body(accountDtos);
     }
+
+//    public ResponseEntity<List<AccountDto>> getAccountsByFilters(@RequestParam(required = false) Optional<String> city, @RequestParam(required = false) Boolean givesHelp) {
+//        List<AccountDto> accountDtos;
+//        if (city.isEmpty()) {
+//            accountDtos = accountService.getAccounts();
+//        } else {
+//            accountDtos = accountService.getAccountsByFilters(city.get());
+//        }
+//        return ResponseEntity.ok().body(accountDtos);
+//    }
 
     @GetMapping("/{id}")
     public ResponseEntity<AccountDto> getAccount(@PathVariable("id") Long id) {

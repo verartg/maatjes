@@ -32,13 +32,13 @@ public class Account {
 // private pdf identification;
     private boolean givesHelp;
     private boolean needsHelp;
-    @Enumerated
-    private ActivitiesToGive activitiesToGive;
-    @Enumerated
-    private ActivitiesToReceive activitiesToReceive;
+//    @Enumerated
+//    private ActivitiesToGive activitiesToGive;
+//    @Enumerated
+//    private ActivitiesToReceive activitiesToReceive;
 //    private ArrayList<Match> matches; <-- dit wordt een relatie
-    @Enumerated
-    private Availability availability;
-    @Enumerated
-    private Frequency frequency;
+//    @Enumerated
+//    private Availability availability;
+//    @Enumerated
+//    private Frequency frequency;
 }
