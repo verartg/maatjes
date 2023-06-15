@@ -1,9 +1,9 @@
 package com.example.maatjes.dtos;
 
-import com.example.maatjes.models.ActivitiesToGive;
-import com.example.maatjes.models.ActivitiesToReceive;
-import com.example.maatjes.models.Availability;
-import com.example.maatjes.models.Frequency;
+import com.example.maatjes.enums.ActivitiesToGive;
+import com.example.maatjes.enums.ActivitiesToReceive;
+import com.example.maatjes.enums.Availability;
+import com.example.maatjes.enums.Frequency;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,9 +30,9 @@ public class AccountDto {
     // private pdf identification;
     public boolean givesHelp;
     public boolean needsHelp;
-//    public ActivitiesToGive activitiesToGive;
-//    public ActivitiesToReceive activitiesToReceive;
-//    public Availability availability;
-//    public Frequency frequency;
+    public ActivitiesToGive activitiesToGive;
+    public ActivitiesToReceive activitiesToReceive;
+    public Availability availability;
+    public Frequency frequency;
 
 }

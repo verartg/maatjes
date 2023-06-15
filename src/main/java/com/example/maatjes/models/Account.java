@@ -1,5 +1,9 @@
 package com.example.maatjes.models;
 
+import com.example.maatjes.enums.ActivitiesToGive;
+import com.example.maatjes.enums.ActivitiesToReceive;
+import com.example.maatjes.enums.Availability;
+import com.example.maatjes.enums.Frequency;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
@@ -32,13 +36,13 @@ public class Account {
 // private pdf identification;
     private boolean givesHelp;
     private boolean needsHelp;
-//    @Enumerated
-//    private ActivitiesToGive activitiesToGive;
-//    @Enumerated
-//    private ActivitiesToReceive activitiesToReceive;
+    @Enumerated
+    private ActivitiesToGive activitiesToGive;
+    @Enumerated
+    private ActivitiesToReceive activitiesToReceive;
 //    private ArrayList<Match> matches; <-- dit wordt een relatie
-//    @Enumerated
-//    private Availability availability;
-//    @Enumerated
-//    private Frequency frequency;
+    @Enumerated
+    private Availability availability;
+    @Enumerated
+    private Frequency frequency;
 }

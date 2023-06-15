@@ -1,4 +1,4 @@
-package com.example.maatjes.models;
+package com.example.maatjes.enums;
 
 public enum Availability {
     MAANDAGOCHTEND,

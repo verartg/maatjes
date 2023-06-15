@@ -1,11 +1,12 @@
 package com.example.maatjes.dtos;
 
-import com.example.maatjes.models.ActivitiesToGive;
-import com.example.maatjes.models.ActivitiesToReceive;
-import com.example.maatjes.models.Availability;
-import com.example.maatjes.models.Frequency;
+import com.example.maatjes.enums.ActivitiesToGive;
+import com.example.maatjes.enums.ActivitiesToReceive;
+import com.example.maatjes.enums.Availability;
+import com.example.maatjes.enums.Frequency;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,7 +21,9 @@ public class AccountInputDto {
     public Long id;
     @NotBlank
     public String name;
+    @NotNull
     public int age;
+    @NotNull
     public char sex;
     public String phoneNumber;
     @Email(message = "Invalid email address") @NotBlank
@@ -35,15 +38,17 @@ public class AccountInputDto {
     @NotBlank
     public String bio;
     // private pdf identification;
+    @NotNull
     public boolean givesHelp;
+    @NotNull
     public boolean needsHelp;
-//    @NotBlank
-//    public ActivitiesToGive activitiesToGive;
-//    @NotBlank
-//    public ActivitiesToReceive activitiesToReceive;
-//    @NotBlank
-//    public Availability availability;
-//    @NotBlank
-//    public Frequency frequency;
+    @NotNull
+    public ActivitiesToGive activitiesToGive;
+    @NotNull
+    public ActivitiesToReceive activitiesToReceive;
+    @NotNull
+    public Availability availability;
+    @NotNull
+    public Frequency frequency;
 
 }

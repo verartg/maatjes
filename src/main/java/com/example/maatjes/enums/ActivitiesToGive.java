@@ -1,6 +1,6 @@
-package com.example.maatjes.models;
+package com.example.maatjes.enums;
 
-public enum ActivitiesToReceive {
+public enum ActivitiesToGive {
     WANDELEN,
     NEDERLANDS_LEREN,
     VOORLEZEN,

@@ -19,17 +19,6 @@ public class AccountController {
         this.accountService = accountService;
     }
 
-//    @GetMapping
-//    public ResponseEntity<List<AccountDto>> getAccounts(@RequestParam(value = "city", required = false) Optional<String> city) {
-//        List<AccountDto> accountDtos;
-//        if (city.isEmpty()) {
-//            accountDtos = accountService.getAccounts();
-//        } else {
-//            accountDtos = accountService.getAccountsByCity(city.get());
-//        }
-//        return ResponseEntity.ok().body(accountDtos);
-//    }
-
     @GetMapping
     public ResponseEntity<List<AccountDto>> getAccountsByFilters(
             @RequestParam(required = false) String city,
@@ -39,7 +28,7 @@ public class AccountController {
         accountDtos = accountService.getAccountsByFilters(city, givesHelp);
         return ResponseEntity.ok().body(accountDtos);
     }
-
+// in onderstaande code wordt gebruik gemaakt van <Optional>, dat werkte niet meer bij meerdere filters, maar is het dan nog wel oke?
 //    public ResponseEntity<List<AccountDto>> getAccountsByFilters(@RequestParam(required = false) Optional<String> city, @RequestParam(required = false) Boolean givesHelp) {
 //        List<AccountDto> accountDtos;
 //        if (city.isEmpty()) {

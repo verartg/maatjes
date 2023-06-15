@@ -20,15 +20,6 @@ public class AccountService {
         this.accountRepository = accountRepository;
     }
 
-    public List<AccountDto> getAccounts() {
-        List<Account> accounts = accountRepository.findAll();
-        List<AccountDto> accountDtos = new ArrayList<>();
-        for (Account account : accounts) {
-            accountDtos.add(transferAccountToDto(account));
-        }
-        return accountDtos;
-    }
-
 //    public List<AccountDto> getAccountsByCity(String city) {
 //        List<Account> accounts = accountRepository.findAllAccountsByCityEqualsIgnoreCase(city);
 //        List<AccountDto> accountDtos = new ArrayList<>();
@@ -102,10 +93,10 @@ public class AccountService {
         accountDto.bio = account.getBio();
         accountDto.givesHelp = account.isGivesHelp();
         accountDto.needsHelp = account.isNeedsHelp();
-//        accountDto.activitiesToGive = account.getActivitiesToGive();
-//        accountDto.activitiesToReceive = account.getActivitiesToReceive();
-//        accountDto.availability = account.getAvailability();
-//        accountDto.frequency = account.getFrequency();
+        accountDto.activitiesToGive = account.getActivitiesToGive();
+        accountDto.activitiesToReceive = account.getActivitiesToReceive();
+        accountDto.availability = account.getAvailability();
+        accountDto.frequency = account.getFrequency();
         return accountDto;
         }
 
@@ -124,10 +115,10 @@ public class AccountService {
         account.setBio(accountDto.getBio());
         account.setGivesHelp(accountDto.isGivesHelp());
         account.setNeedsHelp(accountDto.isNeedsHelp());
-//        account.setActivitiesToGive(accountDto.getActivitiesToGive());
-//        account.setActivitiesToReceive(accountDto.getActivitiesToReceive());
-//        account.setAvailability(accountDto.getAvailability());
-//        account.setFrequency(accountDto.getFrequency());
+        account.setActivitiesToGive(accountDto.getActivitiesToGive());
+        account.setActivitiesToReceive(accountDto.getActivitiesToReceive());
+        account.setAvailability(accountDto.getAvailability());
+        account.setFrequency(accountDto.getFrequency());
         return account;
 
         }
