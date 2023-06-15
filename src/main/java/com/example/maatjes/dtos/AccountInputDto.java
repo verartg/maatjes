@@ -20,7 +20,9 @@ public class AccountInputDto {
     public Long id;
     @NotBlank
     public String name;
+    @NotBlank
     public int age;
+    @NotBlank
     public char sex;
     public String phoneNumber;
     @Email(message = "Invalid email address") @NotBlank
@@ -32,13 +34,20 @@ public class AccountInputDto {
     @NotBlank
     public String city;
     //    private image profilePicture;
+    @NotBlank
     public String bio;
     // private pdf identification;
+    @NotBlank
     public boolean givesHelp;
+    @NotBlank
     public boolean needsHelp;
+    @NotBlank
     public ActivitiesToGive activitiesToGive;
+    @NotBlank
     public ActivitiesToReceive activitiesToReceive;
+    @NotBlank
     public Availability availability;
+    @NotBlank
     public Frequency frequency;
 
 }
