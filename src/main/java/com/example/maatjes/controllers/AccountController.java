@@ -58,4 +58,9 @@ public class AccountController {
         return ResponseEntity.noContent().build();
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> updateAccount(@PathVariable Long id, @Valid @RequestBody AccountInputDto account) {
+        AccountDto dto = accountService.updateAccount(id, account);
+        return ResponseEntity.ok().body(dto);
+    }
 }

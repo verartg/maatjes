@@ -77,6 +77,34 @@ public class AccountService {
         }
     }
 
+    public AccountDto updateAccount(Long id, AccountInputDto newAccount) {
+        Optional<Account> accountOptional = accountRepository.findById(id);
+        if (accountOptional.isPresent()) {
+            Account account1 = accountOptional.get();
+
+            account1.setName(newAccount.getName());
+            account1.setAge(newAccount.getAge());
+            account1.setSex(newAccount.getSex());
+            account1.setPhoneNumber(newAccount.getPhoneNumber());
+            account1.setEmailAddress(newAccount.getEmailAddress());
+            account1.setStreet(newAccount.getStreet());
+            account1.setHouseNumber(newAccount.getHouseNumber());
+            account1.setPostalCode(newAccount.getPostalCode());
+            account1.setCity(newAccount.getCity());
+            account1.setBio(newAccount.getBio());
+            account1.setGivesHelp(newAccount.isGivesHelp());
+            account1.setNeedsHelp(newAccount.isNeedsHelp());
+            account1.setActivitiesToGive(newAccount.getActivitiesToGive());
+            account1.setActivitiesToReceive(newAccount.getActivitiesToReceive());
+            account1.setAvailability(newAccount.getAvailability());
+            account1.setFrequency(newAccount.getFrequency());
+            Account returnAccount = accountRepository.save(account1);
+            return transferAccountToDto(returnAccount);
+        } else {
+            throw new RecordNotFoundException("Account niet gevonden");
+        }
+    }
+
     public AccountDto transferAccountToDto(Account account) {
         AccountDto accountDto = new AccountDto();
 
