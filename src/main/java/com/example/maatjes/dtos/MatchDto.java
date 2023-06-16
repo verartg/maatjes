@@ -1,5 +1,10 @@
 package com.example.maatjes.dtos;
 
+import com.example.maatjes.enums.Availability;
+import com.example.maatjes.enums.ContactPerson;
+import com.example.maatjes.enums.Frequency;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,8 +19,10 @@ import java.time.LocalDate;
 public class MatchDto {
     public Long id;
     public boolean accepted;
+    public ContactPerson contactPerson;
     public LocalDate startMatch;
     public LocalDate endMatch;
-//    public String frequency;
-//    public String activities;
+    public Availability availability;
+    public Frequency frequency;
+
 }

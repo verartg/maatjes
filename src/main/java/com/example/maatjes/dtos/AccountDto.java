@@ -4,6 +4,7 @@ import com.example.maatjes.enums.ActivitiesToGive;
 import com.example.maatjes.enums.ActivitiesToReceive;
 import com.example.maatjes.enums.Availability;
 import com.example.maatjes.enums.Frequency;
+import jakarta.persistence.Lob;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,12 +28,13 @@ public class AccountDto {
     public String city;
     //    private image profilePicture;
     public String bio;
-    // private pdf identification;
+    public byte[] document;
     public boolean givesHelp;
     public boolean needsHelp;
     public ActivitiesToGive activitiesToGive;
     public ActivitiesToReceive activitiesToReceive;
     public Availability availability;
     public Frequency frequency;
+
 
 }

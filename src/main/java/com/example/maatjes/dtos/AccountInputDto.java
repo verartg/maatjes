@@ -19,36 +19,36 @@ import lombok.Setter;
 @NoArgsConstructor
 public class AccountInputDto {
     public Long id;
-    @NotBlank
-    public String name;
     @NotNull
     public int age;
-    @NotNull
+//    @NotBlank
+    public String name;
+//    @NotNull
     public char sex;
     public String phoneNumber;
-    @Email(message = "Invalid email address") @NotBlank
+//    @Email(message = "Invalid email address") @NotBlank
     public String emailAddress;
     public String street;
     public String houseNumber;
-    @Pattern(regexp = "\\d{4}[A-Za-z]{2}", message = "Invalid postal code")
+//    @Pattern(regexp = "\\d{4}[A-Za-z]{2}", message = "Invalid postal code")
     public String postalCode;
-    @NotBlank
+//    @NotBlank
     public String city;
     //    private image profilePicture;
-    @NotBlank
+//    @NotBlank
     public String bio;
-    // private pdf identification;
-    @NotNull
+    public byte[] document;
+//    @NotNull
     public boolean givesHelp;
-    @NotNull
+//    @NotNull
     public boolean needsHelp;
-    @NotNull
+//    @NotNull
     public ActivitiesToGive activitiesToGive;
-    @NotNull
+//    @NotNull
     public ActivitiesToReceive activitiesToReceive;
-    @NotNull
+//    @NotNull
     public Availability availability;
-    @NotNull
+//    @NotNull
     public Frequency frequency;
 
 }

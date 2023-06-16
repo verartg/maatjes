@@ -4,17 +4,25 @@ import com.example.maatjes.enums.ActivitiesToGive;
 import com.example.maatjes.enums.ActivitiesToReceive;
 import com.example.maatjes.enums.Availability;
 import com.example.maatjes.enums.Frequency;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Table(name = "Account")
 public class Account {
     @Id
     @GeneratedValue
@@ -30,7 +38,8 @@ public class Account {
     private String city;
 //    private image profilePicture;
     private String bio;
-// private pdf identification;
+    @Lob
+    private byte[] document;
     private boolean givesHelp;
     private boolean needsHelp;
     @Enumerated(EnumType.STRING)
@@ -42,4 +51,25 @@ public class Account {
     private Availability availability;
     @Enumerated(EnumType.STRING)
     private Frequency frequency;
+
+    @OneToMany(mappedBy = "account")
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @JsonIgnore
+    Collection<AccountMatch> accountMatches;
+
+//    @ManyToMany
+//    @JoinTable(name = "account_match",
+//            joinColumns = @JoinColumn(name = "account_id"),
+//            inverseJoinColumns = @JoinColumn(name = "match_id"))
+//    private List<Match> matches = new ArrayList<>();
+//
+//    public void addMatch(Match match) {
+//        matches.add(match);
+//        match.getAccounts().add(this);
+//    }
+//
+//    public void removeMatch(Match match) {
+//        matches.remove(match);
+//        match.getAccounts().remove(this);
+//    }
 }

@@ -4,10 +4,14 @@ import com.example.maatjes.dtos.AccountDto;
 import com.example.maatjes.dtos.AccountInputDto;
 import com.example.maatjes.exceptions.RecordNotFoundException;
 import com.example.maatjes.models.Account;
+import com.example.maatjes.models.Match;
 import com.example.maatjes.repositories.AccountRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.swing.text.Document;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -57,7 +61,7 @@ public class AccountService {
     public AccountDto getAccount(Long id) {
         Optional<Account> optionalAccount = accountRepository.findById(id);
         if (optionalAccount.isEmpty()) {
-            throw new RecordNotFoundException("Account not found");}
+            throw new RecordNotFoundException("Account niet gevonden");}
         Account account = optionalAccount.get();
         return transferAccountToDto(account);
     }
@@ -73,9 +77,10 @@ public class AccountService {
         if (optionalAccount.isPresent()) {
             accountRepository.deleteById(id);
         } else {
-            throw new RecordNotFoundException("Cannot find account");
+            throw new RecordNotFoundException("Account niet gevonden");
         }
     }
+
 
     public AccountDto updateAccount(Long id, AccountInputDto newAccount) {
         Optional<Account> accountOptional = accountRepository.findById(id);
@@ -92,6 +97,7 @@ public class AccountService {
             account1.setPostalCode(newAccount.getPostalCode());
             account1.setCity(newAccount.getCity());
             account1.setBio(newAccount.getBio());
+            account1.setDocument(newAccount.getDocument());
             account1.setGivesHelp(newAccount.isGivesHelp());
             account1.setNeedsHelp(newAccount.isNeedsHelp());
             account1.setActivitiesToGive(newAccount.getActivitiesToGive());
@@ -100,6 +106,40 @@ public class AccountService {
             account1.setFrequency(newAccount.getFrequency());
             Account returnAccount = accountRepository.save(account1);
             return transferAccountToDto(returnAccount);
+        } else {
+            throw new RecordNotFoundException("Account niet gevonden");
+        }
+    }
+
+    @Transactional
+    public AccountDto uploadDocument(Long id, MultipartFile file) throws Exception {
+        Optional<Account> accountOptional = accountRepository.findById(id);
+        if (accountOptional.isPresent()) {
+            Account account1 = accountOptional.get();
+
+            long fileSize = file.getSize();
+            long maxFileSize = 100 * 1024 * 1024; // 100MB in bytes
+            if (fileSize > maxFileSize) {
+                throw new IllegalArgumentException("Bestand is te groot");
+                //deze error werkt nog niet
+            }
+            byte[] documentData = file.getBytes();
+
+            account1.setDocument(documentData);
+            Account returnaccount = accountRepository.save(account1);
+
+            return transferAccountToDto(returnaccount);
+        } else {
+            throw new RecordNotFoundException("Account niet gevonden");
+        }
+    }
+
+    @Transactional
+    public void removeDocument (@RequestBody Long id) {
+        Optional<Account> optionalAccount = accountRepository.findById(id);
+        if (optionalAccount.isPresent()) {
+            Account account = optionalAccount.get();
+            account.setDocument(null);
         } else {
             throw new RecordNotFoundException("Account niet gevonden");
         }
@@ -119,6 +159,7 @@ public class AccountService {
         accountDto.postalCode = account.getPostalCode();
         accountDto.city = account.getCity();
         accountDto.bio = account.getBio();
+        accountDto.document = account.getDocument();
         accountDto.givesHelp = account.isGivesHelp();
         accountDto.needsHelp = account.isNeedsHelp();
         accountDto.activitiesToGive = account.getActivitiesToGive();
@@ -141,6 +182,7 @@ public class AccountService {
         account.setPostalCode(accountDto.getPostalCode());
         account.setCity(accountDto.getCity());
         account.setBio(accountDto.getBio());
+        account.setDocument(accountDto.getDocument());
         account.setGivesHelp(accountDto.isGivesHelp());
         account.setNeedsHelp(accountDto.isNeedsHelp());
         account.setActivitiesToGive(accountDto.getActivitiesToGive());

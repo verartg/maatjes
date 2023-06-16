@@ -2,21 +2,26 @@ package com.example.maatjes.controllers;
 
 import com.example.maatjes.dtos.AccountDto;
 import com.example.maatjes.dtos.AccountInputDto;
+import com.example.maatjes.dtos.MatchDto;
+import com.example.maatjes.services.AccountMatchService;
 import com.example.maatjes.services.AccountService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/accounts")
 public class AccountController {
     private final AccountService accountService;
+    private final AccountMatchService accountMatchService;
 
-    public AccountController(AccountService accountService) {
+    public AccountController(AccountService accountService, AccountMatchService accountMatchService) {
         this.accountService = accountService;
+        this.accountMatchService = accountMatchService;
     }
 
     @GetMapping
@@ -62,5 +67,24 @@ public class AccountController {
     public ResponseEntity<Object> updateAccount(@PathVariable Long id, @Valid @RequestBody AccountInputDto account) {
         AccountDto dto = accountService.updateAccount(id, account);
         return ResponseEntity.ok().body(dto);
+    }
+
+    @PutMapping("/{id}/upload")
+    public ResponseEntity<Object> uploadDocument(@PathVariable Long id, @RequestParam("file") MultipartFile file) throws Exception {
+        AccountDto dto = accountService.uploadDocument(id, file);
+        return ResponseEntity.ok().body(dto);
+    }
+
+    @DeleteMapping("/{id}/upload")
+    public ResponseEntity<Object> removeDocument(@PathVariable Long id) {
+        accountService.removeDocument(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    // Deze methode is om alle matches op te halen die aan een bepaalde account gekoppeld zijn.
+    // Deze methode maakt gebruik van de accountMatchService.
+    @GetMapping("/matches/{accountId}")
+    public ResponseEntity<Collection<MatchDto>> getMatchesByAccountId(@PathVariable("accountId") Long accountId){
+        return ResponseEntity.ok(accountMatchService.getMatchesByAccountId(accountId));
     }
 }

@@ -1,15 +1,17 @@
 package com.example.maatjes.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import com.example.maatjes.enums.Availability;
+import com.example.maatjes.enums.ContactPerson;
+import com.example.maatjes.enums.Frequency;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -17,15 +19,29 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Table(name = "Match")
 public class Match {
     @Id
     @GeneratedValue
     private Long id;
     private boolean accepted;
-//    private User contactperson; <-- dit wordt geen relatie denk ik, maaaar hoe implementeer ik dit
+    @Enumerated(EnumType.STRING)
+    private ContactPerson contactPerson;
     private LocalDate startMatch;
     private LocalDate endMatch;
-//    @Enumerated
-//    private Availability frequency; <--
-//    private List<String> activities;
+    @Enumerated(EnumType.STRING)
+    private Availability availability;
+    @Enumerated(EnumType.STRING)
+    private Frequency frequency;
+
+    @OneToMany(mappedBy = "match")
+    @JsonIgnore
+    List<AccountMatch> accountMatches;
+
+    @PrePersist
+    private void validateAccounts() {
+        if (accountMatches.size() != 2) {
+            throw new IllegalArgumentException("A match must have exactly two accounts.");
+        }
+    }
 }
