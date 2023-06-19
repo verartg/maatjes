@@ -27,6 +27,7 @@ public class Match {
     private boolean accepted;
     @Enumerated(EnumType.STRING)
     private ContactPerson contactPerson;
+
     private LocalDate startMatch;
     private LocalDate endMatch;
     @Enumerated(EnumType.STRING)
@@ -34,14 +35,12 @@ public class Match {
     @Enumerated(EnumType.STRING)
     private Frequency frequency;
 
-    @OneToMany(mappedBy = "match")
-    @JsonIgnore
-    List<AccountMatch> accountMatches;
+    @ManyToOne
+    @JoinColumn(name = "helpGiver_id")
+    private Account helpGiver;
 
-    @PrePersist
-    private void validateAccounts() {
-        if (accountMatches.size() != 2) {
-            throw new IllegalArgumentException("A match must have exactly two accounts.");
-        }
-    }
+    @ManyToOne
+    @JoinColumn(name = "helpReceiver_id")
+    private Account helpReceiver;
+
 }

@@ -52,24 +52,14 @@ public class Account {
     @Enumerated(EnumType.STRING)
     private Frequency frequency;
 
-    @OneToMany(mappedBy = "account")
-    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(mappedBy = "helpGiver")
     @JsonIgnore
-    Collection<AccountMatch> accountMatches;
+    private List<Match> helpReceivers;
 
-//    @ManyToMany
-//    @JoinTable(name = "account_match",
-//            joinColumns = @JoinColumn(name = "account_id"),
-//            inverseJoinColumns = @JoinColumn(name = "match_id"))
-//    private List<Match> matches = new ArrayList<>();
 //
-//    public void addMatch(Match match) {
-//        matches.add(match);
-//        match.getAccounts().add(this);
-//    }
-//
-//    public void removeMatch(Match match) {
-//        matches.remove(match);
-//        match.getAccounts().remove(this);
-//    }
+//// nu maak ik twee lijsten aan met matches. Is dat wel wat ik wil?
+    @OneToMany(mappedBy = "helpReceiver")
+    @JsonIgnore
+    private List<Match> helpGivers;
+
 }

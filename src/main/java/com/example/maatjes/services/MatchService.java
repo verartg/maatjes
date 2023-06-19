@@ -1,13 +1,15 @@
 package com.example.maatjes.services;
 
 import com.example.maatjes.dtos.MatchDto;
+import com.example.maatjes.dtos.MatchInputDto;
+import com.example.maatjes.exceptions.RecordNotFoundException;
+import com.example.maatjes.models.Account;
 import com.example.maatjes.models.Match;
 import com.example.maatjes.repositories.AccountRepository;
 import com.example.maatjes.repositories.MatchRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class MatchService {
@@ -30,16 +32,79 @@ public class MatchService {
         return matchDtos;
     }
 
+    public MatchDto createMatch(Long helpGiverId, Long helpReceiverId, MatchInputDto matchInputDto) throws RecordNotFoundException {
+        System.out.println(helpGiverId);
+        System.out.println(helpReceiverId);
+        System.out.println(matchInputDto.getId());
+
+        Account giver = accountRepository.findById(helpGiverId).orElseThrow(() -> new RecordNotFoundException("De gebruiker met id " + helpGiverId + " bestaat niet"));
+
+        Account receiver = accountRepository.findById(helpReceiverId).orElseThrow(() -> new RecordNotFoundException("De gebruiker met id " + helpReceiverId + " bestaat niet"));
+        Match match = transferInputDtoToMatch(matchInputDto);
+        match.setHelpGiver(giver);
+        match.setHelpReceiver(receiver);
+
+        matchRepository.save(match);
+        return transferMatchToDto(match); // or id2, depending on your requirements
+    }
+
+
     public MatchDto transferMatchToDto(Match match) {
         MatchDto matchDto = new MatchDto();
         matchDto.id = match.getId();
         matchDto.accepted = match.isAccepted();
         matchDto.startMatch = match.getStartMatch();
+        matchDto.contactPerson = match.getContactPerson();
         matchDto.endMatch = match.getEndMatch();
-//        matchDto.frequency = match.getFrequency();
+        matchDto.frequency = match.getFrequency();
+        matchDto.availability = match.getAvailability();
+        matchDto.nameGiver = match.getHelpGiver().getName();
+        matchDto.nameReceiver = match.getHelpReceiver().getName();
 
         return matchDto;
     }
+
+//    public Collection<MatchDto> getMatchesByAccountId(Long accountId) {
+//        //We gebruiken hier Set om te voorkomen dat er dubbele entries in staan.
+//        List<Match> matches = matchRepository.findAllByAccountId(accountId);
+//        Set<MatchDto> dtos = new HashSet<>();
+//        for (Match match : matches) {
+//            dtos.add(transferMatchToDto(match));
+//        }
+//        return dtos;
+
+
+//todo onderstaande heb ik dat nodig voor bovenstaande request?
+//
+//        for (AccountMatch accountMatch : accountMatches) {
+//            Match match = accountMatch.getMatch();
+//            var dto = new MatchDto();
+//
+//            dto.setId(match.getId());
+//            dto.setAccepted(match.isAccepted());
+//            dto.setContactPerson(match.getContactPerson());
+//            dto.setStartMatch(match.getStartMatch());
+//            dto.setEndMatch(match.getEndMatch());
+//            dto.setAvailability(match.getAvailability());
+//            dto.setFrequency(match.getFrequency());
+//
+//            dtos.add(dto);
+//        }
+//        return dtos;
+
+
+    public Match transferInputDtoToMatch(MatchInputDto matchInputDto) {
+        var match = new Match();
+        match.setId(matchInputDto.getId());
+        match.setAccepted(matchInputDto.isAccepted());
+        match.setContactPerson(matchInputDto.getContactPerson());
+        match.setStartMatch(matchInputDto.getStartMatch());
+        match.setEndMatch(matchInputDto.getEndMatch());
+        match.setAvailability(matchInputDto.getAvailability());
+        match.setFrequency(matchInputDto.getFrequency());
+        return match;
+    }
+}
 
 //    public void assignAccountToMatch(Long id, Long ciModuleId) {
 //        var optionalTelevision = televisionRepository.findById(id);
@@ -55,5 +120,5 @@ public class MatchService {
 //            throw new RecordNotFoundException();
 //        }
 //    }
-}
+
 

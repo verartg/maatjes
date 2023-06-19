@@ -3,7 +3,6 @@ package com.example.maatjes.controllers;
 import com.example.maatjes.dtos.AccountDto;
 import com.example.maatjes.dtos.AccountInputDto;
 import com.example.maatjes.dtos.MatchDto;
-import com.example.maatjes.services.AccountMatchService;
 import com.example.maatjes.services.AccountService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -17,11 +16,9 @@ import java.util.List;
 @RequestMapping("/accounts")
 public class AccountController {
     private final AccountService accountService;
-    private final AccountMatchService accountMatchService;
 
-    public AccountController(AccountService accountService, AccountMatchService accountMatchService) {
+    public AccountController(AccountService accountService) {
         this.accountService = accountService;
-        this.accountMatchService = accountMatchService;
     }
 
     @GetMapping
@@ -83,8 +80,8 @@ public class AccountController {
 
     // Deze methode is om alle matches op te halen die aan een bepaalde account gekoppeld zijn.
     // Deze methode maakt gebruik van de accountMatchService.
-    @GetMapping("/matches/{accountId}")
-    public ResponseEntity<Collection<MatchDto>> getMatchesByAccountId(@PathVariable("accountId") Long accountId){
-        return ResponseEntity.ok(accountMatchService.getMatchesByAccountId(accountId));
-    }
+//    @GetMapping("/matches/{accountId}")
+//    public ResponseEntity<Collection<MatchDto>> getMatchesByAccountId(@PathVariable("accountId") Long accountId){
+//        return ResponseEntity.ok(accountMatchService.getMatchesByAccountId(accountId));
+//    }
 }
