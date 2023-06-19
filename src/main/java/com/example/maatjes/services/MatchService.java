@@ -14,14 +14,47 @@ import java.util.*;
 @Service
 public class MatchService {
     private final MatchRepository matchRepository;
-    private final AccountService accountService;
     private final AccountRepository accountRepository;
 
-    public MatchService(MatchRepository matchRepository, AccountService accountService, AccountRepository accountRepository) {
+    public MatchService(MatchRepository matchRepository, AccountRepository accountRepository) {
         this.matchRepository = matchRepository;
-        this.accountService = accountService;
         this.accountRepository = accountRepository;
     }
+
+//    public List<MatchDto> getMatchesByAccountId(Long accountId) {
+//        List<MatchDto> dtos = new HashSet<>();
+//
+//    }
+
+//    public Collection<TelevisionDto> getTelevisionsByWallBracketId(Long wallBracketId) {
+//        Collection<TelevisionDto> dtos = new HashSet<>();
+//        Collection<TelevisionWallBracket> televisionWallbrackets = televisionWallBracketRepository.findAllByWallBracketId(wallBracketId);
+//        for (TelevisionWallBracket televisionWallbracket : televisionWallbrackets) {
+//            Television television = televisionWallbracket.getTelevision();
+//            TelevisionDto televisionDto = new TelevisionDto();
+//
+//            televisionDto.setId(television.getId());
+//            televisionDto.setType(television.getType());
+//            televisionDto.setBrand(television.getBrand());
+//            televisionDto.setName(television.getName());
+//            televisionDto.setPrice(television.getPrice());
+//            televisionDto.setAvailableSize(television.getAvailableSize());
+//            televisionDto.setRefreshRate(television.getRefreshRate());
+//            televisionDto.setScreenType(television.getScreenType());
+//            televisionDto.setScreenQuality(television.getScreenQuality());
+//            televisionDto.setSmartTv(television.getSmartTv());
+//            televisionDto.setWifi(television.getWifi());
+//            televisionDto.setVoiceControl(television.getVoiceControl());
+//            televisionDto.setHdr(television.getHdr());
+//            televisionDto.setBluetooth(television.getBluetooth());
+//            televisionDto.setAmbiLight(television.getAmbiLight());
+//            televisionDto.setOriginalStock(television.getOriginalStock());
+//            televisionDto.setSold(television.getSold());
+//
+//            dtos.add(televisionDto);
+//        }
+//        return dtos;
+//    }
 
     public List<MatchDto> getMatches() {
         List<Match> matches = matchRepository.findAll();
@@ -33,21 +66,14 @@ public class MatchService {
     }
 
     public MatchDto createMatch(Long helpGiverId, Long helpReceiverId, MatchInputDto matchInputDto) throws RecordNotFoundException {
-        System.out.println(helpGiverId);
-        System.out.println(helpReceiverId);
-        System.out.println(matchInputDto.getId());
-
         Account giver = accountRepository.findById(helpGiverId).orElseThrow(() -> new RecordNotFoundException("De gebruiker met id " + helpGiverId + " bestaat niet"));
-
         Account receiver = accountRepository.findById(helpReceiverId).orElseThrow(() -> new RecordNotFoundException("De gebruiker met id " + helpReceiverId + " bestaat niet"));
         Match match = transferInputDtoToMatch(matchInputDto);
         match.setHelpGiver(giver);
         match.setHelpReceiver(receiver);
-
         matchRepository.save(match);
-        return transferMatchToDto(match); // or id2, depending on your requirements
+        return transferMatchToDto(match);
     }
-
 
     public MatchDto transferMatchToDto(Match match) {
         MatchDto matchDto = new MatchDto();
@@ -60,38 +86,8 @@ public class MatchService {
         matchDto.availability = match.getAvailability();
         matchDto.nameGiver = match.getHelpGiver().getName();
         matchDto.nameReceiver = match.getHelpReceiver().getName();
-
         return matchDto;
     }
-
-//    public Collection<MatchDto> getMatchesByAccountId(Long accountId) {
-//        //We gebruiken hier Set om te voorkomen dat er dubbele entries in staan.
-//        List<Match> matches = matchRepository.findAllByAccountId(accountId);
-//        Set<MatchDto> dtos = new HashSet<>();
-//        for (Match match : matches) {
-//            dtos.add(transferMatchToDto(match));
-//        }
-//        return dtos;
-
-
-//todo onderstaande heb ik dat nodig voor bovenstaande request?
-//
-//        for (AccountMatch accountMatch : accountMatches) {
-//            Match match = accountMatch.getMatch();
-//            var dto = new MatchDto();
-//
-//            dto.setId(match.getId());
-//            dto.setAccepted(match.isAccepted());
-//            dto.setContactPerson(match.getContactPerson());
-//            dto.setStartMatch(match.getStartMatch());
-//            dto.setEndMatch(match.getEndMatch());
-//            dto.setAvailability(match.getAvailability());
-//            dto.setFrequency(match.getFrequency());
-//
-//            dtos.add(dto);
-//        }
-//        return dtos;
-
 
     public Match transferInputDtoToMatch(MatchInputDto matchInputDto) {
         var match = new Match();
@@ -105,20 +101,4 @@ public class MatchService {
         return match;
     }
 }
-
-//    public void assignAccountToMatch(Long id, Long ciModuleId) {
-//        var optionalTelevision = televisionRepository.findById(id);
-//        var optionalCIModule = ciModuleRepository.findById(ciModuleId);
-//
-//        if(optionalTelevision.isPresent() && optionalCIModule.isPresent()) {
-//            var television = optionalTelevision.get();
-//            var ciModule = optionalCIModule.get();
-//
-//            television.setCiModule(ciModule);
-//            televisionRepository.save(television);
-//        } else {
-//            throw new RecordNotFoundException();
-//        }
-//    }
-
 

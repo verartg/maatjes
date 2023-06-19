@@ -46,7 +46,6 @@ public class Account {
     private ActivitiesToGive activitiesToGive;
     @Enumerated(EnumType.STRING)
     private ActivitiesToReceive activitiesToReceive;
-//    private ArrayList<Match> matches; <-- dit wordt een relatie
     @Enumerated(EnumType.STRING)
     private Availability availability;
     @Enumerated(EnumType.STRING)

@@ -4,14 +4,12 @@ import com.example.maatjes.dtos.AccountDto;
 import com.example.maatjes.dtos.AccountInputDto;
 import com.example.maatjes.exceptions.RecordNotFoundException;
 import com.example.maatjes.models.Account;
-import com.example.maatjes.models.Match;
 import com.example.maatjes.repositories.AccountRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.swing.text.Document;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -23,15 +21,6 @@ public class AccountService {
     public AccountService(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;
     }
-
-//    public List<AccountDto> getAccountsByCity(String city) {
-//        List<Account> accounts = accountRepository.findAllAccountsByCityEqualsIgnoreCase(city);
-//        List<AccountDto> accountDtos = new ArrayList<>();
-//            for (Account account : accounts) {
-//                accountDtos.add(transferAccountToDto(account));
-//            }
-//            return accountDtos;
-//    }
 
     public List<AccountDto> getAccountsByFilters(String city, Boolean givesHelp) {
         List<Account> accounts;

@@ -2,14 +2,12 @@ package com.example.maatjes.controllers;
 
 import com.example.maatjes.dtos.AccountDto;
 import com.example.maatjes.dtos.AccountInputDto;
-import com.example.maatjes.dtos.MatchDto;
 import com.example.maatjes.services.AccountService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -30,16 +28,6 @@ public class AccountController {
         accountDtos = accountService.getAccountsByFilters(city, givesHelp);
         return ResponseEntity.ok().body(accountDtos);
     }
-// in onderstaande code wordt gebruik gemaakt van <Optional>, dat werkte niet meer bij meerdere filters, maar is het dan nog wel oke?
-//    public ResponseEntity<List<AccountDto>> getAccountsByFilters(@RequestParam(required = false) Optional<String> city, @RequestParam(required = false) Boolean givesHelp) {
-//        List<AccountDto> accountDtos;
-//        if (city.isEmpty()) {
-//            accountDtos = accountService.getAccounts();
-//        } else {
-//            accountDtos = accountService.getAccountsByFilters(city.get());
-//        }
-//        return ResponseEntity.ok().body(accountDtos);
-//    }
 
     @GetMapping("/{id}")
     public ResponseEntity<AccountDto> getAccount(@PathVariable("id") Long id) {

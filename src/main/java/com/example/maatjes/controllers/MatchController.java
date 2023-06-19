@@ -1,5 +1,6 @@
 package com.example.maatjes.controllers;
 
+import com.example.maatjes.dtos.AppointmentDto;
 import com.example.maatjes.dtos.MatchDto;
 import com.example.maatjes.dtos.MatchInputDto;
 import com.example.maatjes.services.MatchService;
@@ -11,6 +12,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequestMapping("/matches")
@@ -34,6 +36,15 @@ public class MatchController {
 //        return ResponseEntity.ok(matchService.getMatchesByAccountId(accountId));
 //    }
 
+    @GetMapping
+    public ResponseEntity<List<MatchDto>> getMatches() {
+            List<MatchDto> matchDtos;
+            matchDtos = matchService.getMatches();
+            return ResponseEntity.ok().body(matchDtos);
+    }
+
+
+
     @PostMapping("/{helpGiverId}/{helpReceiverId}")
     public ResponseEntity<Object> createMatch(@PathVariable("helpGiverId") Long helpGiverId, @PathVariable("helpReceiverId") Long helpReceiverId, @Valid @RequestBody MatchInputDto matchInputDto, BindingResult bindingResult){
         if (bindingResult.hasFieldErrors()) {
@@ -41,16 +52,4 @@ public class MatchController {
         }
         return new ResponseEntity<>(matchService.createMatch(helpGiverId, helpReceiverId, matchInputDto), HttpStatus.ACCEPTED);
     }
-
-
-            //@PostMapping("/{accountId}/{matchId}")
-    //    public ResponseEntity<AccountMatchKey> addAccountMatch(@PathVariable("accountId") Long accountId, @PathVariable("matchId") Long matchId) {
-    //        AccountMatchKey key = accountMatchService.addAccountMatch(accountId, matchId);
-    //        return ResponseEntity.created(null).body(key);
-    //    }
-//    @PutMapping("/televisions/{id}/{ciModuleId}")
-//    public ResponseEntity<Object> assignCIModuleToTelevision(@PathVariable("id") Long id, @PathVariable("ciModuleId") Long ciModuleId) {
-//        matchService.assignCIModuleToTelevision(id, ciModuleId);
-//        return ResponseEntity.noContent().build();
-//    }
 }

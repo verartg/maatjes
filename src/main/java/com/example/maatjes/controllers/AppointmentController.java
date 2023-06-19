@@ -21,7 +21,7 @@ public class AppointmentController {
     public ResponseEntity<List<AppointmentDto>> getAppointments() {
         List<AppointmentDto> appointmentDtos;
         appointmentDtos = appointmentService.getAppointments();
-        return ResponseEntity.ok().body(appointmentService.getAppointments());
+        return ResponseEntity.ok().body(appointmentDtos);
     }
 
     @GetMapping("/{id}")
