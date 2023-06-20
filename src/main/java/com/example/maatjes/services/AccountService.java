@@ -2,6 +2,7 @@ package com.example.maatjes.services;
 
 import com.example.maatjes.dtos.AccountDto;
 import com.example.maatjes.dtos.AccountInputDto;
+import com.example.maatjes.exceptions.FileSizeExceededException;
 import com.example.maatjes.exceptions.RecordNotFoundException;
 import com.example.maatjes.models.Account;
 import com.example.maatjes.repositories.AccountRepository;
@@ -10,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -91,16 +93,18 @@ public class AccountService {
     }
 
     @Transactional
-    public AccountDto uploadDocument(Long id, MultipartFile file) throws Exception {
+    public AccountDto uploadDocument(Long id, MultipartFile file) throws FileSizeExceededException, IOException {
         Optional<Account> accountOptional = accountRepository.findById(id);
         if (accountOptional.isPresent()) {
             Account account1 = accountOptional.get();
 
-            long fileSize = file.getSize();
-            long maxFileSize = 100 * 1024 * 1024; // 100MB in bytes
+            long fileSize = file.getBytes().length;
+            System.out.println( fileSize);
+            long maxFileSize = 500; // halveMB in bytes/500kb
             if (fileSize > maxFileSize) {
-                throw new IllegalArgumentException("Bestand is te groot");
-                //deze error werkt nog niet
+                throw new FileSizeExceededException("Bestand is te groot");
+                //todo deze error werkt nog niet
+
             }
             byte[] documentData = file.getBytes();
 
@@ -154,6 +158,8 @@ public class AccountService {
         accountDto.activitiesToReceive = account.getActivitiesToReceive();
         accountDto.availability = account.getAvailability();
         accountDto.frequency = account.getFrequency();
+        accountDto.helpGivers = account.getHelpGivers();
+        accountDto.helpReceivers = account.getHelpReceivers();
         return accountDto;
         }
 

@@ -9,6 +9,8 @@ import com.example.maatjes.models.Match;
 import com.example.maatjes.repositories.AccountRepository;
 import com.example.maatjes.repositories.MatchRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
+
 import java.util.*;
 
 @Service
@@ -62,6 +64,34 @@ public class MatchService {
         match.setHelpReceiver(receiver);
         matchRepository.save(match);
         return transferMatchToDto(match);
+    }
+
+    public void removeMatch(@RequestBody Long id) {
+        Optional<Match> optionalMatch = matchRepository.findById(id);
+        if (optionalMatch.isPresent()) {
+            matchRepository.deleteById(id);
+        } else {
+            throw new RecordNotFoundException("Match niet gevonden");
+        }
+    }
+
+    public MatchDto updateMatch(Long id, MatchInputDto newMatch) {
+        Optional<Match> matchOptional = matchRepository.findById(id);
+        if (matchOptional.isPresent()) {
+            Match match = matchOptional.get();
+
+            match.setAccepted(newMatch.isAccepted());
+            match.setContactPerson(newMatch.getContactPerson());
+            match.setStartMatch(newMatch.getStartMatch());
+            match.setEndMatch(newMatch.getEndMatch());
+            match.setAvailability(newMatch.getAvailability());
+            match.setFrequency(newMatch.getFrequency());
+
+            Match returnMatch = matchRepository.save(match);
+            return transferMatchToDto(returnMatch);
+        } else {
+            throw new RecordNotFoundException("Match niet gevonden");
+        }
     }
 
     public MatchDto transferMatchToDto(Match match) {

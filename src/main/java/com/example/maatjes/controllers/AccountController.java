@@ -2,7 +2,9 @@ package com.example.maatjes.controllers;
 
 import com.example.maatjes.dtos.AccountDto;
 import com.example.maatjes.dtos.AccountInputDto;
+import com.example.maatjes.exceptions.FileSizeExceededException;
 import com.example.maatjes.services.AccountService;
+import com.example.maatjes.util.FileSizeExceededHandler;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,7 +47,7 @@ public class AccountController {
     }
 
     @PutMapping("/{id}/upload")
-    public ResponseEntity<Object> uploadDocument(@PathVariable Long id, @RequestParam("file") MultipartFile file) throws Exception {
+    public ResponseEntity<Object> uploadDocument(@PathVariable Long id, @RequestParam("file") MultipartFile file) throws Exception{
         return new ResponseEntity<>(accountService.uploadDocument(id, file), HttpStatus.ACCEPTED);
     }
 

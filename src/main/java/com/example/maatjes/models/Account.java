@@ -55,8 +55,6 @@ public class Account {
     @JsonIgnore
     private List<Match> helpReceivers;
 
-//
-//// nu maak ik twee lijsten aan met matches. Is dat wel wat ik wil?
     @OneToMany(mappedBy = "helpReceiver", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Match> helpGivers;
