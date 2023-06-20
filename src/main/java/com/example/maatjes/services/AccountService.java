@@ -61,16 +61,6 @@ public class AccountService {
         return transferAccountToDto(account);
     }
 
-    public void removeAccount(@RequestBody Long id) {
-        Optional<Account> optionalAccount = accountRepository.findById(id);
-        if (optionalAccount.isPresent()) {
-            accountRepository.deleteById(id);
-        } else {
-            throw new RecordNotFoundException("Account niet gevonden");
-        }
-    }
-
-
     public AccountDto updateAccount(Long id, AccountInputDto newAccount) {
         Optional<Account> accountOptional = accountRepository.findById(id);
         if (accountOptional.isPresent()) {
@@ -134,6 +124,15 @@ public class AccountService {
         }
     }
 
+    public void removeAccount(@RequestBody Long id) {
+        Optional<Account> optionalAccount = accountRepository.findById(id);
+        if (optionalAccount.isPresent()) {
+            accountRepository.deleteById(id);
+        } else {
+            throw new RecordNotFoundException("Account niet gevonden");
+        }
+    }
+
     public AccountDto transferAccountToDto(Account account) {
         AccountDto accountDto = new AccountDto();
 
@@ -179,6 +178,5 @@ public class AccountService {
         account.setAvailability(accountDto.getAvailability());
         account.setFrequency(accountDto.getFrequency());
         return account;
-
         }
 }

@@ -21,16 +21,25 @@ public class MatchController {
         this.fieldErrorHandling = fieldErrorHandling;
     }
 
-        @GetMapping("/{accountId}")
-    public ResponseEntity<List<MatchDto>> getMatchesByAccountId(@PathVariable("accountId") Long accountId) {
-        return new ResponseEntity<>(matchService.getMatchesByAccountId(accountId), HttpStatus.OK);
+//    @GetMapping
+//    public ResponseEntity<List<MatchDto>> getMatches() {
+//        List<MatchDto> matchDtos;
+//        matchDtos = matchService.getMatches();
+//        return ResponseEntity.ok().body(matchDtos);
+//    }
+    @GetMapping
+    public ResponseEntity<List<MatchDto>> getMatches(){
+        return new ResponseEntity<>(matchService.getMatches(), HttpStatus.OK);
     }
 
-    @GetMapping
-    public ResponseEntity<List<MatchDto>> getMatches() {
-            List<MatchDto> matchDtos;
-            matchDtos = matchService.getMatches();
-            return ResponseEntity.ok().body(matchDtos);
+    @GetMapping("/match/{id}")
+    public ResponseEntity<MatchDto> getMatch(@PathVariable("id") Long id) {
+        return new ResponseEntity<>(matchService.getMatch(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/{accountId}")
+    public ResponseEntity<List<MatchDto>> getMatchesByAccountId(@PathVariable("accountId") Long accountId) {
+        return new ResponseEntity<>(matchService.getMatchesByAccountId(accountId), HttpStatus.OK);
     }
 
     @PostMapping("/{helpGiverId}/{helpReceiverId}")
