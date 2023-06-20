@@ -24,7 +24,8 @@ public class Match {
     @Id
     @GeneratedValue
     private Long id;
-    private boolean accepted;
+    private boolean giverAccepted = false;
+    private boolean receiverAccepted = false;
     @Enumerated(EnumType.STRING)
     private ContactPerson contactPerson;
 
