@@ -26,9 +26,5 @@ public class MatchInputDto {
     public Frequency frequency;
     public Account helpReceiver;
     public Account helpGiver;
-//    @NotNull
-//    public Long workshopId;
-//    @NotNull
-//    public Long customerId;
 
 }

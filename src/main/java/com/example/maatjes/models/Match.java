@@ -42,5 +42,5 @@ public class Match {
     @ManyToOne
     @JoinColumn(name = "helpReceiver_id")
     private Account helpReceiver;
-
+// mist nog activities
 }

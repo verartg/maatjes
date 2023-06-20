@@ -4,11 +4,14 @@ import com.example.maatjes.enums.ActivitiesToGive;
 import com.example.maatjes.enums.ActivitiesToReceive;
 import com.example.maatjes.enums.Availability;
 import com.example.maatjes.enums.Frequency;
+import com.example.maatjes.models.Match;
 import jakarta.persistence.Lob;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -35,6 +38,6 @@ public class AccountDto {
     public ActivitiesToReceive activitiesToReceive;
     public Availability availability;
     public Frequency frequency;
-
-
+    public List<Match> helpReceivers;
+    public List<Match> helpGivers;
 }

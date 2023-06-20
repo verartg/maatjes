@@ -1,6 +1,5 @@
 package com.example.maatjes.controllers;
 
-import com.example.maatjes.dtos.AppointmentDto;
 import com.example.maatjes.dtos.MatchDto;
 import com.example.maatjes.dtos.MatchInputDto;
 import com.example.maatjes.services.MatchService;
@@ -10,8 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -24,17 +21,10 @@ public class MatchController {
         this.fieldErrorHandling = fieldErrorHandling;
     }
 
-    // Deze methode haalt alle accounts op die aan een bepaalde match gekoppeld zijn.
-    // Deze methode maakt gebruikt van de accountMatchService.
-//    @GetMapping("/accounts/{matchId}")
-//    public ResponseEntity<Collection<AccountDto>> getAccountsByMatchId(@PathVariable("matchId") Long matchId){
-//        return ResponseEntity.ok(accountMatchService.getAccountsByMatchId(matchId));
-//    }
-
-//    @GetMapping("/{accountId}")
-//    public ResponseEntity<Collection<MatchDto>> getMatchesByAccountId(@PathVariable("accountId") Long accountId) {
-//        return ResponseEntity.ok(matchService.getMatchesByAccountId(accountId));
-//    }
+        @GetMapping("/{accountId}")
+    public ResponseEntity<List<MatchDto>> getMatchesByAccountId(@PathVariable("accountId") Long accountId) {
+        return new ResponseEntity<>(matchService.getMatchesByAccountId(accountId), HttpStatus.OK);
+    }
 
     @GetMapping
     public ResponseEntity<List<MatchDto>> getMatches() {
@@ -42,8 +32,6 @@ public class MatchController {
             matchDtos = matchService.getMatches();
             return ResponseEntity.ok().body(matchDtos);
     }
-
-
 
     @PostMapping("/{helpGiverId}/{helpReceiverId}")
     public ResponseEntity<Object> createMatch(@PathVariable("helpGiverId") Long helpGiverId, @PathVariable("helpReceiverId") Long helpReceiverId, @Valid @RequestBody MatchInputDto matchInputDto, BindingResult bindingResult){

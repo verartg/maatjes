@@ -8,7 +8,6 @@ import com.example.maatjes.models.Match;
 import com.example.maatjes.repositories.AccountRepository;
 import com.example.maatjes.repositories.MatchRepository;
 import org.springframework.stereotype.Service;
-
 import java.util.*;
 
 @Service
@@ -21,40 +20,21 @@ public class MatchService {
         this.accountRepository = accountRepository;
     }
 
-//    public List<MatchDto> getMatchesByAccountId(Long accountId) {
-//        List<MatchDto> dtos = new HashSet<>();
-//
-//    }
-
-//    public Collection<TelevisionDto> getTelevisionsByWallBracketId(Long wallBracketId) {
-//        Collection<TelevisionDto> dtos = new HashSet<>();
-//        Collection<TelevisionWallBracket> televisionWallbrackets = televisionWallBracketRepository.findAllByWallBracketId(wallBracketId);
-//        for (TelevisionWallBracket televisionWallbracket : televisionWallbrackets) {
-//            Television television = televisionWallbracket.getTelevision();
-//            TelevisionDto televisionDto = new TelevisionDto();
-//
-//            televisionDto.setId(television.getId());
-//            televisionDto.setType(television.getType());
-//            televisionDto.setBrand(television.getBrand());
-//            televisionDto.setName(television.getName());
-//            televisionDto.setPrice(television.getPrice());
-//            televisionDto.setAvailableSize(television.getAvailableSize());
-//            televisionDto.setRefreshRate(television.getRefreshRate());
-//            televisionDto.setScreenType(television.getScreenType());
-//            televisionDto.setScreenQuality(television.getScreenQuality());
-//            televisionDto.setSmartTv(television.getSmartTv());
-//            televisionDto.setWifi(television.getWifi());
-//            televisionDto.setVoiceControl(television.getVoiceControl());
-//            televisionDto.setHdr(television.getHdr());
-//            televisionDto.setBluetooth(television.getBluetooth());
-//            televisionDto.setAmbiLight(television.getAmbiLight());
-//            televisionDto.setOriginalStock(television.getOriginalStock());
-//            televisionDto.setSold(television.getSold());
-//
-//            dtos.add(televisionDto);
-//        }
-//        return dtos;
-//    }
+    public List<MatchDto> getMatchesByAccountId(Long accountId) throws RecordNotFoundException {
+        Account account = accountRepository.findById(accountId).orElseThrow(() -> new RecordNotFoundException("The Account with ID " + accountId + " doesn't exist."));
+        List<Match> helpGivers = account.getHelpGivers();
+        List<Match> helpReceivers = account.getHelpReceivers();
+        List<MatchDto> accountMatchDtos = new ArrayList<>();
+        for (Match m : helpGivers) {
+            MatchDto accountMatchDto = transferMatchToDto(m);
+            accountMatchDtos.add(accountMatchDto);
+        }
+        for (Match m : helpReceivers) {
+            MatchDto accountMatchDto = transferMatchToDto(m);
+            accountMatchDtos.add(accountMatchDto);
+        }
+        return accountMatchDtos;
+    }
 
     public List<MatchDto> getMatches() {
         List<Match> matches = matchRepository.findAll();
