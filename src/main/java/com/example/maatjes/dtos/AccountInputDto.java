@@ -18,7 +18,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AccountInputDto {
-    public Long id;
     @NotNull
     public int age;
 //    @NotBlank

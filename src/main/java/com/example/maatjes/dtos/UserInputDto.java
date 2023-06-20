@@ -10,5 +10,4 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserInputDto {
-    public Long id;
 }

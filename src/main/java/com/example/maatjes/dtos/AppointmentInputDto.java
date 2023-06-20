@@ -14,7 +14,6 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AppointmentInputDto {
-    public Long id;
     @NotBlank
     public Date date;
     @NotBlank

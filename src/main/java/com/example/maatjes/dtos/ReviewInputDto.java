@@ -11,7 +11,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReviewInputDto {
-    public Long id;
     public float rating;
     @NotBlank
     public String description;

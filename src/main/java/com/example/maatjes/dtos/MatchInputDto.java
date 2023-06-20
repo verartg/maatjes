@@ -16,7 +16,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MatchInputDto {
-    public Long id;
     public boolean accepted;
     public ContactPerson contactPerson;
     public LocalDate startMatch;

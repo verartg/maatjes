@@ -1,6 +1,5 @@
 package com.example.maatjes.controllers;
 
-import com.example.maatjes.dtos.AccountInputDto;
 import com.example.maatjes.dtos.MatchDto;
 import com.example.maatjes.dtos.MatchInputDto;
 import com.example.maatjes.services.MatchService;

@@ -1,6 +1,5 @@
 package com.example.maatjes.services;
 
-import com.example.maatjes.dtos.AccountDto;
 import com.example.maatjes.dtos.MatchDto;
 import com.example.maatjes.dtos.MatchInputDto;
 import com.example.maatjes.exceptions.RecordNotFoundException;
@@ -110,7 +109,6 @@ public class MatchService {
 
     public Match transferInputDtoToMatch(MatchInputDto matchInputDto) {
         var match = new Match();
-        match.setId(matchInputDto.getId());
         match.setAccepted(matchInputDto.isAccepted());
         match.setContactPerson(matchInputDto.getContactPerson());
         match.setStartMatch(matchInputDto.getStartMatch());
