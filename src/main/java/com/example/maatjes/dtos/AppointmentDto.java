@@ -18,5 +18,6 @@ public class AppointmentDto {
     public LocalDateTime startTime;
     public LocalDateTime endTime;
     public String description;
-    public boolean accepted;
+    public String createdByName;
+    public String createdForName;
 }

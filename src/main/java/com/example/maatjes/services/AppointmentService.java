@@ -4,7 +4,10 @@ import com.example.maatjes.dtos.AppointmentDto;
 import com.example.maatjes.dtos.AppointmentInputDto;
 import com.example.maatjes.exceptions.RecordNotFoundException;
 import com.example.maatjes.models.Appointment;
+import com.example.maatjes.models.Match;
+import com.example.maatjes.repositories.AccountRepository;
 import com.example.maatjes.repositories.AppointmentRepository;
+import com.example.maatjes.repositories.MatchRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -15,16 +18,20 @@ import java.util.Optional;
 @Service
 public class AppointmentService {
     private final AppointmentRepository appointmentRepository;
+    private final MatchRepository matchRepository;
+    private final AccountRepository accountRepository;
 
-    public AppointmentService(AppointmentRepository appointmentRepository) {
+    public AppointmentService(AppointmentRepository appointmentRepository, MatchRepository matchRepository, AccountRepository accountRepository) {
         this.appointmentRepository = appointmentRepository;
+        this.matchRepository = matchRepository;
+        this.accountRepository = accountRepository;
     }
 
     public List<AppointmentDto> getAppointments() {
         List<Appointment> appointments = appointmentRepository.findAll();
         List<AppointmentDto> appointmentDtos = new ArrayList<>();
         for (Appointment appointment : appointments) {
-            appointmentDtos.add(transferAppointmentToDto(appointment));
+            appointmentDtos.add(transferAppointmentToOutputDto(appointment));
         }
         return appointmentDtos;
     }
@@ -34,13 +41,40 @@ public class AppointmentService {
         if (optionalAppointment.isEmpty()) {
             throw new RecordNotFoundException("Afspraak niet gevonden");}
         Appointment appointment = optionalAppointment.get();
-        return transferAppointmentToDto(appointment);
+        return transferAppointmentToOutputDto(appointment);
         }
 
-    public AppointmentDto saveAppointment(AppointmentInputDto appointmentDto) {
-        Appointment appointment = transferToAppointment(appointmentDto);
-        appointmentRepository.save(appointment);
-        return transferAppointmentToDto(appointment);
+    public AppointmentDto createAppointment(AppointmentInputDto appointmentInputDto) throws RecordNotFoundException {
+        // Retrieve the Match based on the matchId in the inputDto
+        Match match = matchRepository.findById(appointmentInputDto.getMatchId())
+                .orElseThrow(() -> new RecordNotFoundException("Match not found"));
+
+        Appointment appointment = transferInputDtoToAppointment(appointmentInputDto);
+        appointment.setDate(appointmentInputDto.getDate());
+        appointment.setStartTime(appointmentInputDto.getStartTime());
+        appointment.setEndTime(appointmentInputDto.getEndTime());
+        appointment.setDescription(appointmentInputDto.getDescription());
+
+        // Set the Match and Account references
+        appointment.setMatch(match);
+
+        if (match.getHelpGiver().getId().equals(appointmentInputDto.getCreatedById())) {
+            appointment.setCreatedBy(match.getHelpGiver());
+            appointment.setCreatedFor(match.getHelpReceiver());
+        } else if (match.getHelpReceiver().getId().equals(appointmentInputDto.getCreatedById())) {
+            appointment.setCreatedBy(match.getHelpReceiver());
+            appointment.setCreatedFor(match.getHelpGiver());
+        } else {
+            throw new RuntimeException("Invalid account ID for creating the appointment");
+        }
+
+        // Save the Appointment and update the Match's appointments list
+        //save the Match and update the Accounts Matches list
+        appointment = appointmentRepository.save(appointment);
+        match.getAppointments().add(appointment);
+        matchRepository.save(match);
+
+        return transferAppointmentToOutputDto(appointment);
     }
 
     public void removeAppointment(@RequestBody Long id) {
@@ -60,30 +94,32 @@ public class AppointmentService {
             appointment1.setStartTime(newAppointment.getStartTime());
             appointment1.setEndTime(newAppointment.getEndTime());
             appointment1.setDescription(newAppointment.getDescription());
-            appointment1.setAccepted(newAppointment.isAccepted());
+            //nog match
             Appointment returnAppointment = appointmentRepository.save(appointment1);
-            return transferAppointmentToDto(returnAppointment);
+            return transferAppointmentToOutputDto(returnAppointment);
         }
     }
 
-    public AppointmentDto transferAppointmentToDto(Appointment appointment) {
+    public AppointmentDto transferAppointmentToOutputDto(Appointment appointment) {
         AppointmentDto appointmentDto = new AppointmentDto();
         appointmentDto.id = appointment.getId();
         appointmentDto.date = appointment.getDate();
         appointmentDto.startTime = appointment.getStartTime();
         appointmentDto.endTime = appointment.getEndTime();
         appointmentDto.description = appointment.getDescription();
-        appointmentDto.accepted = appointment.isAccepted();
+        appointmentDto.createdForName = appointment.getCreatedFor().getName();
+        appointmentDto.createdByName = appointment.getCreatedBy().getName();
+        //nog match
         return appointmentDto;
     }
 
-    public Appointment transferToAppointment(AppointmentInputDto appointmentDto) {
+    public Appointment transferInputDtoToAppointment(AppointmentInputDto appointmentInputDto) {
         var appointment = new Appointment();
-        appointment.setDate(appointmentDto.getDate());
-        appointment.setStartTime(appointmentDto.getStartTime());
-        appointment.setEndTime(appointmentDto.getEndTime());
-        appointment.setDescription(appointmentDto.getDescription());
-        appointment.setAccepted(appointmentDto.isAccepted());
+        appointment.setDate(appointmentInputDto.getDate());
+        appointment.setStartTime(appointmentInputDto.getStartTime());
+        appointment.setEndTime(appointmentInputDto.getEndTime());
+        appointment.setDescription(appointmentInputDto.getDescription());
+        //nog match
         return appointment;
     }
 

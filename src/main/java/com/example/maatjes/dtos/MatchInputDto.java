@@ -3,7 +3,6 @@ package com.example.maatjes.dtos;
 import com.example.maatjes.enums.Availability;
 import com.example.maatjes.enums.ContactPerson;
 import com.example.maatjes.enums.Frequency;
-import com.example.maatjes.models.Account;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,7 +23,6 @@ public class MatchInputDto {
     public LocalDate endMatch;
     public Availability availability;
     public Frequency frequency;
-    public Account helpReceiver;
-    public Account helpGiver;
-
+    public Long helpReceiverId;
+    public Long helpGiverId;
 }

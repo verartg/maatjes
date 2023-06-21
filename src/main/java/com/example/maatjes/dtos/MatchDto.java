@@ -23,7 +23,7 @@ public class MatchDto {
     public LocalDate endMatch;
     public Availability availability;
     public Frequency frequency;
-    public String nameGiver;
-    public String nameReceiver;
+    public String helpReceiverName;
+    public String helpGiverName;
 
 }

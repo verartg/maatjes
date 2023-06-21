@@ -27,7 +27,8 @@ public class MatchService {
         List<Match> matches = matchRepository.findAll();
         List<MatchDto> matchDtos = new ArrayList<>();
         for (Match match : matches) {
-            matchDtos.add(transferMatchToDto(match));
+            MatchDto matchDto = transferMatchToDto(match);
+            matchDtos.add(matchDto);
         }
         return matchDtos;
     }
@@ -89,7 +90,14 @@ public class MatchService {
         match.setGiverAccepted(false);
         match.setReceiverAccepted(false);
 
-        matchRepository.save(match);
+        //save the Match and update the Accounts Matches list
+        //todo klopt dit??
+        match = matchRepository.save(match);
+        giver.getHelpGivers().add(match);
+        receiver.getHelpReceivers().add(match);
+        accountRepository.save(giver);
+        accountRepository.save(receiver);
+
         return transferMatchToDto(match);
     }
 
@@ -141,27 +149,24 @@ public class MatchService {
 //            }
 //        }
 
-    public MatchDto updateMatch(Long id, MatchInputDto newMatch) {
-        Optional<Match> matchOptional = matchRepository.findById(id);
-        if (matchOptional.isPresent()) {
-            Match match = matchOptional.get();
+    public MatchDto updateMatch(Long id, MatchInputDto matchInputDto) throws RecordNotFoundException {
+        Match match = matchRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("The match with ID " + id + " doesn't exist"));
+        Account helpGiver = accountRepository.findById(matchInputDto.helpGiverId).orElseThrow(() -> new RecordNotFoundException("The account with id " + matchInputDto.helpGiverId + " doesn't exist"));
+        Account helpReceiver = accountRepository.findById(matchInputDto.helpReceiverId).orElseThrow(() -> new RecordNotFoundException("The account with id " + matchInputDto.helpReceiverId + " doesn't exist"));
 
-            match.setReceiverAccepted(newMatch.isReceiverAccepted());
-            match.setGiverAccepted(newMatch.isGiverAccepted());
-            match.setContactPerson(newMatch.getContactPerson());
-            match.setStartMatch(newMatch.getStartMatch());
-            match.setEndMatch(newMatch.getEndMatch());
-            match.setAvailability(newMatch.getAvailability());
-            match.setFrequency(newMatch.getFrequency());
-            match.setHelpGiver(newMatch.getHelpGiver());
-            match.setHelpReceiver(newMatch.getHelpReceiver());
+            match.setReceiverAccepted(matchInputDto.isReceiverAccepted());
+            match.setGiverAccepted(matchInputDto.isGiverAccepted());
+            match.setContactPerson(matchInputDto.getContactPerson());
+            match.setStartMatch(matchInputDto.getStartMatch());
+            match.setEndMatch(matchInputDto.getEndMatch());
+            match.setAvailability(matchInputDto.getAvailability());
+            match.setFrequency(matchInputDto.getFrequency());
+            match.setHelpGiver(helpGiver);
+            match.setHelpReceiver(helpReceiver);
 
             Match returnMatch = matchRepository.save(match);
             return transferMatchToDto(returnMatch);
-        } else {
-            throw new RecordNotFoundException("Match niet gevonden");
         }
-    }
 
     public MatchDto transferMatchToDto(Match match) {
         MatchDto matchDto = new MatchDto();
@@ -173,8 +178,8 @@ public class MatchService {
         matchDto.endMatch = match.getEndMatch();
         matchDto.frequency = match.getFrequency();
         matchDto.availability = match.getAvailability();
-        matchDto.nameGiver = match.getHelpGiver().getName();
-        matchDto.nameReceiver = match.getHelpReceiver().getName();
+        matchDto.helpGiverName = match.getHelpGiver().getName();
+        matchDto.helpReceiverName = match.getHelpReceiver().getName();
         return matchDto;
     }
 
@@ -187,8 +192,6 @@ public class MatchService {
         match.setEndMatch(matchInputDto.getEndMatch());
         match.setAvailability(matchInputDto.getAvailability());
         match.setFrequency(matchInputDto.getFrequency());
-        match.setHelpGiver(matchInputDto.getHelpGiver());
-        match.setHelpReceiver(matchInputDto.getHelpReceiver());
         return match;
     }
 }

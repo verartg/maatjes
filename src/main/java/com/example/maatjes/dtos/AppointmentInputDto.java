@@ -1,6 +1,5 @@
 package com.example.maatjes.dtos;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,13 +13,14 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AppointmentInputDto {
-    @NotBlank
+    //todo nog constraints implementeren
     public Date date;
-    @NotBlank
+    //todo onderstaande alleen als tijd implementeren, nu is er dubbelop data.
     public LocalDateTime startTime;
     public LocalDateTime endTime;
     public String description;
-    public boolean accepted;
-
-    
+    public Long matchId;
+    //todo onderstaande wil ik niet willen meegeven, maar via principle doen?
+    public Long createdById;
+    public Long createdForId;
 }

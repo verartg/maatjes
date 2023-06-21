@@ -23,19 +23,17 @@ public class Appointment {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private String description;
-//    private Account account; <-- dit wordt een relatie
-//    private Account createdFor; <-- dit wordt een relatie, maar moet dit onderscheid wel?
-    private boolean accepted;
+// accepted boolean?
 
-//    @ManyToOne
-//    @JoinColumn(name = "calendar_id")
-//    private Calendar myCalendar;
+    @ManyToOne
+    @JoinColumn(name = "match_id")
+    private Match match;
 
-//    public Calendar getMyCalendar() {
-//        return myCalendar;
-//    }
-//
-//    public void setMyCalendar(Calendar myCalendar) {
-//        this.myCalendar = myCalendar;
-//    }
+    @ManyToOne
+    @JoinColumn(name = "created_by_id")
+    private Account createdBy;
+
+    @ManyToOne
+    @JoinColumn(name = "created_for_id")
+    private Account createdFor;
 }

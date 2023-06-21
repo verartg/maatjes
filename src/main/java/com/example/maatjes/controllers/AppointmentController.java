@@ -4,6 +4,7 @@ import com.example.maatjes.dtos.AppointmentDto;
 import com.example.maatjes.dtos.AppointmentInputDto;
 import com.example.maatjes.services.AppointmentService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,9 +32,8 @@ public class AppointmentController {
     }
 
     @PostMapping("/addappointment")
-    public ResponseEntity<AppointmentDto> saveAppointment(@RequestBody AppointmentInputDto appointment) {
-        AppointmentDto dto = appointmentService.saveAppointment(appointment);
-        return ResponseEntity.created(null).body(dto);
+    public ResponseEntity<AppointmentDto> createAppointment(@Valid @RequestBody AppointmentInputDto appointmentInputDto) {
+        return new ResponseEntity<>(appointmentService.createAppointment(appointmentInputDto), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
