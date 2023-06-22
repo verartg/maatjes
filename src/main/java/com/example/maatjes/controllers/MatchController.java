@@ -20,7 +20,7 @@ public class MatchController {
     public MatchController(MatchService matchService, FieldErrorHandling fieldErrorHandling) {this.matchService = matchService;
         this.fieldErrorHandling = fieldErrorHandling;
     }
-    //todo werkt niet meer sinds ik de booleans heb geïmplementeerd.
+
     @GetMapping
     public ResponseEntity<List<MatchDto>> getMatches(){
         return new ResponseEntity<>(matchService.getMatches(), HttpStatus.OK);
@@ -49,17 +49,16 @@ public class MatchController {
         return new ResponseEntity<>(matchService.proposeMatch(helpGiverId, helpReceiverId, matchInputDto), HttpStatus.ACCEPTED);
     }
 
-    //todo werken niet meer sinds ik de booleans heb geïmplementeerd.
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> removeMatch(@PathVariable Long id) {
         matchService.removeMatch(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-//    @PutMapping("/{matchId}/{accountId}")
-//    public ResponseEntity<Object> acceptMatch(@PathVariable("matchId") Long matchId, @PathVariable("accountId") Long accountId, MatchInputDto match) {
-//        return new ResponseEntity<>(matchService.acceptMatch(matchId, accountId, match), HttpStatus.ACCEPTED);
-//    }
+    @PutMapping("/{matchId}/{accountId}")
+    public ResponseEntity<Object> acceptMatch(@PathVariable("matchId") Long matchId, @PathVariable("accountId") Long accountId) {
+        return new ResponseEntity<>(matchService.acceptMatch(matchId, accountId), HttpStatus.ACCEPTED);
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateMatch(@PathVariable Long id, @Valid @RequestBody MatchInputDto match) {

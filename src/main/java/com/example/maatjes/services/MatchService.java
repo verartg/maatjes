@@ -90,13 +90,7 @@ public class MatchService {
         match.setGiverAccepted(false);
         match.setReceiverAccepted(false);
 
-        //save the Match and update the Accounts Matches list
-        //todo klopt dit??
         match = matchRepository.save(match);
-        giver.getHelpGivers().add(match);
-        receiver.getHelpReceivers().add(match);
-        accountRepository.save(giver);
-        accountRepository.save(receiver);
 
         return transferMatchToDto(match);
     }
@@ -110,49 +104,25 @@ public class MatchService {
         }
     }
 
-//    public MatchDto acceptMatch(Long matchId, Long accountId, MatchInputDto newMatch) throws RecordNotFoundException, AccountNotAssociatedException {
-//        Match match = matchRepository.findById(matchId).orElseThrow(() -> new RecordNotFoundException("Match not found"));
-//        Account account = accountRepository.findById(accountId).orElseThrow(() -> new RecordNotFoundException("Account not found"));
-//        if (!match.getHelpGiver().equals(account) && !match.getHelpReceiver().equals(account)) {
-//            throw new AccountNotAssociatedException("Account is not associated with the Match");
-//        }
-//            if (match.getHelpGiver().equals(account)) {
-//                match.setGiverAccepted(newMatch.isGiverAccepted());
-//            } else {
-//                match.setReceiverAccepted(newMatch.isReceiverAccepted());
-//            }
-//
-//            matchRepository.save(match);
-//            return transferMatchToDto(match);
-//        }
+    public MatchDto acceptMatch(Long matchId, Long accountId) throws RecordNotFoundException {
+        Match match = matchRepository.findById(matchId).orElseThrow(() -> new RecordNotFoundException("Match not found"));
+        Account account = accountRepository.findById(accountId).orElseThrow(() -> new RecordNotFoundException("Account not found"));
+        if (!match.getHelpGiver().equals(account) && !match.getHelpReceiver().equals(account)) {
+            throw new RecordNotFoundException("Account is not associated with the Match");
+            //AccountNotAssociatedException werkt niet, deze wel...
+        }
+            if (match.getHelpGiver().equals(account)) {
+                match.setGiverAccepted(true);
+            } else {
+                match.setReceiverAccepted(true);
+            }
 
-//    public MatchDto updateMatch(Long id, Long accountId, MatchInputDto newMatch) {
-//        Optional<Match> matchOptional = matchRepository.findById(id);
-//        Optional<Account> accountOptional = accountRepository.findById(accountId);
-//        if (matchOptional.isPresent()) {
-//            Match match = matchOptional.get();
-//            if (accountOptional.isPresent()) {
-//                Account account = accountOptional.get();
-//                if (!match.getHelpGiver().equals(account) && !match.getHelpReceiver().equals(account)) {
-//                    throw new AccountNotAssociatedException("Account is not associated with the Match");
-//                }
-//                if (match.getHelpGiver().equals(account)) {
-//                    match.setGiverAccepted(newMatch.isGiverAccepted());
-//                } else {
-//                    match.setReceiverAccepted(newMatch.isReceiverAccepted());
-//                }
-//            }
-//                Match returnMatch = matchRepository.save(match);
-//                return transferMatchToDto(returnMatch);
-//            } else {
-//                throw new RecordNotFoundException("Match niet gevonden");
-//            }
-//        }
+            matchRepository.save(match);
+            return transferMatchToDto(match);
+        }
 
     public MatchDto updateMatch(Long id, MatchInputDto matchInputDto) throws RecordNotFoundException {
         Match match = matchRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("The match with ID " + id + " doesn't exist"));
-        Account helpGiver = accountRepository.findById(matchInputDto.helpGiverId).orElseThrow(() -> new RecordNotFoundException("The account with id " + matchInputDto.helpGiverId + " doesn't exist"));
-        Account helpReceiver = accountRepository.findById(matchInputDto.helpReceiverId).orElseThrow(() -> new RecordNotFoundException("The account with id " + matchInputDto.helpReceiverId + " doesn't exist"));
 
             match.setReceiverAccepted(matchInputDto.isReceiverAccepted());
             match.setGiverAccepted(matchInputDto.isGiverAccepted());
@@ -161,8 +131,6 @@ public class MatchService {
             match.setEndMatch(matchInputDto.getEndMatch());
             match.setAvailability(matchInputDto.getAvailability());
             match.setFrequency(matchInputDto.getFrequency());
-            match.setHelpGiver(helpGiver);
-            match.setHelpReceiver(helpReceiver);
 
             Match returnMatch = matchRepository.save(match);
             return transferMatchToDto(returnMatch);

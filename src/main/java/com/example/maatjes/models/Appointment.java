@@ -28,12 +28,14 @@ public class Appointment {
     @ManyToOne
     @JoinColumn(name = "match_id")
     private Match match;
+    private String createdByName;
+    private String createdForName;
 
-    @ManyToOne
-    @JoinColumn(name = "created_by_id")
-    private Account createdBy;
-
-    @ManyToOne
-    @JoinColumn(name = "created_for_id")
-    private Account createdFor;
+//    @ManyToOne
+//    @JoinColumn(name = "created_by_id")
+//    private Account createdBy;
+//
+//    @ManyToOne
+//    @JoinColumn(name = "created_for_id")
+//    private Account createdFor;
 }

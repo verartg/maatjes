@@ -100,11 +100,9 @@ public class AccountService {
 
             long fileSize = file.getBytes().length;
             System.out.println( fileSize);
-            long maxFileSize = 500; // halveMB in bytes/500kb
+            long maxFileSize = 1000000; // 1MB in bytes
             if (fileSize > maxFileSize) {
                 throw new FileSizeExceededException("Bestand is te groot");
-                //todo deze error werkt nog niet
-
             }
             byte[] documentData = file.getBytes();
 

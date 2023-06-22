@@ -2,6 +2,7 @@ package com.example.maatjes.controllers;
 
 import com.example.maatjes.dtos.AppointmentDto;
 import com.example.maatjes.dtos.AppointmentInputDto;
+import com.example.maatjes.services.AccountService;
 import com.example.maatjes.services.AppointmentService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -14,15 +15,23 @@ import java.util.List;
 @RequestMapping("/appointments")
 public class AppointmentController {
     private final AppointmentService appointmentService;
-    public AppointmentController(AppointmentService appointmentService) {
+    private final AccountService accountService;
+
+    public AppointmentController(AppointmentService appointmentService, AccountService accountService) {
         this.appointmentService = appointmentService;
+        this.accountService = accountService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<AppointmentDto>> getAppointments() {
-        List<AppointmentDto> appointmentDtos;
-        appointmentDtos = appointmentService.getAppointments();
-        return ResponseEntity.ok().body(appointmentDtos);
+    @GetMapping("/match/{matchId}")
+    public ResponseEntity<List<AppointmentDto>> getAppointmentsByMatchId(@PathVariable Long matchId) {
+        List<AppointmentDto> appointments = appointmentService.getAppointmentsByMatchId(matchId);
+        return new ResponseEntity<>(appointments, HttpStatus.OK);
+    }
+
+    @GetMapping("account/{accountId}")
+    public ResponseEntity<List<AppointmentDto>> getAppointmentsByAccountId(@PathVariable Long accountId) {
+        List<AppointmentDto> appointments = appointmentService.getAppointmentsByAccountId(accountId);
+        return new ResponseEntity<>(appointments, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

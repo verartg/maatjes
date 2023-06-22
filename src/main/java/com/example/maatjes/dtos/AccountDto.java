@@ -5,7 +5,6 @@ import com.example.maatjes.enums.ActivitiesToReceive;
 import com.example.maatjes.enums.Availability;
 import com.example.maatjes.enums.Frequency;
 import com.example.maatjes.models.Match;
-import jakarta.persistence.Lob;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
