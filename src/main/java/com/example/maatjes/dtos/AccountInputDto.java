@@ -1,17 +1,15 @@
 package com.example.maatjes.dtos;
 
-import com.example.maatjes.enums.ActivitiesToGive;
-import com.example.maatjes.enums.ActivitiesToReceive;
+import com.example.maatjes.enums.Activities;
 import com.example.maatjes.enums.Availability;
 import com.example.maatjes.enums.Frequency;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -42,9 +40,9 @@ public class AccountInputDto {
 //    @NotNull
     public boolean needsHelp;
 //    @NotNull
-    public ActivitiesToGive activitiesToGive;
-//    @NotNull
-    public ActivitiesToReceive activitiesToReceive;
+    public List<Activities> activitiesToGive;
+    //    @NotNull
+    public List<Activities> activitiesToReceive;
 //    @NotNull
     public Availability availability;
 //    @NotNull

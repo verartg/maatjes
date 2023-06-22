@@ -1,5 +1,6 @@
 package com.example.maatjes.dtos;
 
+import com.example.maatjes.enums.Activities;
 import com.example.maatjes.enums.Availability;
 import com.example.maatjes.enums.ContactPerson;
 import com.example.maatjes.enums.Frequency;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -25,5 +27,7 @@ public class MatchDto {
     public Frequency frequency;
     public String helpReceiverName;
     public String helpGiverName;
+    public List<Activities> activities;
+
 
 }

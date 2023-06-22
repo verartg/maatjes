@@ -1,5 +1,6 @@
 package com.example.maatjes.dtos;
 
+import com.example.maatjes.enums.Activities;
 import com.example.maatjes.enums.Availability;
 import com.example.maatjes.enums.ContactPerson;
 import com.example.maatjes.enums.Frequency;
@@ -25,4 +26,5 @@ public class MatchInputDto {
     public Frequency frequency;
     public Long helpReceiverId;
     public Long helpGiverId;
+    public Activities activities;
 }

@@ -1,7 +1,6 @@
 package com.example.maatjes.dtos;
 
-import com.example.maatjes.enums.ActivitiesToGive;
-import com.example.maatjes.enums.ActivitiesToReceive;
+import com.example.maatjes.enums.Activities;
 import com.example.maatjes.enums.Availability;
 import com.example.maatjes.enums.Frequency;
 import com.example.maatjes.models.Match;
@@ -33,8 +32,8 @@ public class AccountDto {
     public byte[] document;
     public boolean givesHelp;
     public boolean needsHelp;
-    public ActivitiesToGive activitiesToGive;
-    public ActivitiesToReceive activitiesToReceive;
+    public List<Activities> activitiesToGive;
+    public List<Activities> activitiesToReceive;
     public Availability availability;
     public Frequency frequency;
     public List<Match> helpReceivers;

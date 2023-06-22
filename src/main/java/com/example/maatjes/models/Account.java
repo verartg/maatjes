@@ -1,7 +1,6 @@
 package com.example.maatjes.models;
 
-import com.example.maatjes.enums.ActivitiesToGive;
-import com.example.maatjes.enums.ActivitiesToReceive;
+import com.example.maatjes.enums.Activities;
 import com.example.maatjes.enums.Availability;
 import com.example.maatjes.enums.Frequency;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -10,11 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @Getter
@@ -42,10 +37,14 @@ public class Account {
     private byte[] document;
     private boolean givesHelp;
     private boolean needsHelp;
+    @ElementCollection
+    @CollectionTable(name = "activities_to_give")
     @Enumerated(EnumType.STRING)
-    private ActivitiesToGive activitiesToGive;
+    private List<Activities> activitiesToGive;
+    @ElementCollection
+    @CollectionTable(name = "activities_to_receive")
     @Enumerated(EnumType.STRING)
-    private ActivitiesToReceive activitiesToReceive;
+    private List<Activities> activitiesToReceive;
     @Enumerated(EnumType.STRING)
     private Availability availability;
     @Enumerated(EnumType.STRING)

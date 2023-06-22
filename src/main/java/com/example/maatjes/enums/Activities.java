@@ -1,6 +1,6 @@
 package com.example.maatjes.enums;
 
-public enum ActivitiesToGive {
+public enum Activities {
     WANDELEN,
     NEDERLANDS_LEREN,
     VOORLEZEN,

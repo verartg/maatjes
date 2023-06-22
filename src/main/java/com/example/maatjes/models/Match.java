@@ -1,5 +1,6 @@
 package com.example.maatjes.models;
 
+import com.example.maatjes.enums.Activities;
 import com.example.maatjes.enums.Availability;
 import com.example.maatjes.enums.ContactPerson;
 import com.example.maatjes.enums.Frequency;
@@ -35,6 +36,7 @@ public class Match {
     private Availability availability;
     @Enumerated(EnumType.STRING)
     private Frequency frequency;
+    private List<Activities> activities;
 
     @ManyToOne
     @JoinColumn(name = "helpGiver_id")
