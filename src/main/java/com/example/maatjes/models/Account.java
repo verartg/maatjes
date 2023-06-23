@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -37,18 +38,24 @@ public class Account {
     private byte[] document;
     private boolean givesHelp;
     private boolean needsHelp;
+
     @ElementCollection
     @CollectionTable(name = "activities_to_give")
+    @Column(name = "activity")
     @Enumerated(EnumType.STRING)
-    private List<Activities> activitiesToGive;
+    private List<Activities> activitiesToGive = new ArrayList<>();
+
     @ElementCollection
     @CollectionTable(name = "activities_to_receive")
+    @Column(name = "activity")
     @Enumerated(EnumType.STRING)
-    private List<Activities> activitiesToReceive;
-    @Enumerated(EnumType.STRING)
-    private Availability availability;
+    private List<Activities> activitiesToReceive = new ArrayList<>();
+
     @Enumerated(EnumType.STRING)
     private Frequency frequency;
+
+    @Enumerated(EnumType.STRING)
+    private Availability availability;
 
     @OneToMany(mappedBy = "helpGiver", cascade = CascadeType.ALL)
     @JsonIgnore

@@ -6,5 +6,7 @@ public enum Activities {
     VOORLEZEN,
     KLUSSEN,
     KOFFIE_DRINKEN,
-    HOND_UITLATEN
+    HOND_UITLATEN,
+    TUINIEREN,
+    BREIEN
 }

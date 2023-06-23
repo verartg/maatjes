@@ -24,7 +24,9 @@ public class MatchInputDto {
     public LocalDate endMatch;
     public Availability availability;
     public Frequency frequency;
-    public Long helpReceiverId;
     public Long helpGiverId;
-    public Activities activities;
+    public Long helpReceiverId;
+
+//  deze hoeft volgens mij niet, want ik geef geen activiteiten mee, maar ga op zoek naar overeenkomstige activiteiten binnen beide accounts.
+//  public Activities activities;
 }

@@ -88,23 +88,17 @@ public class MatchService {
         //we halen de ontvanger op
         Account receiver = accountRepository.findById(helpReceiverId).orElseThrow(() -> new RecordNotFoundException("De gebruiker met id " + helpReceiverId + " bestaat niet"));
         // we halen de activiteiten op van de gever. account1
-        List<Activities> giverActivitiesToGive = giver.getActivitiesToGive(); //kan goed Frans
-        List<Activities> giverActivitiesToReceive = giver.getActivitiesToReceive(); //kan niet goed tuinieren
+        List<Activities> giverActivitiesToGive = giver.getActivitiesToGive(); //kan goed tuinieren
+        List<Activities> giverActivitiesToReceive = giver.getActivitiesToReceive(); //kan niet goed frans
+
         // we halen de activiteiten op van de ontvanger.
         List<Activities> receiverActivitiesToGive = receiver.getActivitiesToGive(); //kan goed tuinieren
-        List<Activities> receiverActivitiesToReceive = receiver.getActivitiesToReceive(); //kan niet goed administratie
-
-
+        List<Activities> receiverActivitiesToReceive = receiver.getActivitiesToReceive(); //kan niet goed tuinieren
         List<Activities> sharedActivities = getSharedActivities(giverActivitiesToGive, receiverActivitiesToReceive, giverActivitiesToReceive, receiverActivitiesToGive);
-        //                                                      account1toGive          account2toreceive                       tuinieren               tuinieren
-        //                                                              frans               admin
-//        List<Activities> sharedActivitiesOtherWay = getSharedActivities(giverActivitiesToReceive, receiverActivitiesToGive);
-        //                                                      account1toReceive          account2toGive
-        //                                                              tuinieren               tuinieren
 
         if (sharedActivities == null) {
-            throw new RuntimeException("No matching activities found for the accounts");
-        }
+            throw new RecordNotFoundException("No matching activities found for the accounts");
+        } else {
 
         Match match = transferInputDtoToMatch(matchInputDto);
         match.setHelpGiver(giver);
@@ -112,48 +106,26 @@ public class MatchService {
         match.setGiverAccepted(false);
         match.setReceiverAccepted(false);
         match.setActivities(sharedActivities);
+            System.out.println(match.getActivities());
         match = matchRepository.save(match);
-        return transferMatchToDto(match);
+        return transferMatchToDto(match); }
     }
     private List<Activities> getSharedActivities(List<Activities> giverActivitiesToGive, List<Activities> receiverActivitiesToReceive, List<Activities> giverActivitiesToReceive, List<Activities> receiverActivitiesToGive) {
-        //                                                          frans                   admin
         List<Activities> sharedActivities = new ArrayList<>();
-        // nieuwe lijst aanmaken voor overeenkomstige activiteiten
+
         for (Activities activity : giverActivitiesToGive) {
-            // voor iedere activiteit uit lijst1
             if (receiverActivitiesToReceive.contains(activity)) {
-                // als lijst2 een activiteit van lijst1 bevat
                 sharedActivities.add(activity);
             }
         }
 
         for (Activities activity : giverActivitiesToReceive) {
-            // voor iedere activiteit uit lijst1
             if (receiverActivitiesToGive.contains(activity)) {
-                // als lijst2 een activiteit van lijst1 bevat
                 sharedActivities.add(activity);
             }
         }
         return sharedActivities.isEmpty() ? null : sharedActivities;
     }
-
-
-//        Match match = transferInputDtoToMatch(matchInputDto);
-//        match.setHelpGiver(giver);
-//        match.setHelpReceiver(receiver);
-//        match.setGiverAccepted(false);
-//        match.setReceiverAccepted(false);
-//
-//        match = matchRepository.save(match);
-//
-//        return transferMatchToDto(match);
-    //}
-
-
-
-
-
-
 
     public void removeMatch(@RequestBody Long id) {
         Optional<Match> optionalMatch = matchRepository.findById(id);
@@ -208,6 +180,7 @@ public class MatchService {
         matchDto.availability = match.getAvailability();
         matchDto.helpGiverName = match.getHelpGiver().getName();
         matchDto.helpReceiverName = match.getHelpReceiver().getName();
+        matchDto.activities = match.getActivities();
         return matchDto;
     }
 
