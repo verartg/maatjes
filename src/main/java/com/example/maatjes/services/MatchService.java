@@ -83,17 +83,14 @@ public class MatchService {
     }
 //todo eigenlijk moet ik helpreceiver omnoemen naar account1 en helpgiver account2 bijv.
     public MatchDto proposeMatch(Long helpGiverId, Long helpReceiverId, MatchInputDto matchInputDto) throws RecordNotFoundException {
-        // we halen de gever op
         Account giver = accountRepository.findById(helpGiverId).orElseThrow(() -> new RecordNotFoundException("De gebruiker met id " + helpGiverId + " bestaat niet"));
-        //we halen de ontvanger op
         Account receiver = accountRepository.findById(helpReceiverId).orElseThrow(() -> new RecordNotFoundException("De gebruiker met id " + helpReceiverId + " bestaat niet"));
-        // we halen de activiteiten op van de gever. account1
-        List<Activities> giverActivitiesToGive = giver.getActivitiesToGive(); //kan goed tuinieren
-        List<Activities> giverActivitiesToReceive = giver.getActivitiesToReceive(); //kan niet goed frans
 
-        // we halen de activiteiten op van de ontvanger.
-        List<Activities> receiverActivitiesToGive = receiver.getActivitiesToGive(); //kan goed tuinieren
-        List<Activities> receiverActivitiesToReceive = receiver.getActivitiesToReceive(); //kan niet goed tuinieren
+        List<Activities> giverActivitiesToGive = giver.getActivitiesToGive();
+        List<Activities> giverActivitiesToReceive = giver.getActivitiesToReceive();
+
+        List<Activities> receiverActivitiesToGive = receiver.getActivitiesToGive();
+        List<Activities> receiverActivitiesToReceive = receiver.getActivitiesToReceive();
         List<Activities> sharedActivities = getSharedActivities(giverActivitiesToGive, receiverActivitiesToReceive, giverActivitiesToReceive, receiverActivitiesToGive);
 
         if (sharedActivities == null) {
@@ -115,14 +112,12 @@ public class MatchService {
 
         for (Activities activity : giverActivitiesToGive) {
             if (receiverActivitiesToReceive.contains(activity)) {
-                sharedActivities.add(activity);
-            }
+                sharedActivities.add(activity);}
         }
 
         for (Activities activity : giverActivitiesToReceive) {
             if (receiverActivitiesToGive.contains(activity)) {
-                sharedActivities.add(activity);
-            }
+                sharedActivities.add(activity);}
         }
         return sharedActivities.isEmpty() ? null : sharedActivities;
     }
@@ -141,7 +136,7 @@ public class MatchService {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new RecordNotFoundException("Account not found"));
         if (!match.getHelpGiver().equals(account) && !match.getHelpReceiver().equals(account)) {
             throw new RecordNotFoundException("Account is not associated with the Match");
-            //AccountNotAssociatedException werkt niet, deze wel...
+            //todo AccountNotAssociatedException werkt niet, deze wel...
         }
             if (match.getHelpGiver().equals(account)) {
                 match.setGiverAccepted(true);
