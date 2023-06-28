@@ -45,9 +45,12 @@ public class Match {
     @ManyToOne
     @JoinColumn(name = "helpReceiver_id")
     private Account helpReceiver;
-// mist nog activities
 
     @OneToMany(mappedBy = "match", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Appointment> appointments;
+
+    @OneToMany(mappedBy = "match", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Review> matchReviews;
 }

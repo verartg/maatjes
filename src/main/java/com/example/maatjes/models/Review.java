@@ -1,8 +1,7 @@
 package com.example.maatjes.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,9 +16,23 @@ public class Review {
     @Id
     @GeneratedValue
     private Long id;
-    private float rating;
+    private double rating;
     private String description;
-//    private account writtenBy; <-- dit wordt een relatie
-//    private account writtenAbout; <-- dit wordt een relatie
     private boolean verified;
+
+    //todo private String feedbackAdmin?;
+
+    @ManyToOne
+    @JsonIgnore
+    @JoinColumn(name = "match_id")
+    private Match match;
+
+    @ManyToOne
+    @JsonIgnore
+    @JoinColumn(name = "account_id")
+    private Account writtenBy;
 }
+
+
+
+

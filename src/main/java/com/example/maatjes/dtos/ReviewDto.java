@@ -1,9 +1,12 @@
 package com.example.maatjes.dtos;
 
+import com.example.maatjes.enums.Activities;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -11,9 +14,11 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ReviewDto {
     public Long id;
-    public float rating;
+    public double rating;
     public String description;
-    //    private account writtenBy; <-- dit wordt een relatie
-//    private account writtenAbout; <-- dit wordt een relatie
     public boolean verified;
+    //todo private String feedbackAdmin?
+    public List<Activities> activities;
+    public String writtenBy;
+    public String writtenFor;
 }

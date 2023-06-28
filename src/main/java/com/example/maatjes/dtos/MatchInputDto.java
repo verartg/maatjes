@@ -1,6 +1,5 @@
 package com.example.maatjes.dtos;
 
-import com.example.maatjes.enums.Activities;
 import com.example.maatjes.enums.Availability;
 import com.example.maatjes.enums.ContactPerson;
 import com.example.maatjes.enums.Frequency;
@@ -27,6 +26,4 @@ public class MatchInputDto {
     public Long helpGiverId;
     public Long helpReceiverId;
 
-//  deze hoeft volgens mij niet, want ik geef geen activiteiten mee, maar ga op zoek naar overeenkomstige activiteiten binnen beide accounts.
-//  public Activities activities;
 }

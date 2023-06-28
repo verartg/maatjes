@@ -4,6 +4,7 @@ import com.example.maatjes.enums.Activities;
 import com.example.maatjes.enums.Availability;
 import com.example.maatjes.enums.Frequency;
 import com.example.maatjes.models.Match;
+import com.example.maatjes.models.Review;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,4 +39,6 @@ public class AccountDto {
     public Frequency frequency;
     public List<Match> helpReceivers;
     public List<Match> helpGivers;
+//    public List<Review> writtenReviews;
+//    public List<Review> receivedReviews;
 }

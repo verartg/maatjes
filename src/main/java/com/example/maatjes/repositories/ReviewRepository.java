@@ -1,7 +1,7 @@
 package com.example.maatjes.repositories;
 
-import com.example.maatjes.models.Match;
+import com.example.maatjes.models.Review;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ReviewRepository extends JpaRepository<Match, Long> {
+public interface ReviewRepository extends JpaRepository<Review, Long> {
 }

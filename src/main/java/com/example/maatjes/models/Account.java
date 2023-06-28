@@ -65,4 +65,13 @@ public class Account {
     @JsonIgnore
     private List<Match> helpGivers;
 
+
+    @OneToMany (mappedBy = "writtenBy", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Review> givenReviews;
+
+//    @OneToMany (mappedBy = "account", cascade = CascadeType.ALL)
+//    @JsonIgnore
+//    private List<Review> receivedReviews;
+
 }

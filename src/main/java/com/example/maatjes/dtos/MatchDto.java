@@ -4,6 +4,7 @@ import com.example.maatjes.enums.Activities;
 import com.example.maatjes.enums.Availability;
 import com.example.maatjes.enums.ContactPerson;
 import com.example.maatjes.enums.Frequency;
+import com.example.maatjes.models.Review;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,6 +29,9 @@ public class MatchDto {
     public String helpReceiverName;
     public String helpGiverName;
     public List<Activities> activities;
+    public List<Review> matchReviews;
+
+
 
 
 }

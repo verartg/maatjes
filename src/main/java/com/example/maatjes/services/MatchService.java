@@ -42,6 +42,8 @@ public class MatchService {
         return transferMatchToDto(match);
     }
 
+    //todo matches filteren op contactperson voor de admin om eigen matches op te halen.
+
     public List<MatchDto> getAcceptedMatchesByAccountId(Long accountId) throws RecordNotFoundException {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new RecordNotFoundException("The Account with ID " + accountId + " doesn't exist."));
         List<Match> helpGivers = account.getHelpGivers();
@@ -81,6 +83,8 @@ public class MatchService {
         }
         return accountMatchDtos;
     }
+
+
 //todo eigenlijk moet ik helpreceiver omnoemen naar account1 en helpgiver account2 bijv.
     public MatchDto proposeMatch(Long helpGiverId, Long helpReceiverId, MatchInputDto matchInputDto) throws RecordNotFoundException {
         Account giver = accountRepository.findById(helpGiverId).orElseThrow(() -> new RecordNotFoundException("De gebruiker met id " + helpGiverId + " bestaat niet"));
@@ -103,7 +107,7 @@ public class MatchService {
         match.setGiverAccepted(false);
         match.setReceiverAccepted(false);
         match.setActivities(sharedActivities);
-            System.out.println(match.getActivities());
+
         match = matchRepository.save(match);
         return transferMatchToDto(match); }
     }
@@ -175,6 +179,7 @@ public class MatchService {
         matchDto.helpGiverName = match.getHelpGiver().getName();
         matchDto.helpReceiverName = match.getHelpReceiver().getName();
         matchDto.activities = match.getActivities();
+        matchDto.matchReviews = match.getMatchReviews();
         return matchDto;
     }
 

@@ -1,8 +1,6 @@
 package com.example.maatjes.controllers;
 
-import com.example.maatjes.exceptions.AccountNotAssociatedException;
-import com.example.maatjes.exceptions.FileSizeExceededException;
-import com.example.maatjes.exceptions.RecordNotFoundException;
+import com.example.maatjes.exceptions.*;
 import com.example.maatjes.exceptions.IllegalArgumentException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,5 +28,11 @@ public class ExceptionController {
     @ExceptionHandler(value = AccountNotAssociatedException.class)
     public ResponseEntity<Object> exception(AccountNotAssociatedException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(value = BadRequestException.class)
+    public ResponseEntity<Object> exception(BadRequestException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+
     }
 }
