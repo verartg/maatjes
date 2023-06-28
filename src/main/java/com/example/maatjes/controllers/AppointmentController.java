@@ -41,7 +41,7 @@ public class AppointmentController {
     }
 
     @PostMapping("/addappointment")
-    public ResponseEntity<AppointmentDto> createAppointment(@Valid @RequestBody AppointmentInputDto appointmentInputDto) {
+    public ResponseEntity<AppointmentDto> createAppointment(@RequestBody AppointmentInputDto appointmentInputDto) {
         return new ResponseEntity<>(appointmentService.createAppointment(appointmentInputDto), HttpStatus.CREATED);
     }
 

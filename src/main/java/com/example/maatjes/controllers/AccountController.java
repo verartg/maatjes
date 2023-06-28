@@ -2,9 +2,7 @@ package com.example.maatjes.controllers;
 
 import com.example.maatjes.dtos.AccountDto;
 import com.example.maatjes.dtos.AccountInputDto;
-import com.example.maatjes.exceptions.FileSizeExceededException;
 import com.example.maatjes.services.AccountService;
-import com.example.maatjes.util.FileSizeExceededHandler;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

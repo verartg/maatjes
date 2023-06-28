@@ -3,6 +3,7 @@ package com.example.maatjes.controllers;
 import com.example.maatjes.exceptions.AccountNotAssociatedException;
 import com.example.maatjes.exceptions.FileSizeExceededException;
 import com.example.maatjes.exceptions.RecordNotFoundException;
+import com.example.maatjes.exceptions.IllegalArgumentException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
