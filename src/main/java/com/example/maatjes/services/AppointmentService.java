@@ -2,6 +2,8 @@ package com.example.maatjes.services;
 
 import com.example.maatjes.dtos.AppointmentDto;
 import com.example.maatjes.dtos.AppointmentInputDto;
+import com.example.maatjes.exceptions.AccountNotAssociatedException;
+import com.example.maatjes.exceptions.IllegalArgumentException;
 import com.example.maatjes.exceptions.RecordNotFoundException;
 import com.example.maatjes.models.Account;
 import com.example.maatjes.models.Appointment;
@@ -13,6 +15,7 @@ import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -31,27 +34,33 @@ public class AppointmentService {
 
     public List<AppointmentDto> getAppointmentsByMatchId(Long matchId) {
         Match match = matchRepository.findById(matchId)
-                .orElseThrow(() -> new RecordNotFoundException("Match not found"));
+                .orElseThrow(() -> new RecordNotFoundException("Match niet gevonden"));
 
         List<Appointment> appointments = match.getAppointments();
         List<AppointmentDto> appointmentDtos = new ArrayList<>();
+        LocalDate currentDate = LocalDate.now();
+
         for (Appointment appointment : appointments) {
-            appointmentDtos.add(transferAppointmentToOutputDto(appointment));
+            if (appointment.getDate().isAfter(currentDate)) {
+                appointmentDtos.add(transferAppointmentToOutputDto(appointment));
+            }
         }
         return appointmentDtos;
     }
 
     public List<AppointmentDto> getAppointmentsByAccountId(Long accountId) {
         Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new RecordNotFoundException("Account not found"));
+                .orElseThrow(() -> new RecordNotFoundException("Account niet gevonden"));
 
         List<AppointmentDto> appointmentDtos = new ArrayList<>();
-
+        LocalDate currentDate = LocalDate.now();
         List<Match> matchesHelpReceiving = account.getHelpReceivers();
         for (Match match : matchesHelpReceiving) {
             List<Appointment> appointments = match.getAppointments();
             for (Appointment appointment : appointments) {
-                appointmentDtos.add(transferAppointmentToOutputDto(appointment));
+                if (appointment.getDate().isAfter(currentDate)) {
+                    appointmentDtos.add(transferAppointmentToOutputDto(appointment));
+                }
             }
         }
 
@@ -59,7 +68,9 @@ public class AppointmentService {
         for (Match match : matchesHelpGiving) {
             List<Appointment> appointments = match.getAppointments();
             for (Appointment appointment : appointments) {
-                appointmentDtos.add(transferAppointmentToOutputDto(appointment));
+                if (appointment.getDate().isAfter(currentDate)) {
+                    appointmentDtos.add(transferAppointmentToOutputDto(appointment));
+                }
             }
         }
         return appointmentDtos;
@@ -75,12 +86,17 @@ public class AppointmentService {
         }
 
         //todo na authentication de check verwerken over wie de appointment maakt. zie request eronder
-    public AppointmentDto createAppointment(AppointmentInputDto appointmentInputDto) throws RecordNotFoundException {
+    public AppointmentDto createAppointment(AppointmentInputDto appointmentInputDto) throws RecordNotFoundException, AccountNotAssociatedException, IllegalArgumentException {
         // Retrieve the Match based on the matchId in the inputDto
         Match match = matchRepository.findById(appointmentInputDto.getMatchId())
-                .orElseThrow(() -> new RecordNotFoundException("Match not found"));
+                .orElseThrow(() -> new RecordNotFoundException("Match niet gevonden"));
         if (!match.isGiverAccepted() || !match.isReceiverAccepted()) {
-            throw new RecordNotFoundException("Match moet eerst worden geaccepteerd voordat een afspraak kan worden ingepland");}
+            throw new AccountNotAssociatedException("Match moet eerst worden geaccepteerd voordat een afspraak kan worden ingepland");}
+
+        LocalDate currentDate = LocalDate.now(); // Get the current date
+        if (appointmentInputDto.getDate().isBefore(currentDate)) {
+            throw new IllegalArgumentException("Afspraakdatum moet in de toekomst liggen");
+        }
 
             Appointment appointment = transferInputDtoToAppointment(appointmentInputDto);
             appointment.setDate(appointmentInputDto.getDate());

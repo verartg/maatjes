@@ -140,8 +140,7 @@ public class MatchService {
         Match match = matchRepository.findById(matchId).orElseThrow(() -> new RecordNotFoundException("Match not found"));
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new RecordNotFoundException("Account not found"));
         if (!match.getHelpGiver().equals(account) && !match.getHelpReceiver().equals(account)) {
-            throw new RecordNotFoundException("Account is not associated with the Match");
-            //AccountNotAssociatedException werkt niet, deze wel...
+            throw new AccountNotAssociatedException("Account is not associated with the Match");
         }
             if (match.getHelpGiver().equals(account)) {
                 match.setGiverAccepted(true);
