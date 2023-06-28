@@ -99,7 +99,7 @@ public class AccountService {
             Account account1 = accountOptional.get();
 
             long fileSize = file.getBytes().length;
-            System.out.println( fileSize);
+
             long maxFileSize = 1000000; // 1MB in bytes
             if (fileSize > maxFileSize) {
                 throw new FileSizeExceededException("Bestand is te groot");

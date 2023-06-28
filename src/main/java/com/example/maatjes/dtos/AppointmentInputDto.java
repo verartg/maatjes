@@ -17,7 +17,6 @@ import java.util.Date;
 public class AppointmentInputDto {
     //todo nog constraints implementeren
     public LocalDate date;
-    //todo onderstaande alleen als tijd implementeren, nu is er dubbelop data.
     public LocalTime startTime;
     public LocalTime endTime;
     public String description;
