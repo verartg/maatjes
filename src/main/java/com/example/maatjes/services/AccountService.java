@@ -158,6 +158,8 @@ public class AccountService {
         accountDto.frequency = account.getFrequency();
         accountDto.helpGivers = account.getHelpGivers();
         accountDto.helpReceivers = account.getHelpReceivers();
+        accountDto.givenReviews = account.getGivenReviews();
+        accountDto.receivedReviews = account.getReceivedReviews();
         return accountDto;
         }
 

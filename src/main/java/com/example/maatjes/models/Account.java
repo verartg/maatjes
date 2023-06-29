@@ -70,8 +70,8 @@ public class Account {
     @JsonIgnore
     private List<Review> givenReviews;
 
-//    @OneToMany (mappedBy = "account", cascade = CascadeType.ALL)
-//    @JsonIgnore
-//    private List<Review> receivedReviews;
+    @OneToMany (mappedBy = "writtenFor", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Review> receivedReviews;
 
 }

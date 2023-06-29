@@ -31,7 +31,4 @@ public class MatchDto {
     public List<Activities> activities;
     public List<Review> matchReviews;
 
-
-
-
 }

@@ -45,7 +45,7 @@ public class MatchService {
     //todo matches filteren op contactperson voor de admin om eigen matches op te halen.
 
     public List<MatchDto> getAcceptedMatchesByAccountId(Long accountId) throws RecordNotFoundException {
-        Account account = accountRepository.findById(accountId).orElseThrow(() -> new RecordNotFoundException("The Account with ID " + accountId + " doesn't exist."));
+        Account account = accountRepository.findById(accountId).orElseThrow(() -> new RecordNotFoundException("De account met ID " + accountId + " bestaat niet."));
         List<Match> helpGivers = account.getHelpGivers();
         List<Match> helpReceivers = account.getHelpReceivers();
         List<MatchDto> accountMatchDtos = new ArrayList<>();
@@ -65,7 +65,7 @@ public class MatchService {
     }
 
     public List<MatchDto> getProposedMatchesByAccountId(Long accountId) throws RecordNotFoundException {
-        Account account = accountRepository.findById(accountId).orElseThrow(() -> new RecordNotFoundException("The Account with ID " + accountId + " doesn't exist."));
+        Account account = accountRepository.findById(accountId).orElseThrow(() -> new RecordNotFoundException("De account met ID " + accountId + " bestaat niet."));
         List<Match> helpGivers = account.getHelpGivers();
         List<Match> helpReceivers = account.getHelpReceivers();
         List<MatchDto> accountMatchDtos = new ArrayList<>();
@@ -98,7 +98,7 @@ public class MatchService {
         List<Activities> sharedActivities = getSharedActivities(giverActivitiesToGive, receiverActivitiesToReceive, giverActivitiesToReceive, receiverActivitiesToGive);
 
         if (sharedActivities == null) {
-            throw new RecordNotFoundException("No matching activities found for the accounts");
+            throw new RecordNotFoundException("Geen gemeenschappelijke activiteiten gevonden voor beide accounts");
         } else {
 
         Match match = transferInputDtoToMatch(matchInputDto);
@@ -136,10 +136,10 @@ public class MatchService {
     }
 
     public MatchDto acceptMatch(Long matchId, Long accountId) throws RecordNotFoundException {
-        Match match = matchRepository.findById(matchId).orElseThrow(() -> new RecordNotFoundException("Match not found"));
-        Account account = accountRepository.findById(accountId).orElseThrow(() -> new RecordNotFoundException("Account not found"));
+        Match match = matchRepository.findById(matchId).orElseThrow(() -> new RecordNotFoundException("Match niet gevonden"));
+        Account account = accountRepository.findById(accountId).orElseThrow(() -> new RecordNotFoundException("Account niet gevonden"));
         if (!match.getHelpGiver().equals(account) && !match.getHelpReceiver().equals(account)) {
-            throw new AccountNotAssociatedException("Account is not associated with the Match");
+            throw new AccountNotAssociatedException("Account is niet geassocieerd met de match");
         }
             if (match.getHelpGiver().equals(account)) {
                 match.setGiverAccepted(true);
@@ -152,7 +152,7 @@ public class MatchService {
         }
 
     public MatchDto updateMatch(Long id, MatchInputDto matchInputDto) throws RecordNotFoundException {
-        Match match = matchRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("The match with ID " + id + " doesn't exist"));
+        Match match = matchRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("De match met ID " + id + " bestaat niet"));
 
             match.setReceiverAccepted(matchInputDto.isReceiverAccepted());
             match.setGiverAccepted(matchInputDto.isGiverAccepted());

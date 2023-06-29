@@ -39,6 +39,6 @@ public class AccountDto {
     public Frequency frequency;
     public List<Match> helpReceivers;
     public List<Match> helpGivers;
-//    public List<Review> writtenReviews;
-//    public List<Review> receivedReviews;
+    public List<Review> givenReviews;
+    public List<Review> receivedReviews;
 }

@@ -29,8 +29,13 @@ public class Review {
 
     @ManyToOne
     @JsonIgnore
-    @JoinColumn(name = "account_id")
+    @JoinColumn(name = "writtenBy_id")
     private Account writtenBy;
+
+    @ManyToOne
+    @JsonIgnore
+    @JoinColumn(name = "writtenFor_id")
+    private Account writtenFor;
 }
 
 
