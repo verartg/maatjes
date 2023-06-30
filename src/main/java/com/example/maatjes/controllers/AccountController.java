@@ -3,9 +3,12 @@ package com.example.maatjes.controllers;
 import com.example.maatjes.dtos.AccountDto;
 import com.example.maatjes.dtos.AccountInputDto;
 import com.example.maatjes.services.AccountService;
+import com.example.maatjes.util.FieldErrorHandling;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,15 +35,20 @@ public class AccountController {
         return new ResponseEntity<>(accountService.getAccount(id), HttpStatus.OK);
     }
 
-    //todo bindingresult?
     @PostMapping("/createaccount")
-    public ResponseEntity<AccountDto> createAccount(@Valid @RequestBody AccountInputDto account) {
+    public ResponseEntity<Object> createAccount(@Valid @RequestBody AccountInputDto account, BindingResult bindingResult) {
+        if (bindingResult.hasFieldErrors()){
+            return ResponseEntity.badRequest().body(FieldErrorHandling.getErrorToStringHandling(bindingResult));
+        }
+        // Validation succeeded, proceed with account creation
         return new ResponseEntity<>(accountService.createAccount(account), HttpStatus.CREATED);
     }
 
-    //todo bindingresult?
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateAccount(@PathVariable Long id, @Valid @RequestBody AccountInputDto account) {
+    public ResponseEntity<Object> updateAccount(@PathVariable Long id, @Valid @RequestBody AccountInputDto account, BindingResult bindingResult) {
+        if (bindingResult.hasFieldErrors()){
+            return ResponseEntity.badRequest().body(FieldErrorHandling.getErrorToStringHandling(bindingResult));
+        }
         return new ResponseEntity<>(accountService.updateAccount(id, account), HttpStatus.ACCEPTED);
     }
 
