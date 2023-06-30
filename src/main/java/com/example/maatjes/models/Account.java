@@ -39,6 +39,12 @@ public class Account {
     private boolean givesHelp;
     private boolean needsHelp;
 
+    @Enumerated(EnumType.STRING)
+    private Frequency frequency;
+
+    @Enumerated(EnumType.STRING)
+    private Availability availability;
+
     @ElementCollection
     @CollectionTable(name = "activities_to_give")
     @Column(name = "activity")
@@ -51,12 +57,6 @@ public class Account {
     @Enumerated(EnumType.STRING)
     private List<Activities> activitiesToReceive = new ArrayList<>();
 
-    @Enumerated(EnumType.STRING)
-    private Frequency frequency;
-
-    @Enumerated(EnumType.STRING)
-    private Availability availability;
-
     @OneToMany(mappedBy = "helpGiver", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Match> helpReceivers;
@@ -65,7 +65,6 @@ public class Account {
     @JsonIgnore
     private List<Match> helpGivers;
 
-
     @OneToMany (mappedBy = "writtenBy", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Review> givenReviews;
@@ -73,5 +72,4 @@ public class Account {
     @OneToMany (mappedBy = "writtenFor", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Review> receivedReviews;
-
 }

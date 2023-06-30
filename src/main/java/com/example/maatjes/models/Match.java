@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -36,7 +35,6 @@ public class Match {
     private Availability availability;
     @Enumerated(EnumType.STRING)
     private Frequency frequency;
-    private List<Activities> activities;
 
     @ManyToOne
     @JoinColumn(name = "helpGiver_id")
@@ -46,9 +44,17 @@ public class Match {
     @JoinColumn(name = "helpReceiver_id")
     private Account helpReceiver;
 
+    //todo ondertaande komen niet terug in de database
+
+    private List<Activities> activities;
+
     @OneToMany(mappedBy = "match", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Appointment> appointments;
+
+    @OneToMany(mappedBy = "match", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Message> messages;
 
     @OneToMany(mappedBy = "match", cascade = CascadeType.ALL)
     @JsonIgnore

@@ -14,13 +14,8 @@ import java.time.LocalTime;
 @NoArgsConstructor
 public class MessageDto {
     public Long id;
-    //todo hieronder naam van maken.
     public String content;
     public LocalTime createdAt;
     public LocalDate createdAtDate;
     public String writtenByName;
-//hieronder is misschien meer frontend?
-    public String getFormattedMessage() {
-        return "At " + createdAtDate + " on " + createdAt + ", " + writtenByName + " sent you: " + content;
-    }
     }

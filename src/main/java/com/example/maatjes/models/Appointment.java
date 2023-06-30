@@ -7,10 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 import java.time.LocalTime;
-import java.util.Date;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -31,6 +29,4 @@ public class Appointment {
     @ManyToOne
     @JoinColumn(name = "match_id")
     private Match match;
-
-
 }

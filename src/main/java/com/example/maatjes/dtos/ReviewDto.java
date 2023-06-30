@@ -18,7 +18,8 @@ public class ReviewDto {
     public String description;
     public boolean verified;
     //todo private String feedbackAdmin?
-    public List<Activities> activities;
     public String writtenBy;
     public String writtenFor;
+    //todo onderstaande worden niet opgeslagen in de database
+    public List<Activities> activities;
 }

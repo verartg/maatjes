@@ -33,10 +33,11 @@ public class AccountDto {
     public byte[] document;
     public boolean givesHelp;
     public boolean needsHelp;
-    public List<Activities> activitiesToGive;
-    public List<Activities> activitiesToReceive;
     public Availability availability;
     public Frequency frequency;
+    //todo onderstaande worden niet opgeslagen in de database.
+    public List<Activities> activitiesToGive;
+    public List<Activities> activitiesToReceive;
     public List<Match> helpReceivers;
     public List<Match> helpGivers;
     public List<Review> givenReviews;

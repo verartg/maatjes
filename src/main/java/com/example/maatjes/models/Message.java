@@ -1,8 +1,6 @@
 package com.example.maatjes.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,4 +22,8 @@ public class Message {
     private String content;
     private LocalTime createdAt;
     private LocalDate createdAtDate;
+
+    @ManyToOne
+    @JoinColumn(name = "match_id")
+    private Match match;
 }

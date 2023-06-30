@@ -11,7 +11,6 @@ import com.example.maatjes.models.Match;
 import com.example.maatjes.repositories.AccountRepository;
 import com.example.maatjes.repositories.AppointmentRepository;
 import com.example.maatjes.repositories.MatchRepository;
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -107,7 +106,7 @@ public class AppointmentService {
             // Set the Match and Account references
             appointment.setMatch(match);
 
-            //if principle is helpgiver
+            //todo if principle is helpgiver
             appointment.setCreatedForName(match.getHelpReceiver().getName());
             appointment.setCreatedByName(match.getHelpGiver().getName());
             //if principle is helpreceiver
@@ -123,34 +122,6 @@ public class AppointmentService {
 
         return transferAppointmentToOutputDto(appointment);
     }
-
-//    public AppointmentDto createAppointment(AppointmentInputDto appointmentInputDto) throws RecordNotFoundException {
-//        // Retrieve the Match based on the matchId in the inputDto
-//        Match match = matchRepository.findById(appointmentInputDto.getMatchId())
-//                .orElseThrow(() -> new RecordNotFoundException("Match not found"));
-//
-//        Account createdById = determineLoggedInAccount();
-//        Account createdForId = determineCreatedForId(createdById, match);
-//
-//        Appointment appointment = transferInputDtoToAppointment(appointmentInputDto);
-//        appointment.setDate(appointmentInputDto.getDate());
-//        appointment.setStartTime(appointmentInputDto.getStartTime());
-//        appointment.setEndTime(appointmentInputDto.getEndTime());
-//        appointment.setDescription(appointmentInputDto.getDescription());
-//
-//        // Set the Match and Account references
-//        appointment.setMatch(match);
-//        appointment.setCreatedBy(createdById);
-//        appointment.setCreatedFor(createdForId);
-//
-//        // Save the Appointment and update the Match's appointments list
-//        appointment = appointmentRepository.save(appointment);
-//        match.getAppointments().add(appointment);
-//        matchRepository.save(match);
-//
-//        return transferAppointmentToOutputDto(appointment);
-//    }
-//
 //    private Account determineLoggedInAccount() {
 //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 //        if (authentication != null && authentication.getPrincipal() instanceof Account) {

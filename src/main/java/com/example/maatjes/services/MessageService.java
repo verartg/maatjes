@@ -15,6 +15,9 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 @Service
 public class MessageService {
@@ -40,26 +43,35 @@ public class MessageService {
         }
 
         Message message = transferInputDtoToMessage(messageInputDto);
-
-        message.setCreatedAt(LocalTime.now().truncatedTo(ChronoUnit.MINUTES));
+        message.setCreatedAt(LocalTime.now().truncatedTo(ChronoUnit.SECONDS));
         message.setCreatedAtDate(LocalDate.now());
         message.setWrittenByName(account.getName());
-        messageRepository.save(message);
+        message.setMatch(match);
+        message = messageRepository.save(message);
+        match.getMessages().add(message);
+        matchRepository.save(match);
         return transferMessageToDto(message);
     }
 
-//    public List<Message> getTheLastTwentyMessagesWithMatch(Long matchId) {
-//        return messageRepository.findLastTwentyByMatchId(matchId);
-//    }
-//
-//    public List<Message> getAllMessagesWithMatch(Long matchId) {
-//        return messageRepository.findByMatchId(matchId);
-//    }
-//
-//    public void deleteMessage(Long messageId) {
-//        // Implement logic to delete the message by messageId
-//        // ... Implementation logic ...
-//    }
+    public List<MessageDto> getAllMessagesWithMatchId(Long matchId) {
+        Match match = matchRepository.findById(matchId)
+                .orElseThrow(() -> new RecordNotFoundException("Match niet gevonden"));
+        List<Message> messages = match.getMessages();
+        List<MessageDto> messageDtos = new ArrayList<>();
+
+        for (Message message : messages) {
+                messageDtos.add(transferMessageToDto(message));
+        }
+// Sort the appointmentDtos list based on start time
+        messageDtos.sort(Comparator.comparing(MessageDto::getCreatedAt));
+        return messageDtos;
+    }
+
+    public void deleteOldMessages() {
+        LocalDate currentDate = LocalDate.now().minusMonths(1);
+        List<Message> messagesToDelete = messageRepository.findByCreatedAtDateBefore(currentDate);
+        messageRepository.deleteAll(messagesToDelete);
+    }
 
     public MessageDto transferMessageToDto(Message message) {
         MessageDto messageDto = new MessageDto();
@@ -78,5 +90,3 @@ public class MessageService {
         return message;
     }
 }
-
-
