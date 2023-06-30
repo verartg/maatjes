@@ -20,6 +20,5 @@ public class ReviewDto {
     //todo private String feedbackAdmin?
     public String writtenBy;
     public String writtenFor;
-    //todo onderstaande worden niet opgeslagen in de database
     public List<Activities> activities;
 }

@@ -86,7 +86,6 @@ public class ReviewService {
                 reviewDtos.add(reviewDto);
             }
         }
-
         return reviewDtos;
     }
 
@@ -101,7 +100,6 @@ public class ReviewService {
                 reviewDtos.add(reviewDto);
             }
         }
-
         return reviewDtos;
     }
 
@@ -124,7 +122,6 @@ public class ReviewService {
         } else {
             review.setVerified(true);
         }
-
         reviewRepository.save(review);
         return transferReviewToDto(review);
     }
@@ -137,9 +134,6 @@ public class ReviewService {
         Review returnReview = reviewRepository.save(review);
         return  transferReviewToDto(returnReview);
     }
-
-    //get reviews from Account over wie het gaat() (verified == true)
-    //get reviews from account welke die heeft geschreven. (verified == true)
 
     public void removeReview(@RequestBody Long id) {
         Optional<Review> optionalReview = reviewRepository.findById(id);
@@ -164,6 +158,7 @@ public class ReviewService {
         reviewDto.setWrittenFor(writtenBy.equals(helpGiver) ? helpReceiver : helpGiver);
         return reviewDto;
     }
+
         public Review transferInputDtoToReview(ReviewInputDto reviewInputDto) {
         var review = new Review();
         review.setRating(reviewInputDto.getRating());

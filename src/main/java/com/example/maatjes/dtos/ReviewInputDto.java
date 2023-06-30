@@ -19,7 +19,6 @@ public class ReviewInputDto {
     public double rating;
     public String description;
     public boolean verified;
-
     //todo private String feedbackAdmin?;
 }
 

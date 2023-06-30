@@ -28,14 +28,12 @@ public class AccountDto {
     public String houseNumber;
     public String postalCode;
     public String city;
-    //    private image profilePicture;
     public String bio;
     public byte[] document;
     public boolean givesHelp;
     public boolean needsHelp;
     public Availability availability;
     public Frequency frequency;
-    //todo onderstaande worden niet opgeslagen in de database.
     public List<Activities> activitiesToGive;
     public List<Activities> activitiesToReceive;
     public List<Match> helpReceivers;

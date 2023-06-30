@@ -44,8 +44,6 @@ public class Match {
     @JoinColumn(name = "helpReceiver_id")
     private Account helpReceiver;
 
-    //todo ondertaande komen niet terug in de database
-
     private List<Activities> activities;
 
     @OneToMany(mappedBy = "match", cascade = CascadeType.ALL)

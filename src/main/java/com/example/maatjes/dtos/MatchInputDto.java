@@ -25,5 +25,4 @@ public class MatchInputDto {
     public Frequency frequency;
     public Long helpGiverId;
     public Long helpReceiverId;
-
 }

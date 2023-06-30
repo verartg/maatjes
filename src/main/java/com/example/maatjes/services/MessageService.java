@@ -62,7 +62,7 @@ public class MessageService {
         for (Message message : messages) {
                 messageDtos.add(transferMessageToDto(message));
         }
-// Sort the appointmentDtos list based on start time
+
         messageDtos.sort(Comparator.comparing(MessageDto::getCreatedAt));
         return messageDtos;
     }

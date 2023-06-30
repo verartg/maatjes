@@ -32,7 +32,6 @@ public class Account {
     private String houseNumber;
     private String postalCode;
     private String city;
-//    private image profilePicture;
     private String bio;
     @Lob
     private byte[] document;

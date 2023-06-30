@@ -31,7 +31,6 @@ public class AccountInputDto {
     public String postalCode;
 //    @NotBlank
     public String city;
-    //    private image profilePicture;
 //    @NotBlank
     public String bio;
     public byte[] document;
@@ -47,5 +46,4 @@ public class AccountInputDto {
     public Availability availability;
 //    @NotNull
     public Frequency frequency;
-
 }

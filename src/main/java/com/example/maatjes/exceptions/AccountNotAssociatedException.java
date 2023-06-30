@@ -1,7 +1,6 @@
 package com.example.maatjes.exceptions;
 
 public class AccountNotAssociatedException extends RuntimeException {
-
     public AccountNotAssociatedException() {
         super();
     }

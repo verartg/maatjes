@@ -30,11 +30,10 @@ public class MatchDto {
     public Frequency frequency;
     public String helpReceiverName;
     public String helpGiverName;
-
-    //todo onderstaande worden niet opgeslagen in de database
     public List<Activities> activities;
     public List<Review> matchReviews;
     //todo onderstaanden nog implementern.
+    //todo additionele vraag, moeten deze hier wel staan? Aangezien ik toch geen lijsten kan weergeven in PgAdmin? ik kan hier toch alleen maar bij met requests?
     public List<Appointment> appointments;
     public List<Message> messages;
 
