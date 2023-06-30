@@ -25,7 +25,6 @@ public class ReviewController {
 
     @PostMapping("/{matchId}/{accountId}")
     public ResponseEntity<Object> createReview (@PathVariable("matchId") Long matchId, @PathVariable ("accountId") Long accountId, @RequestBody ReviewInputDto reviewInputDto) {
-
         ReviewDto reviewDto = reviewService.createReview(matchId, accountId, reviewInputDto);
         return new ResponseEntity<>(reviewDto, HttpStatus.ACCEPTED);
     }

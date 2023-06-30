@@ -8,14 +8,20 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class User {
+public class Message {
     @Id
     @GeneratedValue
     private Long id;
-//    private Role role; <-- dit leren we geloof ik nog
+    private String writtenByName;
+    private String content;
+    private LocalTime createdAt;
+    private LocalDate createdAtDate;
 }

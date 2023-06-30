@@ -36,6 +36,7 @@ public class ReviewService {
         Match match = matchRepository.findById(matchId).orElseThrow(() -> new RecordNotFoundException("Match niet gevonden"));
         //ik ga op zoek naar het account van de schrijver van de review
         //todo omschrijven naar schrijverReview
+        //todo als ik de principle heb, dan hoef ik alleen maar de matchid mee te geven om bij de writer en receiver te komen van de review.
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new RecordNotFoundException("Account niet gevonden"));
         //als de schrijver van de review niet overeenkomt met de gever of receiver in de match, mag het niet.
         if (!match.getHelpGiver().equals(account) && !match.getHelpReceiver().equals(account)) {
@@ -157,7 +158,6 @@ public class ReviewService {
         reviewDto.verified = review.isVerified();
         reviewDto.activities = review.getMatch().getActivities();
         reviewDto.writtenBy = review.getWrittenBy().getName();
-//        reviewDto.writtenFor = review.getWrittenFor().getName();
         String writtenBy = review.getWrittenBy().getName();
         String helpGiver = review.getMatch().getHelpGiver().getName();
         String helpReceiver = review.getMatch().getHelpReceiver().getName();

@@ -9,6 +9,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDto {
-    public Long id;
-    }
+public class MessageInputDto {
+        public String content;
+}
