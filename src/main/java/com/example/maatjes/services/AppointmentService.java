@@ -92,12 +92,12 @@ public class AppointmentService {
         if (!match.isGiverAccepted() || !match.isReceiverAccepted()) {
             throw new AccountNotAssociatedException("Match moet eerst worden geaccepteerd voordat een afspraak kan worden ingepland");}
 
-        LocalDate currentDate = LocalDate.now(); // Get the current date
-        if (appointmentInputDto.getDate().isBefore(currentDate)) {
-            throw new IllegalArgumentException("Afspraakdatum moet in de toekomst liggen");
-        }
+        int value = appointmentInputDto.getStartTime().compareTo(appointmentInputDto.getEndTime());
+            if (value >= 0) {
+                throw new IllegalArgumentException("De eindtijd moet na de starttijd liggen.");
+            }
 
-            Appointment appointment = transferInputDtoToAppointment(appointmentInputDto);
+        Appointment appointment = transferInputDtoToAppointment(appointmentInputDto);
             appointment.setDate(appointmentInputDto.getDate());
             appointment.setStartTime(appointmentInputDto.getStartTime());
             appointment.setEndTime(appointmentInputDto.getEndTime());
