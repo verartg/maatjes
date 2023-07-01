@@ -3,9 +3,11 @@ package com.example.maatjes.controllers;
 import com.example.maatjes.dtos.ReviewDto;
 import com.example.maatjes.dtos.ReviewInputDto;
 import com.example.maatjes.services.ReviewService;
+import com.example.maatjes.util.FieldErrorHandling;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,7 +17,9 @@ import java.util.List;
 public class ReviewController {
     private final ReviewService reviewService;
 
-    public ReviewController(ReviewService reviewService) {this.reviewService = reviewService;}
+    public ReviewController(ReviewService reviewService) {
+        this.reviewService = reviewService;
+    }
 
 //    @GetMapping("/{id}")
 //    public ResponseEntity<ReviewDto> getReview(@PathVariable("id") Long id) {
@@ -23,9 +27,11 @@ public class ReviewController {
 //    }
 
     @PostMapping("/{matchId}/{accountId}")
-    public ResponseEntity<Object> createReview (@PathVariable("matchId") Long matchId, @PathVariable ("accountId") Long accountId, @RequestBody ReviewInputDto reviewInputDto) {
-        ReviewDto reviewDto = reviewService.createReview(matchId, accountId, reviewInputDto);
-        return new ResponseEntity<>(reviewDto, HttpStatus.ACCEPTED);
+    public ResponseEntity<Object> createReview (@PathVariable("matchId") Long matchId, @PathVariable ("accountId") Long accountId, @Valid @RequestBody ReviewInputDto reviewInputDto, BindingResult bindingResult) {
+        if (bindingResult.hasFieldErrors()){
+            return ResponseEntity.badRequest().body(FieldErrorHandling.getErrorToStringHandling(bindingResult));
+        }
+        return new ResponseEntity<>(reviewService.createReview(matchId, accountId, reviewInputDto), HttpStatus.ACCEPTED);
     }
 
     @GetMapping
@@ -56,7 +62,10 @@ public class ReviewController {
     }
 
     @PutMapping("/{reviewId}")
-    public ResponseEntity<Object> updateReview(@PathVariable Long reviewId, @Valid @RequestBody ReviewInputDto review) {
+    public ResponseEntity<Object> updateReview(@PathVariable Long reviewId, @Valid @RequestBody ReviewInputDto review, BindingResult bindingResult) {
+        if (bindingResult.hasFieldErrors()){
+            return ResponseEntity.badRequest().body(FieldErrorHandling.getErrorToStringHandling(bindingResult));
+        }
         return new ResponseEntity<>(reviewService.updateReview(reviewId, review), HttpStatus.ACCEPTED);
     }
 
