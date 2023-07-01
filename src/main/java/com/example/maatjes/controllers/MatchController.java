@@ -15,10 +15,9 @@ import java.util.List;
 @RequestMapping("/matches")
 public class MatchController {
     private final MatchService matchService;
-    private final FieldErrorHandling fieldErrorHandling;
 
-    public MatchController(MatchService matchService, FieldErrorHandling fieldErrorHandling) {this.matchService = matchService;
-        this.fieldErrorHandling = fieldErrorHandling;
+    public MatchController(MatchService matchService) {
+        this.matchService = matchService;
     }
 
     @GetMapping
@@ -44,9 +43,9 @@ public class MatchController {
     @PostMapping("/{helpGiverId}/{helpReceiverId}")
     public ResponseEntity<Object> proposeMatch(@PathVariable("helpGiverId") Long helpGiverId, @PathVariable("helpReceiverId") Long helpReceiverId, @Valid @RequestBody MatchInputDto matchInputDto, BindingResult bindingResult){
         if (bindingResult.hasFieldErrors()) {
-            return ResponseEntity.badRequest().body(fieldErrorHandling.getErrorToStringHandling(bindingResult));
+            return ResponseEntity.badRequest().body(FieldErrorHandling.getErrorToStringHandling(bindingResult));
         }
-        return new ResponseEntity<>(matchService.proposeMatch(helpGiverId, helpReceiverId, matchInputDto), HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(matchService.proposeMatch(helpGiverId, helpReceiverId, matchInputDto), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
@@ -61,7 +60,10 @@ public class MatchController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateMatch(@PathVariable Long id, @Valid @RequestBody MatchInputDto match) {
+    public ResponseEntity<Object> updateMatch(@PathVariable Long id, @Valid @RequestBody MatchInputDto match, BindingResult bindingResult) {
+        if (bindingResult.hasFieldErrors()){
+            return ResponseEntity.badRequest().body(FieldErrorHandling.getErrorToStringHandling(bindingResult));
+        }
         return new ResponseEntity<>(matchService.updateMatch(id, match), HttpStatus.ACCEPTED);
     }
 }

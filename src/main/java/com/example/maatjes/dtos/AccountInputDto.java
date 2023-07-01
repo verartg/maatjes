@@ -3,15 +3,13 @@ package com.example.maatjes.dtos;
 import com.example.maatjes.enums.Activities;
 import com.example.maatjes.enums.Availability;
 import com.example.maatjes.enums.Frequency;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -19,9 +17,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AccountInputDto {
-    //todo leeftijd omzetten naar geboortedatum
-    @NotNull(message = "Je moet je leeftijd invullen.")
-    public Integer age;
+    @NotNull(message = "Je moet je geboortedatum invullen.")
+    @Past(message = "Geboortedatum moet in het verleden liggen.")
+    public LocalDate birthdate;
     @NotBlank(message = "Je moet je naam invullen.")
     public String name;
     public char sex;

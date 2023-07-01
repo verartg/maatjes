@@ -92,16 +92,7 @@ public class AppointmentService {
         if (!match.isGiverAccepted() || !match.isReceiverAccepted()) {
             throw new AccountNotAssociatedException("Match moet eerst worden geaccepteerd voordat een afspraak kan worden ingepland");}
 
-        int value = appointmentInputDto.getStartTime().compareTo(appointmentInputDto.getEndTime());
-            if (value >= 0) {
-                throw new IllegalArgumentException("De eindtijd moet na de starttijd liggen.");
-            }
-
         Appointment appointment = transferInputDtoToAppointment(appointmentInputDto);
-            appointment.setDate(appointmentInputDto.getDate());
-            appointment.setStartTime(appointmentInputDto.getStartTime());
-            appointment.setEndTime(appointmentInputDto.getEndTime());
-            appointment.setDescription(appointmentInputDto.getDescription());
 
             // Set the Match and Account references
             appointment.setMatch(match);
@@ -169,6 +160,10 @@ public class AppointmentService {
         var appointment = new Appointment();
         appointment.setDate(appointmentInputDto.getDate());
         appointment.setStartTime(appointmentInputDto.getStartTime());
+        int value = appointmentInputDto.getStartTime().compareTo(appointmentInputDto.getEndTime());
+        if (value >= 0) {
+            throw new IllegalArgumentException("De eindtijd moet na de starttijd liggen.");
+        }
         appointment.setEndTime(appointmentInputDto.getEndTime());
         appointment.setDescription(appointmentInputDto.getDescription());
         return appointment;

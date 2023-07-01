@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -58,7 +60,7 @@ public class AccountService {
     }
 
     public AccountDto createAccount(AccountInputDto accountDto) {
-        Account account = transferToAccount(accountDto);
+        Account account = transferInputDtoToAccount(accountDto);
         accountRepository.save(account);
         return transferAccountToDto(account);
     }
@@ -69,7 +71,11 @@ public class AccountService {
             Account account1 = accountOptional.get();
 
             account1.setName(newAccount.getName());
-            account1.setAge(newAccount.getAge());
+            LocalDate currentDate = LocalDate.now();
+            Period age = Period.between(newAccount.getBirthdate(), currentDate);
+            int ageYears = age.getYears();
+            //todo check qua leeftijd? 18 jaar of ouder?
+            account1.setAge(ageYears);
             account1.setSex(newAccount.getSex());
             account1.setPhoneNumber(newAccount.getPhoneNumber());
             account1.setEmailAddress(newAccount.getEmailAddress());
@@ -163,26 +169,29 @@ public class AccountService {
         return accountDto;
         }
 
-    public Account transferToAccount(AccountInputDto accountDto) {
+    public Account transferInputDtoToAccount(AccountInputDto accountInputDto) {
         var account = new Account();
 
-        account.setName(accountDto.getName());
-        account.setAge(accountDto.getAge());
-        account.setSex(accountDto.getSex());
-        account.setPhoneNumber(accountDto.getPhoneNumber());
-        account.setEmailAddress(accountDto.getEmailAddress());
-        account.setStreet(accountDto.getStreet());
-        account.setHouseNumber(accountDto.getHouseNumber());
-        account.setPostalCode(accountDto.getPostalCode());
-        account.setCity(accountDto.getCity());
-        account.setBio(accountDto.getBio());
-        account.setDocument(accountDto.getDocument());
-        account.setGivesHelp(accountDto.isGivesHelp());
-        account.setNeedsHelp(accountDto.isNeedsHelp());
-        account.setActivitiesToGive(accountDto.getActivitiesToGive());
-        account.setActivitiesToReceive(accountDto.getActivitiesToReceive());
-        account.setAvailability(accountDto.getAvailability());
-        account.setFrequency(accountDto.getFrequency());
+        account.setName(accountInputDto.getName());
+        LocalDate currentDate = LocalDate.now();
+        Period age = Period.between(accountInputDto.getBirthdate(), currentDate);
+        int ageYears = age.getYears();
+        account.setAge(ageYears);
+        account.setSex(accountInputDto.getSex());
+        account.setPhoneNumber(accountInputDto.getPhoneNumber());
+        account.setEmailAddress(accountInputDto.getEmailAddress());
+        account.setStreet(accountInputDto.getStreet());
+        account.setHouseNumber(accountInputDto.getHouseNumber());
+        account.setPostalCode(accountInputDto.getPostalCode());
+        account.setCity(accountInputDto.getCity());
+        account.setBio(accountInputDto.getBio());
+        account.setDocument(accountInputDto.getDocument());
+        account.setGivesHelp(accountInputDto.isGivesHelp());
+        account.setNeedsHelp(accountInputDto.isNeedsHelp());
+        account.setActivitiesToGive(accountInputDto.getActivitiesToGive());
+        account.setActivitiesToReceive(accountInputDto.getActivitiesToReceive());
+        account.setAvailability(accountInputDto.getAvailability());
+        account.setFrequency(accountInputDto.getFrequency());
         return account;
         }
 }

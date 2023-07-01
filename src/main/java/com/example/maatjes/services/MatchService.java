@@ -104,8 +104,6 @@ public class MatchService {
         Match match = transferInputDtoToMatch(matchInputDto);
         match.setHelpGiver(giver);
         match.setHelpReceiver(receiver);
-        match.setGiverAccepted(false);
-        match.setReceiverAccepted(false);
         match.setActivities(sharedActivities);
 
         match = matchRepository.save(match);
@@ -189,6 +187,10 @@ public class MatchService {
         match.setReceiverAccepted(matchInputDto.isReceiverAccepted());
         match.setContactPerson(matchInputDto.getContactPerson());
         match.setStartMatch(matchInputDto.getStartMatch());
+        int value = matchInputDto.getStartMatch().compareTo(matchInputDto.getEndMatch());
+        if (value >= 0) {
+            throw new IllegalArgumentException("De einddatum moet na de startdatum liggen.");
+        }
         match.setEndMatch(matchInputDto.getEndMatch());
         match.setAvailability(matchInputDto.getAvailability());
         match.setFrequency(matchInputDto.getFrequency());

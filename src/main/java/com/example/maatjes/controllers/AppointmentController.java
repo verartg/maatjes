@@ -4,9 +4,11 @@ import com.example.maatjes.dtos.AppointmentDto;
 import com.example.maatjes.dtos.AppointmentInputDto;
 import com.example.maatjes.services.AccountService;
 import com.example.maatjes.services.AppointmentService;
+import com.example.maatjes.util.FieldErrorHandling;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,11 +17,9 @@ import java.util.List;
 @RequestMapping("/appointments")
 public class AppointmentController {
     private final AppointmentService appointmentService;
-    private final AccountService accountService;
 
-    public AppointmentController(AppointmentService appointmentService, AccountService accountService) {
+    public AppointmentController(AppointmentService appointmentService) {
         this.appointmentService = appointmentService;
-        this.accountService = accountService;
     }
 
     @GetMapping("/match/{matchId}")
@@ -41,7 +41,10 @@ public class AppointmentController {
     }
 
     @PostMapping("/addappointment")
-    public ResponseEntity<AppointmentDto> createAppointment(@RequestBody AppointmentInputDto appointmentInputDto) {
+    public ResponseEntity<Object> createAppointment(@Valid @RequestBody AppointmentInputDto appointmentInputDto, BindingResult bindingResult) {
+        if (bindingResult.hasFieldErrors()){
+            return ResponseEntity.badRequest().body(FieldErrorHandling.getErrorToStringHandling(bindingResult));
+        }
         return new ResponseEntity<>(appointmentService.createAppointment(appointmentInputDto), HttpStatus.CREATED);
     }
 
@@ -52,8 +55,10 @@ public class AppointmentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateAppointment(@PathVariable Long id, @Valid @RequestBody AppointmentInputDto appointment) {
-        AppointmentDto dto = appointmentService.updateAppointment(id, appointment);
-        return ResponseEntity.ok().body(dto);
+    public ResponseEntity<Object> updateAppointment(@PathVariable Long id, @Valid @RequestBody AppointmentInputDto appointment, BindingResult bindingResult) {
+        if (bindingResult.hasFieldErrors()){
+            return ResponseEntity.badRequest().body(FieldErrorHandling.getErrorToStringHandling(bindingResult));
+        }
+        return new ResponseEntity<>(appointmentService.updateAppointment(id, appointment), HttpStatus.ACCEPTED);
     }
 }
