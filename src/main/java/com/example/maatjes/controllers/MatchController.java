@@ -20,14 +20,22 @@ public class MatchController {
         this.matchService = matchService;
     }
 
+    @PostMapping("/{helpGiverId}/{helpReceiverId}")
+    public ResponseEntity<Object> proposeMatch(@PathVariable("helpGiverId") Long helpGiverId, @PathVariable("helpReceiverId") Long helpReceiverId, @Valid @RequestBody MatchInputDto matchInputDto, BindingResult bindingResult){
+        if (bindingResult.hasFieldErrors()) {
+            return ResponseEntity.badRequest().body(FieldErrorHandling.getErrorToStringHandling(bindingResult));
+        }
+        return new ResponseEntity<>(matchService.proposeMatch(helpGiverId, helpReceiverId, matchInputDto), HttpStatus.CREATED);
+    }
+
     @GetMapping
     public ResponseEntity<List<MatchOutputDto>> getMatches(){
         return new ResponseEntity<>(matchService.getMatches(), HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<MatchOutputDto> getMatch(@PathVariable("id") Long id) {
-        return new ResponseEntity<>(matchService.getMatch(id), HttpStatus.OK);
+    @GetMapping("/{matchId}")
+    public ResponseEntity<MatchOutputDto> getMatch(@PathVariable("matchId") Long matchId) {
+        return new ResponseEntity<>(matchService.getMatch(matchId), HttpStatus.OK);
     }
 
     @GetMapping("/{accountId}/accepted")
@@ -40,30 +48,22 @@ public class MatchController {
         return new ResponseEntity<>(matchService.getProposedMatchesByAccountId(accountId), HttpStatus.OK);
     }
 
-    @PostMapping("/{helpGiverId}/{helpReceiverId}")
-    public ResponseEntity<Object> proposeMatch(@PathVariable("helpGiverId") Long helpGiverId, @PathVariable("helpReceiverId") Long helpReceiverId, @Valid @RequestBody MatchInputDto matchInputDto, BindingResult bindingResult){
-        if (bindingResult.hasFieldErrors()) {
-            return ResponseEntity.badRequest().body(FieldErrorHandling.getErrorToStringHandling(bindingResult));
-        }
-        return new ResponseEntity<>(matchService.proposeMatch(helpGiverId, helpReceiverId, matchInputDto), HttpStatus.CREATED);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Object> removeMatch(@PathVariable Long id) {
-        matchService.removeMatch(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
     @PutMapping("/{matchId}/{accountId}")
     public ResponseEntity<Object> acceptMatch(@PathVariable("matchId") Long matchId, @PathVariable("accountId") Long accountId) {
         return new ResponseEntity<>(matchService.acceptMatch(matchId, accountId), HttpStatus.ACCEPTED);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Object> updateMatch(@PathVariable Long id, @Valid @RequestBody MatchInputDto match, BindingResult bindingResult) {
+    @PutMapping("/{matchId}")
+    public ResponseEntity<Object> updateMatch(@PathVariable Long matchId, @Valid @RequestBody MatchInputDto matchInputDto, BindingResult bindingResult) {
         if (bindingResult.hasFieldErrors()){
             return ResponseEntity.badRequest().body(FieldErrorHandling.getErrorToStringHandling(bindingResult));
         }
-        return new ResponseEntity<>(matchService.updateMatch(id, match), HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(matchService.updateMatch(matchId, matchInputDto), HttpStatus.ACCEPTED);
+    }
+
+    @DeleteMapping("/{matchId}")
+    public ResponseEntity<Object> removeMatch(@PathVariable Long matchId) {
+        matchService.removeMatch(matchId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

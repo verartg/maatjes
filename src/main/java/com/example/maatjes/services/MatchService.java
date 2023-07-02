@@ -4,6 +4,7 @@ import com.example.maatjes.dtos.outputDtos.MatchOutputDto;
 import com.example.maatjes.dtos.inputDtos.MatchInputDto;
 import com.example.maatjes.enums.Activities;
 import com.example.maatjes.exceptions.AccountNotAssociatedException;
+import com.example.maatjes.exceptions.IllegalArgumentException;
 import com.example.maatjes.exceptions.RecordNotFoundException;
 import com.example.maatjes.models.Account;
 import com.example.maatjes.models.Match;
@@ -24,6 +25,46 @@ public class MatchService {
         this.accountRepository = accountRepository;
     }
 
+    //todo eigenlijk moet ik helpreceiver omnoemen naar account1 en helpgiver account2 bijv.
+    public MatchOutputDto proposeMatch(Long helpGiverId, Long helpReceiverId, MatchInputDto matchInputDto) throws RecordNotFoundException {
+        Account giver = accountRepository.findById(helpGiverId).orElseThrow(() -> new RecordNotFoundException("De gebruiker met id " + helpGiverId + " bestaat niet"));
+        Account receiver = accountRepository.findById(helpReceiverId).orElseThrow(() -> new RecordNotFoundException("De gebruiker met id " + helpReceiverId + " bestaat niet"));
+
+        List<Activities> giverActivitiesToGive = giver.getActivitiesToGive();
+        List<Activities> giverActivitiesToReceive = giver.getActivitiesToReceive();
+
+        List<Activities> receiverActivitiesToGive = receiver.getActivitiesToGive();
+        List<Activities> receiverActivitiesToReceive = receiver.getActivitiesToReceive();
+        List<Activities> sharedActivities = getSharedActivities(giverActivitiesToGive, receiverActivitiesToReceive, giverActivitiesToReceive, receiverActivitiesToGive);
+
+        if (sharedActivities == null) {
+            throw new RecordNotFoundException("Geen gemeenschappelijke activiteiten gevonden voor beide accounts");
+        } else {
+
+            Match match = transferInputDtoToMatch(matchInputDto);
+            match.setHelpGiver(giver);
+            match.setHelpReceiver(receiver);
+            match.setActivities(sharedActivities);
+
+            match = matchRepository.save(match);
+            return transferMatchToOutputDto(match); }
+    }
+
+    private List<Activities> getSharedActivities(List<Activities> giverActivitiesToGive, List<Activities> receiverActivitiesToReceive, List<Activities> giverActivitiesToReceive, List<Activities> receiverActivitiesToGive) {
+        List<Activities> sharedActivities = new ArrayList<>();
+
+        for (Activities activity : giverActivitiesToGive) {
+            if (receiverActivitiesToReceive.contains(activity)) {
+                sharedActivities.add(activity);}
+        }
+
+        for (Activities activity : giverActivitiesToReceive) {
+            if (receiverActivitiesToGive.contains(activity)) {
+                sharedActivities.add(activity);}
+        }
+        return sharedActivities.isEmpty() ? null : sharedActivities;
+    }
+
     public List<MatchOutputDto> getMatches() {
         List<Match> matches = matchRepository.findAll();
         List<MatchOutputDto> matchOutputDtos = new ArrayList<>();
@@ -34,8 +75,8 @@ public class MatchService {
         return matchOutputDtos;
     }
 
-    public MatchOutputDto getMatch(Long id) {
-        Optional<Match> optionalMatch = matchRepository.findById(id);
+    public MatchOutputDto getMatch(Long matchId) throws RecordNotFoundException {
+        Optional<Match> optionalMatch = matchRepository.findById(matchId);
         if (optionalMatch.isEmpty()) {
             throw new RecordNotFoundException("Match niet gevonden");}
         Match match = optionalMatch.get();
@@ -84,56 +125,7 @@ public class MatchService {
         return accountMatchOutputDtos;
     }
 
-
-//todo eigenlijk moet ik helpreceiver omnoemen naar account1 en helpgiver account2 bijv.
-    public MatchOutputDto proposeMatch(Long helpGiverId, Long helpReceiverId, MatchInputDto matchInputDto) throws RecordNotFoundException {
-        Account giver = accountRepository.findById(helpGiverId).orElseThrow(() -> new RecordNotFoundException("De gebruiker met id " + helpGiverId + " bestaat niet"));
-        Account receiver = accountRepository.findById(helpReceiverId).orElseThrow(() -> new RecordNotFoundException("De gebruiker met id " + helpReceiverId + " bestaat niet"));
-
-        List<Activities> giverActivitiesToGive = giver.getActivitiesToGive();
-        List<Activities> giverActivitiesToReceive = giver.getActivitiesToReceive();
-
-        List<Activities> receiverActivitiesToGive = receiver.getActivitiesToGive();
-        List<Activities> receiverActivitiesToReceive = receiver.getActivitiesToReceive();
-        List<Activities> sharedActivities = getSharedActivities(giverActivitiesToGive, receiverActivitiesToReceive, giverActivitiesToReceive, receiverActivitiesToGive);
-
-        if (sharedActivities == null) {
-            throw new RecordNotFoundException("Geen gemeenschappelijke activiteiten gevonden voor beide accounts");
-        } else {
-
-        Match match = transferInputDtoToMatch(matchInputDto);
-        match.setHelpGiver(giver);
-        match.setHelpReceiver(receiver);
-        match.setActivities(sharedActivities);
-
-        match = matchRepository.save(match);
-        return transferMatchToOutputDto(match); }
-    }
-    private List<Activities> getSharedActivities(List<Activities> giverActivitiesToGive, List<Activities> receiverActivitiesToReceive, List<Activities> giverActivitiesToReceive, List<Activities> receiverActivitiesToGive) {
-        List<Activities> sharedActivities = new ArrayList<>();
-
-        for (Activities activity : giverActivitiesToGive) {
-            if (receiverActivitiesToReceive.contains(activity)) {
-                sharedActivities.add(activity);}
-        }
-
-        for (Activities activity : giverActivitiesToReceive) {
-            if (receiverActivitiesToGive.contains(activity)) {
-                sharedActivities.add(activity);}
-        }
-        return sharedActivities.isEmpty() ? null : sharedActivities;
-    }
-
-    public void removeMatch(@RequestBody Long id) {
-        Optional<Match> optionalMatch = matchRepository.findById(id);
-        if (optionalMatch.isPresent()) {
-            matchRepository.deleteById(id);
-        } else {
-            throw new RecordNotFoundException("Match niet gevonden");
-        }
-    }
-
-    public MatchOutputDto acceptMatch(Long matchId, Long accountId) throws RecordNotFoundException {
+    public MatchOutputDto acceptMatch(Long matchId, Long accountId) throws RecordNotFoundException, AccountNotAssociatedException {
         Match match = matchRepository.findById(matchId).orElseThrow(() -> new RecordNotFoundException("Match niet gevonden"));
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new RecordNotFoundException("Account niet gevonden"));
         if (!match.getHelpGiver().equals(account) && !match.getHelpReceiver().equals(account)) {
@@ -144,14 +136,12 @@ public class MatchService {
             } else {
                 match.setReceiverAccepted(true);
             }
-
             matchRepository.save(match);
             return transferMatchToOutputDto(match);
         }
 
-    public MatchOutputDto updateMatch(Long id, MatchInputDto matchInputDto) throws RecordNotFoundException {
-        Match match = matchRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("De match met ID " + id + " bestaat niet"));
-
+    public MatchOutputDto updateMatch(Long matchId, MatchInputDto matchInputDto) throws RecordNotFoundException {
+        Match match = matchRepository.findById(matchId).orElseThrow(() -> new RecordNotFoundException("De match met ID " + matchId + " is niet gevonden"));
             match.setReceiverAccepted(matchInputDto.isReceiverAccepted());
             match.setGiverAccepted(matchInputDto.isGiverAccepted());
             match.setContactPerson(matchInputDto.getContactPerson());
@@ -159,10 +149,18 @@ public class MatchService {
             match.setEndMatch(matchInputDto.getEndMatch());
             match.setAvailability(matchInputDto.getAvailability());
             match.setFrequency(matchInputDto.getFrequency());
-
             Match returnMatch = matchRepository.save(match);
             return transferMatchToOutputDto(returnMatch);
         }
+
+    public void removeMatch(@RequestBody Long matchId) throws RecordNotFoundException {
+        Optional<Match> optionalMatch = matchRepository.findById(matchId);
+        if (optionalMatch.isPresent()) {
+            matchRepository.deleteById(matchId);
+        } else {
+            throw new RecordNotFoundException("Match niet gevonden");
+        }
+    }
 
     public MatchOutputDto transferMatchToOutputDto(Match match) {
         MatchOutputDto matchOutputDto = new MatchOutputDto();
@@ -181,7 +179,7 @@ public class MatchService {
         return matchOutputDto;
     }
 
-    public Match transferInputDtoToMatch(MatchInputDto matchInputDto) {
+    public Match transferInputDtoToMatch(MatchInputDto matchInputDto) throws IllegalArgumentException {
         Match match = new Match();
         match.setGiverAccepted(matchInputDto.isGiverAccepted());
         match.setReceiverAccepted(matchInputDto.isReceiverAccepted());
