@@ -22,6 +22,14 @@ public class AccountController {
         this.accountService = accountService;
     }
 
+    @PostMapping("/createaccount")
+    public ResponseEntity<Object> createAccount(@Valid @RequestBody AccountInputDto accountInputDto, BindingResult bindingResult) {
+        if (bindingResult.hasFieldErrors()){
+            return ResponseEntity.badRequest().body(FieldErrorHandling.getErrorToStringHandling(bindingResult));
+        }
+        return new ResponseEntity<>(accountService.createAccount(accountInputDto), HttpStatus.CREATED);
+    }
+
     @GetMapping
     public ResponseEntity<List<AccountOutputDto>> getAccountsByFilters(
             @RequestParam(required = false) String city,
@@ -29,41 +37,33 @@ public class AccountController {
         return new ResponseEntity<>(accountService.getAccountsByFilters(city, givesHelp), HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<AccountOutputDto> getAccount(@PathVariable("id") Long id) {
-        return new ResponseEntity<>(accountService.getAccount(id), HttpStatus.OK);
+    @GetMapping("/{accountId}")
+    public ResponseEntity<AccountOutputDto> getAccount(@PathVariable("accountId") Long accountId) {
+        return new ResponseEntity<>(accountService.getAccount(accountId), HttpStatus.OK);
     }
 
-    @PostMapping("/createaccount")
-    public ResponseEntity<Object> createAccount(@Valid @RequestBody AccountInputDto account, BindingResult bindingResult) {
+    @PutMapping("/{accountId}")
+    public ResponseEntity<Object> updateAccount(@PathVariable Long accountId, @Valid @RequestBody AccountInputDto accountInputDto, BindingResult bindingResult) {
         if (bindingResult.hasFieldErrors()){
             return ResponseEntity.badRequest().body(FieldErrorHandling.getErrorToStringHandling(bindingResult));
         }
-        return new ResponseEntity<>(accountService.createAccount(account), HttpStatus.CREATED);
+        return new ResponseEntity<>(accountService.updateAccount(accountId, accountInputDto), HttpStatus.ACCEPTED);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Object> updateAccount(@PathVariable Long id, @Valid @RequestBody AccountInputDto account, BindingResult bindingResult) {
-        if (bindingResult.hasFieldErrors()){
-            return ResponseEntity.badRequest().body(FieldErrorHandling.getErrorToStringHandling(bindingResult));
-        }
-        return new ResponseEntity<>(accountService.updateAccount(id, account), HttpStatus.ACCEPTED);
+    @PutMapping("/{accountId}/upload")
+    public ResponseEntity<Object> uploadIdentificationDocument(@PathVariable Long accountId, @RequestParam("file") MultipartFile file) throws Exception{
+        return new ResponseEntity<>(accountService.uploadIdentificationDocument(accountId, file), HttpStatus.ACCEPTED);
     }
 
-    @PutMapping("/{id}/upload")
-    public ResponseEntity<Object> uploadDocument(@PathVariable Long id, @RequestParam("file") MultipartFile file) throws Exception{
-        return new ResponseEntity<>(accountService.uploadDocument(id, file), HttpStatus.ACCEPTED);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Object> removeAccount(@PathVariable Long id) {
-        accountService.removeAccount(id);
+    @DeleteMapping("/{accountId}/upload")
+    public ResponseEntity<Object> removeIdentificationDocument(@PathVariable Long accountId) {
+        accountService.removeIdentificationDocument(accountId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @DeleteMapping("/{id}/upload")
-    public ResponseEntity<Object> removeDocument(@PathVariable Long id) {
-        accountService.removeDocument(id);
+    @DeleteMapping("/{accountId}")
+    public ResponseEntity<Object> removeAccount(@PathVariable Long accountId) {
+        accountService.removeAccount(accountId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
