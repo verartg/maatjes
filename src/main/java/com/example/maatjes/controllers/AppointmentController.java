@@ -21,6 +21,14 @@ public class AppointmentController {
         this.appointmentService = appointmentService;
     }
 
+    @PostMapping("/addappointment")
+    public ResponseEntity<Object> createAppointment(@Valid @RequestBody AppointmentInputDto appointmentInputDto, BindingResult bindingResult) {
+        if (bindingResult.hasFieldErrors()){
+            return ResponseEntity.badRequest().body(FieldErrorHandling.getErrorToStringHandling(bindingResult));
+        }
+        return new ResponseEntity<>(appointmentService.createAppointment(appointmentInputDto), HttpStatus.CREATED);
+    }
+
     @GetMapping("/match/{matchId}")
     public ResponseEntity<List<AppointmentOutputDto>> getAppointmentsByMatchId(@PathVariable Long matchId) {
         List<AppointmentOutputDto> appointments = appointmentService.getAppointmentsByMatchId(matchId);
@@ -33,31 +41,23 @@ public class AppointmentController {
         return new ResponseEntity<>(appointments, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<AppointmentOutputDto> getAppointment(@PathVariable("id") Long id) {
-        AppointmentOutputDto appointment = appointmentService.getAppointment(id);
+    @GetMapping("/{accountId}")
+    public ResponseEntity<AppointmentOutputDto> getAppointment(@PathVariable("accountId") Long accountId) {
+        AppointmentOutputDto appointment = appointmentService.getAppointment(accountId);
         return ResponseEntity.ok().body(appointment);
     }
 
-    @PostMapping("/addappointment")
-    public ResponseEntity<Object> createAppointment(@Valid @RequestBody AppointmentInputDto appointmentInputDto, BindingResult bindingResult) {
+    @PutMapping("/{appointmentId}")
+    public ResponseEntity<Object> updateAppointment(@PathVariable Long appointmentId, @Valid @RequestBody AppointmentInputDto appointmentInputDto, BindingResult bindingResult) {
         if (bindingResult.hasFieldErrors()){
             return ResponseEntity.badRequest().body(FieldErrorHandling.getErrorToStringHandling(bindingResult));
         }
-        return new ResponseEntity<>(appointmentService.createAppointment(appointmentInputDto), HttpStatus.CREATED);
+        return new ResponseEntity<>(appointmentService.updateAppointment(appointmentId, appointmentInputDto), HttpStatus.ACCEPTED);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Object> removeAppointment(@PathVariable Long id) {
-        appointmentService.removeAppointment(id);
+    @DeleteMapping("/{appointmentId}")
+    public ResponseEntity<Object> removeAppointment(@PathVariable Long appointmentId) {
+        appointmentService.removeAppointment(appointmentId);
         return ResponseEntity.noContent().build();
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Object> updateAppointment(@PathVariable Long id, @Valid @RequestBody AppointmentInputDto appointment, BindingResult bindingResult) {
-        if (bindingResult.hasFieldErrors()){
-            return ResponseEntity.badRequest().body(FieldErrorHandling.getErrorToStringHandling(bindingResult));
-        }
-        return new ResponseEntity<>(appointmentService.updateAppointment(id, appointment), HttpStatus.ACCEPTED);
     }
 }

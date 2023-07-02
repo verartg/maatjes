@@ -31,10 +31,42 @@ public class AppointmentService {
         this.accountRepository = accountRepository;
     }
 
-    public List<AppointmentOutputDto> getAppointmentsByMatchId(Long matchId) {
+    //todo na authentication de check verwerken over wie de appointment maakt. zie request eronder
+    public AppointmentOutputDto createAppointment(AppointmentInputDto appointmentInputDto) throws RecordNotFoundException, AccountNotAssociatedException {
+        Match match = matchRepository.findById(appointmentInputDto.getMatchId())
+                .orElseThrow(() -> new RecordNotFoundException("Match niet gevonden"));
+        if (!match.isGiverAccepted() || !match.isReceiverAccepted()) {
+            throw new AccountNotAssociatedException("Match moet eerst worden geaccepteerd voordat een afspraak kan worden ingepland");}
+
+        Appointment appointment = transferInputDtoToAppointment(appointmentInputDto);
+        appointment.setMatch(match);
+        //todo if principle is helpgiver
+        appointment.setCreatedForName(match.getHelpReceiver().getName());
+        appointment.setCreatedByName(match.getHelpGiver().getName());
+        //if principle is helpreceiver
+//        appointment.setCreatedForName(match.getHelpGiver().getName());
+//        appointment.setCreatedByName(match.getHelpReceiver().getName());
+
+        // Save the Appointment and update the Match's appointments list
+        //save the Match and update the Accounts Matches list
+        appointment = appointmentRepository.save(appointment);
+        match.getAppointments().add(appointment);
+        matchRepository.save(match);
+
+        return transferAppointmentToOutputDto(appointment);
+    }
+
+    //    private Account determineLoggedInAccount() {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        if (authentication != null && authentication.getPrincipal() instanceof Account) {
+//            return (Account) authentication.getPrincipal();
+//        }
+//        throw new RuntimeException("No logged-in account found");
+//    }
+
+    public List<AppointmentOutputDto> getAppointmentsByMatchId(Long matchId) throws RecordNotFoundException {
         Match match = matchRepository.findById(matchId)
                 .orElseThrow(() -> new RecordNotFoundException("Match niet gevonden"));
-
         List<Appointment> appointments = match.getAppointments();
         List<AppointmentOutputDto> appointmentOutputDtos = new ArrayList<>();
         LocalDate currentDate = LocalDate.now();
@@ -47,7 +79,7 @@ public class AppointmentService {
         return appointmentOutputDtos;
     }
 
-    public List<AppointmentOutputDto> getAppointmentsByAccountId(Long accountId) {
+    public List<AppointmentOutputDto> getAppointmentsByAccountId(Long accountId) throws RecordNotFoundException {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new RecordNotFoundException("Account niet gevonden"));
 
@@ -76,71 +108,34 @@ public class AppointmentService {
     }
 
 
-    public AppointmentOutputDto getAppointment(Long id) {
-        Optional<Appointment> optionalAppointment = appointmentRepository.findById(id);
+    public AppointmentOutputDto getAppointment(Long accountId) throws RecordNotFoundException {
+        Optional<Appointment> optionalAppointment = appointmentRepository.findById(accountId);
         if (optionalAppointment.isEmpty()) {
             throw new RecordNotFoundException("Afspraak niet gevonden");}
         Appointment appointment = optionalAppointment.get();
         return transferAppointmentToOutputDto(appointment);
         }
 
-        //todo na authentication de check verwerken over wie de appointment maakt. zie request eronder
-    public AppointmentOutputDto createAppointment(AppointmentInputDto appointmentInputDto) throws RecordNotFoundException, AccountNotAssociatedException, IllegalArgumentException {
-        // Retrieve the Match based on the matchId in the inputDto
-        Match match = matchRepository.findById(appointmentInputDto.getMatchId())
-                .orElseThrow(() -> new RecordNotFoundException("Match niet gevonden"));
-        if (!match.isGiverAccepted() || !match.isReceiverAccepted()) {
-            throw new AccountNotAssociatedException("Match moet eerst worden geaccepteerd voordat een afspraak kan worden ingepland");}
-
-        Appointment appointment = transferInputDtoToAppointment(appointmentInputDto);
-
-            // Set the Match and Account references
-            appointment.setMatch(match);
-
-            //todo if principle is helpgiver
-            appointment.setCreatedForName(match.getHelpReceiver().getName());
-            appointment.setCreatedByName(match.getHelpGiver().getName());
-            //if principle is helpreceiver
-//        appointment.setCreatedForName(match.getHelpGiver().getName());
-//        appointment.setCreatedByName(match.getHelpReceiver().getName());
-
-
-        // Save the Appointment and update the Match's appointments list
-        //save the Match and update the Accounts Matches list
-        appointment = appointmentRepository.save(appointment);
-        match.getAppointments().add(appointment);
-        matchRepository.save(match);
-
-        return transferAppointmentToOutputDto(appointment);
-    }
-//    private Account determineLoggedInAccount() {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        if (authentication != null && authentication.getPrincipal() instanceof Account) {
-//            return (Account) authentication.getPrincipal();
-//        }
-//        throw new RuntimeException("No logged-in account found");
-//    }
-
-    public void removeAppointment(@RequestBody Long id) {
-        Optional<Appointment> optionalAppointment = appointmentRepository.findById(id);
-        if (optionalAppointment.isEmpty()) {
-            throw new RecordNotFoundException("Afspraak niet gevonden");}
-        appointmentRepository.deleteById(id);
-    }
-
-    public AppointmentOutputDto updateAppointment(Long id, AppointmentInputDto newAppointment) {
-        Optional<Appointment> optionalAppointment = appointmentRepository.findById(id);
+    public AppointmentOutputDto updateAppointment(Long appointmentId, AppointmentInputDto appointmentInputDto) throws RecordNotFoundException {
+        Optional<Appointment> optionalAppointment = appointmentRepository.findById(appointmentId);
         if (optionalAppointment.isEmpty()) {
             throw new RecordNotFoundException("Afspraak niet gevonden");
         } else {
             Appointment appointment1 = optionalAppointment.get();
-            appointment1.setDate(newAppointment.getDate());
-            appointment1.setStartTime(newAppointment.getStartTime());
-            appointment1.setEndTime(newAppointment.getEndTime());
-            appointment1.setDescription(newAppointment.getDescription());
+            appointment1.setDate(appointmentInputDto.getDate());
+            appointment1.setStartTime(appointmentInputDto.getStartTime());
+            appointment1.setEndTime(appointmentInputDto.getEndTime());
+            appointment1.setDescription(appointmentInputDto.getDescription());
             Appointment returnAppointment = appointmentRepository.save(appointment1);
             return transferAppointmentToOutputDto(returnAppointment);
         }
+    }
+
+    public void removeAppointment(@RequestBody Long appointmentId) throws RecordNotFoundException {
+        Optional<Appointment> optionalAppointment = appointmentRepository.findById(appointmentId);
+        if (optionalAppointment.isEmpty()) {
+            throw new RecordNotFoundException("Afspraak niet gevonden");}
+        appointmentRepository.deleteById(appointmentId);
     }
 
     public AppointmentOutputDto transferAppointmentToOutputDto(Appointment appointment) {
@@ -152,11 +147,11 @@ public class AppointmentService {
         appointmentOutputDto.description = appointment.getDescription();
         appointmentOutputDto.createdForName = appointment.getCreatedForName();
         appointmentOutputDto.createdByName = appointment.getCreatedByName();
-        //nog match vanwege de activiteiten
+        //todo nog match vanwege de activiteiten
         return appointmentOutputDto;
     }
 
-    public Appointment transferInputDtoToAppointment(AppointmentInputDto appointmentInputDto) {
+    public Appointment transferInputDtoToAppointment(AppointmentInputDto appointmentInputDto) throws IllegalArgumentException {
         Appointment appointment = new Appointment();
         appointment.setDate(appointmentInputDto.getDate());
         appointment.setStartTime(appointmentInputDto.getStartTime());
