@@ -1,7 +1,7 @@
 package com.example.maatjes.services;
 
-import com.example.maatjes.dtos.MessageOutputDto;
-import com.example.maatjes.dtos.MessageInputDto;
+import com.example.maatjes.dtos.outputDtos.MessageOutputDto;
+import com.example.maatjes.dtos.inputDtos.MessageInputDto;
 import com.example.maatjes.exceptions.AccountNotAssociatedException;
 import com.example.maatjes.exceptions.RecordNotFoundException;
 import com.example.maatjes.models.Account;

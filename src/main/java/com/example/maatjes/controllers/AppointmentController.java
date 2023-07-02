@@ -1,7 +1,7 @@
 package com.example.maatjes.controllers;
 
-import com.example.maatjes.dtos.AppointmentOutputDto;
-import com.example.maatjes.dtos.AppointmentInputDto;
+import com.example.maatjes.dtos.outputDtos.AppointmentOutputDto;
+import com.example.maatjes.dtos.inputDtos.AppointmentInputDto;
 import com.example.maatjes.services.AppointmentService;
 import com.example.maatjes.util.FieldErrorHandling;
 import jakarta.validation.Valid;

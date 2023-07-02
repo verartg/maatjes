@@ -1,4 +1,4 @@
-package com.example.maatjes.dtos;
+package com.example.maatjes.dtos.inputDtos;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

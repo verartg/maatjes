@@ -1,7 +1,7 @@
 package com.example.maatjes.controllers;
 
-import com.example.maatjes.dtos.MatchOutputDto;
-import com.example.maatjes.dtos.MatchInputDto;
+import com.example.maatjes.dtos.outputDtos.MatchOutputDto;
+import com.example.maatjes.dtos.inputDtos.MatchInputDto;
 import com.example.maatjes.services.MatchService;
 import com.example.maatjes.util.FieldErrorHandling;
 import jakarta.validation.Valid;

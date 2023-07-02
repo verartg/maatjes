@@ -1,7 +1,7 @@
 package com.example.maatjes.services;
 
-import com.example.maatjes.dtos.AppointmentOutputDto;
-import com.example.maatjes.dtos.AppointmentInputDto;
+import com.example.maatjes.dtos.outputDtos.AppointmentOutputDto;
+import com.example.maatjes.dtos.inputDtos.AppointmentInputDto;
 import com.example.maatjes.exceptions.AccountNotAssociatedException;
 import com.example.maatjes.exceptions.IllegalArgumentException;
 import com.example.maatjes.exceptions.RecordNotFoundException;

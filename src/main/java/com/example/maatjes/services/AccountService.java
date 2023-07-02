@@ -1,7 +1,7 @@
 package com.example.maatjes.services;
 
-import com.example.maatjes.dtos.AccountOutputDto;
-import com.example.maatjes.dtos.AccountInputDto;
+import com.example.maatjes.dtos.outputDtos.AccountOutputDto;
+import com.example.maatjes.dtos.inputDtos.AccountInputDto;
 import com.example.maatjes.exceptions.FileSizeExceededException;
 import com.example.maatjes.exceptions.RecordNotFoundException;
 import com.example.maatjes.models.Account;

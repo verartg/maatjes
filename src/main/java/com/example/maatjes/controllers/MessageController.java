@@ -1,7 +1,7 @@
 package com.example.maatjes.controllers;
 
-import com.example.maatjes.dtos.MessageOutputDto;
-import com.example.maatjes.dtos.MessageInputDto;
+import com.example.maatjes.dtos.outputDtos.MessageOutputDto;
+import com.example.maatjes.dtos.inputDtos.MessageInputDto;
 import com.example.maatjes.services.MessageService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

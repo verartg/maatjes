@@ -1,7 +1,7 @@
 package com.example.maatjes.services;
 
-import com.example.maatjes.dtos.MatchOutputDto;
-import com.example.maatjes.dtos.MatchInputDto;
+import com.example.maatjes.dtos.outputDtos.MatchOutputDto;
+import com.example.maatjes.dtos.inputDtos.MatchInputDto;
 import com.example.maatjes.enums.Activities;
 import com.example.maatjes.exceptions.AccountNotAssociatedException;
 import com.example.maatjes.exceptions.RecordNotFoundException;

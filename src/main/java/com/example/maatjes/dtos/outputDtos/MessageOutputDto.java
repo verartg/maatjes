@@ -1,4 +1,4 @@
-package com.example.maatjes.dtos;
+package com.example.maatjes.dtos.outputDtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

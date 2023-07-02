@@ -1,4 +1,4 @@
-package com.example.maatjes.dtos;
+package com.example.maatjes.dtos.inputDtos;
 
 import com.example.maatjes.enums.Activities;
 import com.example.maatjes.enums.Availability;

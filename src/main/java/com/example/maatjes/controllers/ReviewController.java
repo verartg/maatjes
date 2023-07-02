@@ -1,7 +1,7 @@
 package com.example.maatjes.controllers;
 
-import com.example.maatjes.dtos.ReviewOutputDto;
-import com.example.maatjes.dtos.ReviewInputDto;
+import com.example.maatjes.dtos.outputDtos.ReviewOutputDto;
+import com.example.maatjes.dtos.inputDtos.ReviewInputDto;
 import com.example.maatjes.services.ReviewService;
 import com.example.maatjes.util.FieldErrorHandling;
 import jakarta.validation.Valid;

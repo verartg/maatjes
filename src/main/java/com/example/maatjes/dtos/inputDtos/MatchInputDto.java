@@ -1,4 +1,4 @@
-package com.example.maatjes.dtos;
+package com.example.maatjes.dtos.inputDtos;
 
 import com.example.maatjes.enums.Availability;
 import com.example.maatjes.enums.ContactPerson;
