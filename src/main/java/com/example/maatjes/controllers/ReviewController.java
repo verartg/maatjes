@@ -21,11 +21,6 @@ public class ReviewController {
         this.reviewService = reviewService;
     }
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<ReviewDto> getReview(@PathVariable("id") Long id) {
-//        return new ResponseEntity<>(reviewService.getReviewById(id), HttpStatus.OK);
-//    }
-
     @PostMapping("/{matchId}/{accountId}")
     public ResponseEntity<Object> createReview (@PathVariable("matchId") Long matchId, @PathVariable ("accountId") Long accountId, @Valid @RequestBody ReviewInputDto reviewInputDto, BindingResult bindingResult) {
         if (bindingResult.hasFieldErrors()){
@@ -36,16 +31,16 @@ public class ReviewController {
 
     @GetMapping
     public ResponseEntity<List<ReviewOutputDto>> getAllReviews() {
-        return new ResponseEntity<>(reviewService.getReviews(), HttpStatus.OK);
+        return new ResponseEntity<>(reviewService.getAllReviews(), HttpStatus.OK);
     }
 
-    @GetMapping("/reviews/by/{accountId}")
+    @GetMapping("/by/{accountId}")
     public ResponseEntity<List<ReviewOutputDto>> getReviewsWrittenByAccount(@PathVariable("accountId") Long accountId) {
         List<ReviewOutputDto> reviewOutputDtos = reviewService.getReviewsWrittenByAccount(accountId);
         return new ResponseEntity<>(reviewOutputDtos, HttpStatus.OK);
     }
 
-    @GetMapping("/reviews/for/{accountId}")
+    @GetMapping("/for/{accountId}")
     public ResponseEntity<List<ReviewOutputDto>> getReviewsWrittenForAccount(@PathVariable("accountId") Long accountId) {
         List<ReviewOutputDto> reviewOutputDtos = reviewService.getReviewsWrittenForAccount(accountId);
         return new ResponseEntity<>(reviewOutputDtos, HttpStatus.OK);
@@ -69,9 +64,9 @@ public class ReviewController {
         return new ResponseEntity<>(reviewService.updateReview(reviewId, review), HttpStatus.ACCEPTED);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Object> removeReview(@PathVariable Long id) {
-        reviewService.removeReview(id);
+    @DeleteMapping("/{reviewId}")
+    public ResponseEntity<Object> removeReview(@PathVariable Long reviewId) {
+        reviewService.removeReview(reviewId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

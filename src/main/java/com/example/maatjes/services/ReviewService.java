@@ -31,41 +31,31 @@ public class ReviewService {
         this.accountRepository = accountRepository;
     }
 
-    public ReviewOutputDto createReview (Long matchId, Long accountId, ReviewInputDto reviewInputDto) throws RecordNotFoundException, AccountNotAssociatedException {
-        //ik ga op zoek naar de match
+    public ReviewOutputDto createReview (Long matchId, Long accountId, ReviewInputDto reviewInputDto) throws RecordNotFoundException, AccountNotAssociatedException, BadRequestException {
         Match match = matchRepository.findById(matchId).orElseThrow(() -> new RecordNotFoundException("Match niet gevonden"));
-        //ik ga op zoek naar het account van de schrijver van de review
         //todo omschrijven naar schrijverReview
         //todo als ik de principle heb, dan hoef ik alleen maar de matchid mee te geven om bij de writer en receiver te komen van de review.
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new RecordNotFoundException("Account niet gevonden"));
-        //als de schrijver van de review niet overeenkomt met de gever of receiver in de match, mag het niet.
         if (!match.getHelpGiver().equals(account) && !match.getHelpReceiver().equals(account)) {
             throw new AccountNotAssociatedException("Je kunt alleen een beoordeling schrijven over je eigen matches");
         }
         if (!match.isGiverAccepted() || !match.isReceiverAccepted()) {
             throw new AccountNotAssociatedException("Match moet eerst worden geaccepteerd voordat je een review kunt schrijven");}
 
-        //voor alle bestaande reviews van de match
         for (Review r: match.getMatchReviews()) {
-            //als de ID van de schrijver van één van die review overeenkomt met de accountId
             if (Objects.equals(r.getWrittenBy().getId(), accountId)){
                 throw new BadRequestException("Je kunt maar één review schrijven over je match");
             }
         }
-        //alle nieuwe info van de review wordt geset
                 Review review = transferInputDtoToReview(reviewInputDto);
-        //match wordt geset
                 review.setMatch(match);
-                //schrijver wordt geset
                 review.setWrittenBy(account);
-                //writtenfor wordt geset
                 review.setWrittenFor(match.getHelpReceiver().equals(account) ? match.getHelpGiver() : match.getHelpReceiver());
-
                 reviewRepository.save(review);
                 return transferReviewToOutputDto(review);
             }
 
-    public List<ReviewOutputDto> getReviews() {
+    public List<ReviewOutputDto> getAllReviews() {
         List<Review> reviews = reviewRepository.findAll();
         List<ReviewOutputDto> reviewOutputDtos = new ArrayList<>();
         for (Review review : reviews) {
@@ -115,7 +105,7 @@ public class ReviewService {
         return reviewOutputDtosToVerify;
     }
 
-    public ReviewOutputDto verifyReview(Long reviewId) throws RecordNotFoundException {
+    public ReviewOutputDto verifyReview(Long reviewId) throws RecordNotFoundException, BadRequestException {
         Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new RecordNotFoundException("Review niet gevonden"));
         //todo if review niet goed is, dan setten we een feedback met een string. dan blijft review.setVerified(false). in het andere geval:
 
@@ -137,10 +127,10 @@ public class ReviewService {
         return  transferReviewToOutputDto(returnReview);
     }
 
-    public void removeReview(@RequestBody Long id) {
-        Optional<Review> optionalReview = reviewRepository.findById(id);
+    public void removeReview(@RequestBody Long reviewId) throws RecordNotFoundException {
+        Optional<Review> optionalReview = reviewRepository.findById(reviewId);
         if (optionalReview.isPresent()) {
-           reviewRepository.deleteById(id);
+           reviewRepository.deleteById(reviewId);
         } else {
             throw new RecordNotFoundException("Review niet gevonden");
         }
