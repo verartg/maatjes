@@ -1,6 +1,6 @@
 package com.example.maatjes.services;
 
-import com.example.maatjes.dtos.ReviewDto;
+import com.example.maatjes.dtos.ReviewOutputDto;
 import com.example.maatjes.dtos.ReviewInputDto;
 import com.example.maatjes.exceptions.AccountNotAssociatedException;
 import com.example.maatjes.exceptions.BadRequestException;
@@ -31,7 +31,7 @@ public class ReviewService {
         this.accountRepository = accountRepository;
     }
 
-    public ReviewDto createReview (Long matchId, Long accountId, ReviewInputDto reviewInputDto) throws RecordNotFoundException, AccountNotAssociatedException {
+    public ReviewOutputDto createReview (Long matchId, Long accountId, ReviewInputDto reviewInputDto) throws RecordNotFoundException, AccountNotAssociatedException {
         //ik ga op zoek naar de match
         Match match = matchRepository.findById(matchId).orElseThrow(() -> new RecordNotFoundException("Match niet gevonden"));
         //ik ga op zoek naar het account van de schrijver van de review
@@ -62,77 +62,79 @@ public class ReviewService {
                 review.setWrittenFor(match.getHelpReceiver().equals(account) ? match.getHelpGiver() : match.getHelpReceiver());
 
                 reviewRepository.save(review);
-                return transferReviewToDto(review);
+                return transferReviewToOutputDto(review);
             }
 
-    public List<ReviewDto> getReviews() {
+    public List<ReviewOutputDto> getReviews() {
         List<Review> reviews = reviewRepository.findAll();
-        List<ReviewDto> reviewDtos = new ArrayList<>();
+        List<ReviewOutputDto> reviewOutputDtos = new ArrayList<>();
         for (Review review : reviews) {
-            ReviewDto reviewDto = transferReviewToDto(review);
-            reviewDtos.add(reviewDto);
+            ReviewOutputDto reviewOutputDto = transferReviewToOutputDto(review);
+            reviewOutputDtos.add(reviewOutputDto);
         }
-        return reviewDtos;
+        return reviewOutputDtos;
     }
 
-    public List<ReviewDto> getReviewsWrittenByAccount(Long accountId) throws RecordNotFoundException {
+    public List<ReviewOutputDto> getReviewsWrittenByAccount(Long accountId) throws RecordNotFoundException {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new RecordNotFoundException("Account niet gevonden"));
         List<Review> reviews = reviewRepository.findByWrittenBy(account);
-        List<ReviewDto> reviewDtos = new ArrayList<>();
+        List<ReviewOutputDto> reviewOutputDtos = new ArrayList<>();
 
         for (Review review : reviews) {
             if (review.isVerified()) {
-                ReviewDto reviewDto = transferReviewToDto(review);
-                reviewDtos.add(reviewDto);
+                ReviewOutputDto reviewOutputDto = transferReviewToOutputDto(review);
+                reviewOutputDtos.add(reviewOutputDto);
             }
         }
-        return reviewDtos;
+        return reviewOutputDtos;
     }
 
-    public List<ReviewDto> getReviewsWrittenForAccount(Long accountId) throws RecordNotFoundException {
+    public List<ReviewOutputDto> getReviewsWrittenForAccount(Long accountId) throws RecordNotFoundException {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new RecordNotFoundException("Account niet gevonden"));
         List<Review> reviews = reviewRepository.findByWrittenFor(account);
-        List<ReviewDto> reviewDtos = new ArrayList<>();
+        List<ReviewOutputDto> reviewOutputDtos = new ArrayList<>();
 
         for (Review review : reviews) {
             if (review.isVerified()) {
-                ReviewDto reviewDto = transferReviewToDto(review);
-                reviewDtos.add(reviewDto);
+                ReviewOutputDto reviewOutputDto = transferReviewToOutputDto(review);
+                reviewOutputDtos.add(reviewOutputDto);
             }
         }
-        return reviewDtos;
+        return reviewOutputDtos;
     }
 
-    public List<ReviewDto> getReviewsToVerify() {
+    public List<ReviewOutputDto> getReviewsToVerify() {
         List<Review> reviews = reviewRepository.findAll();
-        List<ReviewDto> reviewDtosToVerify = new ArrayList<>();
+        List<ReviewOutputDto> reviewOutputDtosToVerify = new ArrayList<>();
         for (Review review : reviews) {
             if (!review.isVerified()) {
-                ReviewDto reviewDto = transferReviewToDto(review);
-                reviewDtosToVerify.add(reviewDto);
+                ReviewOutputDto reviewOutputDto = transferReviewToOutputDto(review);
+                reviewOutputDtosToVerify.add(reviewOutputDto);
             }
         }
-        return reviewDtosToVerify;
+        return reviewOutputDtosToVerify;
     }
 
-    public ReviewDto verifyReview(Long reviewId) throws RecordNotFoundException {
+    public ReviewOutputDto verifyReview(Long reviewId) throws RecordNotFoundException {
         Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new RecordNotFoundException("Review niet gevonden"));
+        //todo if review niet goed is, dan setten we een feedback met een string. dan blijft review.setVerified(false). in het andere geval:
+
         if (review.isVerified()) {
             throw new BadRequestException("Review is al geverifieerd");
         } else {
             review.setVerified(true);
         }
         reviewRepository.save(review);
-        return transferReviewToDto(review);
+        return transferReviewToOutputDto(review);
     }
 
-    public ReviewDto updateReview(Long reviewId, ReviewInputDto reviewInputDto) throws RecordNotFoundException {
+    public ReviewOutputDto updateReview(Long reviewId, ReviewInputDto reviewInputDto) throws RecordNotFoundException {
         Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new RecordNotFoundException("De review met ID " + reviewId + " bestaat niet."));
         review.setRating(reviewInputDto.getRating());
         review.setDescription(reviewInputDto.getDescription());
         review.setVerified(false);
         Review returnReview = reviewRepository.save(review);
-        return  transferReviewToDto(returnReview);
+        return  transferReviewToOutputDto(returnReview);
     }
 
     public void removeReview(@RequestBody Long id) {
@@ -144,23 +146,23 @@ public class ReviewService {
         }
     }
 
-    public ReviewDto transferReviewToDto(Review review) {
-        ReviewDto reviewDto = new ReviewDto();
-        reviewDto.id = review.getId();
-        reviewDto.rating = review.getRating();
-        reviewDto.description = review.getDescription();
-        reviewDto.verified = review.isVerified();
-        reviewDto.activities = review.getMatch().getActivities();
-        reviewDto.writtenBy = review.getWrittenBy().getName();
+    public ReviewOutputDto transferReviewToOutputDto(Review review) {
+        ReviewOutputDto reviewOutputDto = new ReviewOutputDto();
+        reviewOutputDto.id = review.getId();
+        reviewOutputDto.rating = review.getRating();
+        reviewOutputDto.description = review.getDescription();
+        reviewOutputDto.verified = review.isVerified();
+        reviewOutputDto.activities = review.getMatch().getActivities();
+        reviewOutputDto.writtenBy = review.getWrittenBy().getName();
         String writtenBy = review.getWrittenBy().getName();
         String helpGiver = review.getMatch().getHelpGiver().getName();
         String helpReceiver = review.getMatch().getHelpReceiver().getName();
-        reviewDto.setWrittenFor(writtenBy.equals(helpGiver) ? helpReceiver : helpGiver);
-        return reviewDto;
+        reviewOutputDto.setWrittenFor(writtenBy.equals(helpGiver) ? helpReceiver : helpGiver);
+        return reviewOutputDto;
     }
 
         public Review transferInputDtoToReview(ReviewInputDto reviewInputDto) {
-        var review = new Review();
+        Review review = new Review();
         review.setRating(reviewInputDto.getRating());
         review.setDescription(reviewInputDto.getDescription());
         review.setVerified(reviewInputDto.isVerified());

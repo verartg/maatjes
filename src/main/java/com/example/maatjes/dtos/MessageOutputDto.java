@@ -12,7 +12,7 @@ import java.time.LocalTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MessageDto {
+public class MessageOutputDto {
     public Long id;
     public String content;
     public LocalTime createdAt;

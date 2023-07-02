@@ -1,6 +1,6 @@
 package com.example.maatjes.services;
 
-import com.example.maatjes.dtos.MessageDto;
+import com.example.maatjes.dtos.MessageOutputDto;
 import com.example.maatjes.dtos.MessageInputDto;
 import com.example.maatjes.exceptions.AccountNotAssociatedException;
 import com.example.maatjes.exceptions.RecordNotFoundException;
@@ -31,7 +31,7 @@ public class MessageService {
         this.accountRepository = accountRepository;
     }
 
-    public MessageDto writeMessage(Long matchId, Long accountId, MessageInputDto messageInputDto) throws RecordNotFoundException, AccountNotAssociatedException {
+    public MessageOutputDto writeMessage(Long matchId, Long accountId, MessageInputDto messageInputDto) throws RecordNotFoundException, AccountNotAssociatedException {
 //todo als ik de principle heb, dan hoef ik alleen maar de matchid mee te geven om bij de writer en receiver te komen van de review.
         //ik ga op zoek naar de match
         Match match = matchRepository.findById(matchId).orElseThrow(() -> new RecordNotFoundException("Match niet gevonden"));
@@ -50,21 +50,21 @@ public class MessageService {
         message = messageRepository.save(message);
         match.getMessages().add(message);
         matchRepository.save(match);
-        return transferMessageToDto(message);
+        return transferMessageOutputToDto(message);
     }
 
-    public List<MessageDto> getAllMessagesWithMatchId(Long matchId) {
+    public List<MessageOutputDto> getAllMessagesWithMatchId(Long matchId) {
         Match match = matchRepository.findById(matchId)
                 .orElseThrow(() -> new RecordNotFoundException("Match niet gevonden"));
         List<Message> messages = match.getMessages();
-        List<MessageDto> messageDtos = new ArrayList<>();
+        List<MessageOutputDto> messageOutputDtos = new ArrayList<>();
 
         for (Message message : messages) {
-                messageDtos.add(transferMessageToDto(message));
+                messageOutputDtos.add(transferMessageOutputToDto(message));
         }
 
-        messageDtos.sort(Comparator.comparing(MessageDto::getCreatedAt));
-        return messageDtos;
+        messageOutputDtos.sort(Comparator.comparing(MessageOutputDto::getCreatedAt));
+        return messageOutputDtos;
     }
 
     public void deleteOldMessages() {
@@ -73,19 +73,18 @@ public class MessageService {
         messageRepository.deleteAll(messagesToDelete);
     }
 
-    public MessageDto transferMessageToDto(Message message) {
-        MessageDto messageDto = new MessageDto();
-        messageDto.id = message.getId();
-        messageDto.content = message.getContent();
-        messageDto.createdAt = message.getCreatedAt();
-        messageDto.writtenByName = message.getWrittenByName();
-        messageDto.createdAtDate = message.getCreatedAtDate();
-
-        return messageDto;
+    public MessageOutputDto transferMessageOutputToDto(Message message) {
+        MessageOutputDto messageOutputDto = new MessageOutputDto();
+        messageOutputDto.id = message.getId();
+        messageOutputDto.content = message.getContent();
+        messageOutputDto.createdAt = message.getCreatedAt();
+        messageOutputDto.writtenByName = message.getWrittenByName();
+        messageOutputDto.createdAtDate = message.getCreatedAtDate();
+        return messageOutputDto;
     }
 
     public Message transferInputDtoToMessage(MessageInputDto messageInputDto) {
-        var message = new Message();
+        Message message = new Message();
         message.setContent(messageInputDto.getContent());
         return message;
     }

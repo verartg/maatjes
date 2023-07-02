@@ -1,6 +1,6 @@
 package com.example.maatjes.controllers;
 
-import com.example.maatjes.dtos.ReviewDto;
+import com.example.maatjes.dtos.ReviewOutputDto;
 import com.example.maatjes.dtos.ReviewInputDto;
 import com.example.maatjes.services.ReviewService;
 import com.example.maatjes.util.FieldErrorHandling;
@@ -35,24 +35,24 @@ public class ReviewController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReviewDto>> getAllReviews() {
+    public ResponseEntity<List<ReviewOutputDto>> getAllReviews() {
         return new ResponseEntity<>(reviewService.getReviews(), HttpStatus.OK);
     }
 
     @GetMapping("/reviews/by/{accountId}")
-    public ResponseEntity<List<ReviewDto>> getReviewsWrittenByAccount(@PathVariable("accountId") Long accountId) {
-        List<ReviewDto> reviewDtos = reviewService.getReviewsWrittenByAccount(accountId);
-        return new ResponseEntity<>(reviewDtos, HttpStatus.OK);
+    public ResponseEntity<List<ReviewOutputDto>> getReviewsWrittenByAccount(@PathVariable("accountId") Long accountId) {
+        List<ReviewOutputDto> reviewOutputDtos = reviewService.getReviewsWrittenByAccount(accountId);
+        return new ResponseEntity<>(reviewOutputDtos, HttpStatus.OK);
     }
 
     @GetMapping("/reviews/for/{accountId}")
-    public ResponseEntity<List<ReviewDto>> getReviewsWrittenForAccount(@PathVariable("accountId") Long accountId) {
-        List<ReviewDto> reviewDtos = reviewService.getReviewsWrittenForAccount(accountId);
-        return new ResponseEntity<>(reviewDtos, HttpStatus.OK);
+    public ResponseEntity<List<ReviewOutputDto>> getReviewsWrittenForAccount(@PathVariable("accountId") Long accountId) {
+        List<ReviewOutputDto> reviewOutputDtos = reviewService.getReviewsWrittenForAccount(accountId);
+        return new ResponseEntity<>(reviewOutputDtos, HttpStatus.OK);
     }
 
     @GetMapping("/toverify")
-    public ResponseEntity<List<ReviewDto>> getReviewsToVerify() {
+    public ResponseEntity<List<ReviewOutputDto>> getReviewsToVerify() {
         return new ResponseEntity<>(reviewService.getReviewsToVerify(), HttpStatus.OK);
     }
 

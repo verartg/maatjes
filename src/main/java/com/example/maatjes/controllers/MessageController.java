@@ -1,6 +1,6 @@
 package com.example.maatjes.controllers;
 
-import com.example.maatjes.dtos.MessageDto;
+import com.example.maatjes.dtos.MessageOutputDto;
 import com.example.maatjes.dtos.MessageInputDto;
 import com.example.maatjes.services.MessageService;
 import org.springframework.http.HttpStatus;
@@ -19,13 +19,13 @@ public class MessageController {
 
     @PostMapping("/{matchId}/{accountId}")
     public ResponseEntity<Object> writeMessage(@PathVariable("matchId") Long matchId, @PathVariable ("accountId") Long accountId, @RequestBody MessageInputDto messageInputDto) {
-        MessageDto messageDto = messageService.writeMessage(matchId, accountId, messageInputDto);
-        return new ResponseEntity<>(messageDto, HttpStatus.ACCEPTED);
+        MessageOutputDto messageOutputDto = messageService.writeMessage(matchId, accountId, messageInputDto);
+        return new ResponseEntity<>(messageOutputDto, HttpStatus.ACCEPTED);
     }
 
     @GetMapping("/match/{matchId}")
-    public ResponseEntity<List<MessageDto>> getAllMessagesWithMatchId(@PathVariable Long matchId) {
-        List<MessageDto> messages = messageService.getAllMessagesWithMatchId(matchId);
+    public ResponseEntity<List<MessageOutputDto>> getAllMessagesWithMatchId(@PathVariable Long matchId) {
+        List<MessageOutputDto> messages = messageService.getAllMessagesWithMatchId(matchId);
         return new ResponseEntity<>(messages, HttpStatus.OK);
     }
 

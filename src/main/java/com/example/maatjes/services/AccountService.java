@@ -1,6 +1,6 @@
 package com.example.maatjes.services;
 
-import com.example.maatjes.dtos.AccountDto;
+import com.example.maatjes.dtos.AccountOutputDto;
 import com.example.maatjes.dtos.AccountInputDto;
 import com.example.maatjes.exceptions.FileSizeExceededException;
 import com.example.maatjes.exceptions.RecordNotFoundException;
@@ -26,7 +26,7 @@ public class AccountService {
         this.accountRepository = accountRepository;
     }
 
-    public List<AccountDto> getAccountsByFilters(String city, Boolean givesHelp) {
+    public List<AccountOutputDto> getAccountsByFilters(String city, Boolean givesHelp) {
         List<Account> accounts;
 
         if (city != null && givesHelp != null) {
@@ -43,29 +43,29 @@ public class AccountService {
             accounts = accountRepository.findAll();
         }
 
-        List<AccountDto> accountDtos = new ArrayList<>();
+        List<AccountOutputDto> accountOutputDtos = new ArrayList<>();
         for (Account account : accounts) {
-            accountDtos.add(transferAccountToDto(account));
+            accountOutputDtos.add(transferAccountToOutputDto(account));
         }
-        return accountDtos;
+        return accountOutputDtos;
     }
 
 
-    public AccountDto getAccount(Long id) {
+    public AccountOutputDto getAccount(Long id) {
         Optional<Account> optionalAccount = accountRepository.findById(id);
         if (optionalAccount.isEmpty()) {
             throw new RecordNotFoundException("Account niet gevonden");}
         Account account = optionalAccount.get();
-        return transferAccountToDto(account);
+        return transferAccountToOutputDto(account);
     }
 
-    public AccountDto createAccount(AccountInputDto accountDto) {
+    public AccountOutputDto createAccount(AccountInputDto accountDto) {
         Account account = transferInputDtoToAccount(accountDto);
         accountRepository.save(account);
-        return transferAccountToDto(account);
+        return transferAccountToOutputDto(account);
     }
 
-    public AccountDto updateAccount(Long id, AccountInputDto newAccount) {
+    public AccountOutputDto updateAccount(Long id, AccountInputDto newAccount) {
         Optional<Account> accountOptional = accountRepository.findById(id);
         if (accountOptional.isPresent()) {
             Account account1 = accountOptional.get();
@@ -92,14 +92,14 @@ public class AccountService {
             account1.setAvailability(newAccount.getAvailability());
             account1.setFrequency(newAccount.getFrequency());
             Account returnAccount = accountRepository.save(account1);
-            return transferAccountToDto(returnAccount);
+            return transferAccountToOutputDto(returnAccount);
         } else {
             throw new RecordNotFoundException("Account niet gevonden");
         }
     }
 
     @Transactional
-    public AccountDto uploadDocument(Long id, MultipartFile file) throws FileSizeExceededException, IOException {
+    public AccountOutputDto uploadDocument(Long id, MultipartFile file) throws FileSizeExceededException, IOException {
         Optional<Account> accountOptional = accountRepository.findById(id);
         if (accountOptional.isPresent()) {
             Account account1 = accountOptional.get();
@@ -115,7 +115,7 @@ public class AccountService {
             account1.setDocument(documentData);
             Account returnaccount = accountRepository.save(account1);
 
-            return transferAccountToDto(returnaccount);
+            return transferAccountToOutputDto(returnaccount);
         } else {
             throw new RecordNotFoundException("Account niet gevonden");
         }
@@ -141,37 +141,35 @@ public class AccountService {
         }
     }
 
-    public AccountDto transferAccountToDto(Account account) {
-        AccountDto accountDto = new AccountDto();
-
-        accountDto.id = account.getId();
-        accountDto.name = account.getName();
-        accountDto.age = account.getAge();
-        accountDto.sex = account.getSex();
-        accountDto.phoneNumber = account.getPhoneNumber();
-        accountDto.emailAddress = account.getEmailAddress();
-        accountDto.street = account.getStreet();
-        accountDto.houseNumber = account.getHouseNumber();
-        accountDto.postalCode = account.getPostalCode();
-        accountDto.city = account.getCity();
-        accountDto.bio = account.getBio();
-        accountDto.document = account.getDocument();
-        accountDto.givesHelp = account.isGivesHelp();
-        accountDto.needsHelp = account.isNeedsHelp();
-        accountDto.activitiesToGive = account.getActivitiesToGive();
-        accountDto.activitiesToReceive = account.getActivitiesToReceive();
-        accountDto.availability = account.getAvailability();
-        accountDto.frequency = account.getFrequency();
-        accountDto.helpGivers = account.getHelpGivers();
-        accountDto.helpReceivers = account.getHelpReceivers();
-        accountDto.givenReviews = account.getGivenReviews();
-        accountDto.receivedReviews = account.getReceivedReviews();
-        return accountDto;
+    public AccountOutputDto transferAccountToOutputDto(Account account) {
+        AccountOutputDto accountOutputDto = new AccountOutputDto();
+        accountOutputDto.id = account.getId();
+        accountOutputDto.name = account.getName();
+        accountOutputDto.age = account.getAge();
+        accountOutputDto.sex = account.getSex();
+        accountOutputDto.phoneNumber = account.getPhoneNumber();
+        accountOutputDto.emailAddress = account.getEmailAddress();
+        accountOutputDto.street = account.getStreet();
+        accountOutputDto.houseNumber = account.getHouseNumber();
+        accountOutputDto.postalCode = account.getPostalCode();
+        accountOutputDto.city = account.getCity();
+        accountOutputDto.bio = account.getBio();
+        accountOutputDto.document = account.getDocument();
+        accountOutputDto.givesHelp = account.isGivesHelp();
+        accountOutputDto.needsHelp = account.isNeedsHelp();
+        accountOutputDto.activitiesToGive = account.getActivitiesToGive();
+        accountOutputDto.activitiesToReceive = account.getActivitiesToReceive();
+        accountOutputDto.availability = account.getAvailability();
+        accountOutputDto.frequency = account.getFrequency();
+        accountOutputDto.helpGivers = account.getHelpGivers();
+        accountOutputDto.helpReceivers = account.getHelpReceivers();
+        accountOutputDto.givenReviews = account.getGivenReviews();
+        accountOutputDto.receivedReviews = account.getReceivedReviews();
+        return accountOutputDto;
         }
 
     public Account transferInputDtoToAccount(AccountInputDto accountInputDto) {
-        var account = new Account();
-
+        Account account = new Account();
         account.setName(accountInputDto.getName());
         LocalDate currentDate = LocalDate.now();
         Period age = Period.between(accountInputDto.getBirthdate(), currentDate);

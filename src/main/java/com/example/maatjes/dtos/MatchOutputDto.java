@@ -19,7 +19,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MatchDto {
+public class MatchOutputDto {
     public Long id;
     public boolean giverAccepted = false;
     public boolean receiverAccepted = false;

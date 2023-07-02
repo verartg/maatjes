@@ -1,6 +1,6 @@
 package com.example.maatjes.controllers;
 
-import com.example.maatjes.dtos.MatchDto;
+import com.example.maatjes.dtos.MatchOutputDto;
 import com.example.maatjes.dtos.MatchInputDto;
 import com.example.maatjes.services.MatchService;
 import com.example.maatjes.util.FieldErrorHandling;
@@ -21,22 +21,22 @@ public class MatchController {
     }
 
     @GetMapping
-    public ResponseEntity<List<MatchDto>> getMatches(){
+    public ResponseEntity<List<MatchOutputDto>> getMatches(){
         return new ResponseEntity<>(matchService.getMatches(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MatchDto> getMatch(@PathVariable("id") Long id) {
+    public ResponseEntity<MatchOutputDto> getMatch(@PathVariable("id") Long id) {
         return new ResponseEntity<>(matchService.getMatch(id), HttpStatus.OK);
     }
 
     @GetMapping("/{accountId}/accepted")
-    public ResponseEntity<List<MatchDto>> getAcceptedMatchesByAccountId(@PathVariable("accountId") Long accountId) {
+    public ResponseEntity<List<MatchOutputDto>> getAcceptedMatchesByAccountId(@PathVariable("accountId") Long accountId) {
         return new ResponseEntity<>(matchService.getAcceptedMatchesByAccountId(accountId), HttpStatus.OK);
     }
 
     @GetMapping("/{accountId}/proposed")
-    public ResponseEntity<List<MatchDto>> getProposedMatchesByAccountId(@PathVariable("accountId") Long accountId) {
+    public ResponseEntity<List<MatchOutputDto>> getProposedMatchesByAccountId(@PathVariable("accountId") Long accountId) {
         return new ResponseEntity<>(matchService.getProposedMatchesByAccountId(accountId), HttpStatus.OK);
     }
 

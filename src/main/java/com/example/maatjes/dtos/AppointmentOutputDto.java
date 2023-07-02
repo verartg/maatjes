@@ -12,7 +12,7 @@ import java.time.LocalTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AppointmentDto {
+public class AppointmentOutputDto {
     public Long id;
     public LocalDate date;
     public LocalTime startTime;

@@ -17,7 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class AccountDto {
+public class AccountOutputDto {
     public Long id;
     public String name;
     public int age;

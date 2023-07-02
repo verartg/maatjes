@@ -1,6 +1,6 @@
 package com.example.maatjes.services;
 
-import com.example.maatjes.dtos.AppointmentDto;
+import com.example.maatjes.dtos.AppointmentOutputDto;
 import com.example.maatjes.dtos.AppointmentInputDto;
 import com.example.maatjes.exceptions.AccountNotAssociatedException;
 import com.example.maatjes.exceptions.IllegalArgumentException;
@@ -31,34 +31,34 @@ public class AppointmentService {
         this.accountRepository = accountRepository;
     }
 
-    public List<AppointmentDto> getAppointmentsByMatchId(Long matchId) {
+    public List<AppointmentOutputDto> getAppointmentsByMatchId(Long matchId) {
         Match match = matchRepository.findById(matchId)
                 .orElseThrow(() -> new RecordNotFoundException("Match niet gevonden"));
 
         List<Appointment> appointments = match.getAppointments();
-        List<AppointmentDto> appointmentDtos = new ArrayList<>();
+        List<AppointmentOutputDto> appointmentOutputDtos = new ArrayList<>();
         LocalDate currentDate = LocalDate.now();
 
         for (Appointment appointment : appointments) {
             if (appointment.getDate().isAfter(currentDate)) {
-                appointmentDtos.add(transferAppointmentToOutputDto(appointment));
+                appointmentOutputDtos.add(transferAppointmentToOutputDto(appointment));
             }
         }
-        return appointmentDtos;
+        return appointmentOutputDtos;
     }
 
-    public List<AppointmentDto> getAppointmentsByAccountId(Long accountId) {
+    public List<AppointmentOutputDto> getAppointmentsByAccountId(Long accountId) {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new RecordNotFoundException("Account niet gevonden"));
 
-        List<AppointmentDto> appointmentDtos = new ArrayList<>();
+        List<AppointmentOutputDto> appointmentOutputDtos = new ArrayList<>();
         LocalDate currentDate = LocalDate.now();
         List<Match> matchesHelpReceiving = account.getHelpReceivers();
         for (Match match : matchesHelpReceiving) {
             List<Appointment> appointments = match.getAppointments();
             for (Appointment appointment : appointments) {
                 if (appointment.getDate().isAfter(currentDate)) {
-                    appointmentDtos.add(transferAppointmentToOutputDto(appointment));
+                    appointmentOutputDtos.add(transferAppointmentToOutputDto(appointment));
                 }
             }
         }
@@ -68,15 +68,15 @@ public class AppointmentService {
             List<Appointment> appointments = match.getAppointments();
             for (Appointment appointment : appointments) {
                 if (appointment.getDate().isAfter(currentDate)) {
-                    appointmentDtos.add(transferAppointmentToOutputDto(appointment));
+                    appointmentOutputDtos.add(transferAppointmentToOutputDto(appointment));
                 }
             }
         }
-        return appointmentDtos;
+        return appointmentOutputDtos;
     }
 
 
-    public AppointmentDto getAppointment(Long id) {
+    public AppointmentOutputDto getAppointment(Long id) {
         Optional<Appointment> optionalAppointment = appointmentRepository.findById(id);
         if (optionalAppointment.isEmpty()) {
             throw new RecordNotFoundException("Afspraak niet gevonden");}
@@ -85,7 +85,7 @@ public class AppointmentService {
         }
 
         //todo na authentication de check verwerken over wie de appointment maakt. zie request eronder
-    public AppointmentDto createAppointment(AppointmentInputDto appointmentInputDto) throws RecordNotFoundException, AccountNotAssociatedException, IllegalArgumentException {
+    public AppointmentOutputDto createAppointment(AppointmentInputDto appointmentInputDto) throws RecordNotFoundException, AccountNotAssociatedException, IllegalArgumentException {
         // Retrieve the Match based on the matchId in the inputDto
         Match match = matchRepository.findById(appointmentInputDto.getMatchId())
                 .orElseThrow(() -> new RecordNotFoundException("Match niet gevonden"));
@@ -128,7 +128,7 @@ public class AppointmentService {
         appointmentRepository.deleteById(id);
     }
 
-    public AppointmentDto updateAppointment(Long id, AppointmentInputDto newAppointment) {
+    public AppointmentOutputDto updateAppointment(Long id, AppointmentInputDto newAppointment) {
         Optional<Appointment> optionalAppointment = appointmentRepository.findById(id);
         if (optionalAppointment.isEmpty()) {
             throw new RecordNotFoundException("Afspraak niet gevonden");
@@ -143,21 +143,21 @@ public class AppointmentService {
         }
     }
 
-    public AppointmentDto transferAppointmentToOutputDto(Appointment appointment) {
-        AppointmentDto appointmentDto = new AppointmentDto();
-        appointmentDto.id = appointment.getId();
-        appointmentDto.date = appointment.getDate();
-        appointmentDto.startTime = appointment.getStartTime();
-        appointmentDto.endTime = appointment.getEndTime();
-        appointmentDto.description = appointment.getDescription();
-        appointmentDto.createdForName = appointment.getCreatedForName();
-        appointmentDto.createdByName = appointment.getCreatedByName();
+    public AppointmentOutputDto transferAppointmentToOutputDto(Appointment appointment) {
+        AppointmentOutputDto appointmentOutputDto = new AppointmentOutputDto();
+        appointmentOutputDto.id = appointment.getId();
+        appointmentOutputDto.date = appointment.getDate();
+        appointmentOutputDto.startTime = appointment.getStartTime();
+        appointmentOutputDto.endTime = appointment.getEndTime();
+        appointmentOutputDto.description = appointment.getDescription();
+        appointmentOutputDto.createdForName = appointment.getCreatedForName();
+        appointmentOutputDto.createdByName = appointment.getCreatedByName();
         //nog match vanwege de activiteiten
-        return appointmentDto;
+        return appointmentOutputDto;
     }
 
     public Appointment transferInputDtoToAppointment(AppointmentInputDto appointmentInputDto) {
-        var appointment = new Appointment();
+        Appointment appointment = new Appointment();
         appointment.setDate(appointmentInputDto.getDate());
         appointment.setStartTime(appointmentInputDto.getStartTime());
         int value = appointmentInputDto.getStartTime().compareTo(appointmentInputDto.getEndTime());

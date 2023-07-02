@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ReviewDto {
+public class ReviewOutputDto {
     public Long id;
     public double rating;
     public String description;

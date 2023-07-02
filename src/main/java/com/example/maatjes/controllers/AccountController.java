@@ -1,6 +1,6 @@
 package com.example.maatjes.controllers;
 
-import com.example.maatjes.dtos.AccountDto;
+import com.example.maatjes.dtos.AccountOutputDto;
 import com.example.maatjes.dtos.AccountInputDto;
 import com.example.maatjes.services.AccountService;
 import com.example.maatjes.util.FieldErrorHandling;
@@ -23,14 +23,14 @@ public class AccountController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AccountDto>> getAccountsByFilters(
+    public ResponseEntity<List<AccountOutputDto>> getAccountsByFilters(
             @RequestParam(required = false) String city,
             @RequestParam(required = false) Boolean givesHelp) {
         return new ResponseEntity<>(accountService.getAccountsByFilters(city, givesHelp), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AccountDto> getAccount(@PathVariable("id") Long id) {
+    public ResponseEntity<AccountOutputDto> getAccount(@PathVariable("id") Long id) {
         return new ResponseEntity<>(accountService.getAccount(id), HttpStatus.OK);
     }
 

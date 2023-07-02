@@ -1,8 +1,7 @@
 package com.example.maatjes.controllers;
 
-import com.example.maatjes.dtos.AppointmentDto;
+import com.example.maatjes.dtos.AppointmentOutputDto;
 import com.example.maatjes.dtos.AppointmentInputDto;
-import com.example.maatjes.services.AccountService;
 import com.example.maatjes.services.AppointmentService;
 import com.example.maatjes.util.FieldErrorHandling;
 import jakarta.validation.Valid;
@@ -23,20 +22,20 @@ public class AppointmentController {
     }
 
     @GetMapping("/match/{matchId}")
-    public ResponseEntity<List<AppointmentDto>> getAppointmentsByMatchId(@PathVariable Long matchId) {
-        List<AppointmentDto> appointments = appointmentService.getAppointmentsByMatchId(matchId);
+    public ResponseEntity<List<AppointmentOutputDto>> getAppointmentsByMatchId(@PathVariable Long matchId) {
+        List<AppointmentOutputDto> appointments = appointmentService.getAppointmentsByMatchId(matchId);
         return new ResponseEntity<>(appointments, HttpStatus.OK);
     }
 
     @GetMapping("account/{accountId}")
-    public ResponseEntity<List<AppointmentDto>> getAppointmentsByAccountId(@PathVariable Long accountId) {
-        List<AppointmentDto> appointments = appointmentService.getAppointmentsByAccountId(accountId);
+    public ResponseEntity<List<AppointmentOutputDto>> getAppointmentsByAccountId(@PathVariable Long accountId) {
+        List<AppointmentOutputDto> appointments = appointmentService.getAppointmentsByAccountId(accountId);
         return new ResponseEntity<>(appointments, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AppointmentDto> getAppointment(@PathVariable("id") Long id) {
-        AppointmentDto appointment = appointmentService.getAppointment(id);
+    public ResponseEntity<AppointmentOutputDto> getAppointment(@PathVariable("id") Long id) {
+        AppointmentOutputDto appointment = appointmentService.getAppointment(id);
         return ResponseEntity.ok().body(appointment);
     }
 

@@ -1,6 +1,6 @@
 package com.example.maatjes.services;
 
-import com.example.maatjes.dtos.MatchDto;
+import com.example.maatjes.dtos.MatchOutputDto;
 import com.example.maatjes.dtos.MatchInputDto;
 import com.example.maatjes.enums.Activities;
 import com.example.maatjes.exceptions.AccountNotAssociatedException;
@@ -24,69 +24,69 @@ public class MatchService {
         this.accountRepository = accountRepository;
     }
 
-    public List<MatchDto> getMatches() {
+    public List<MatchOutputDto> getMatches() {
         List<Match> matches = matchRepository.findAll();
-        List<MatchDto> matchDtos = new ArrayList<>();
+        List<MatchOutputDto> matchOutputDtos = new ArrayList<>();
         for (Match match : matches) {
-            MatchDto matchDto = transferMatchToDto(match);
-            matchDtos.add(matchDto);
+            MatchOutputDto matchOutputDto = transferMatchToOutputDto(match);
+            matchOutputDtos.add(matchOutputDto);
         }
-        return matchDtos;
+        return matchOutputDtos;
     }
 
-    public MatchDto getMatch(Long id) {
+    public MatchOutputDto getMatch(Long id) {
         Optional<Match> optionalMatch = matchRepository.findById(id);
         if (optionalMatch.isEmpty()) {
             throw new RecordNotFoundException("Match niet gevonden");}
         Match match = optionalMatch.get();
-        return transferMatchToDto(match);
+        return transferMatchToOutputDto(match);
     }
 
     //todo matches filteren op contactperson voor de admin om eigen matches op te halen.
 
-    public List<MatchDto> getAcceptedMatchesByAccountId(Long accountId) throws RecordNotFoundException {
+    public List<MatchOutputDto> getAcceptedMatchesByAccountId(Long accountId) throws RecordNotFoundException {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new RecordNotFoundException("De account met ID " + accountId + " bestaat niet."));
         List<Match> helpGivers = account.getHelpGivers();
         List<Match> helpReceivers = account.getHelpReceivers();
-        List<MatchDto> accountMatchDtos = new ArrayList<>();
+        List<MatchOutputDto> accountMatchOutputDtos = new ArrayList<>();
         for (Match m : helpGivers) {
         if (m.isGiverAccepted() && m.isReceiverAccepted()) {
-            MatchDto accountMatchDto = transferMatchToDto(m);
-            accountMatchDtos.add(accountMatchDto);
+            MatchOutputDto accountMatchOutputDto = transferMatchToOutputDto(m);
+            accountMatchOutputDtos.add(accountMatchOutputDto);
         }
     }
         for (Match m : helpReceivers) {
         if (m.isGiverAccepted() && m.isReceiverAccepted()) {
-            MatchDto accountMatchDto = transferMatchToDto(m);
-            accountMatchDtos.add(accountMatchDto);
+            MatchOutputDto accountMatchOutputDto = transferMatchToOutputDto(m);
+            accountMatchOutputDtos.add(accountMatchOutputDto);
         }
     }
-        return accountMatchDtos;
+        return accountMatchOutputDtos;
     }
 
-    public List<MatchDto> getProposedMatchesByAccountId(Long accountId) throws RecordNotFoundException {
+    public List<MatchOutputDto> getProposedMatchesByAccountId(Long accountId) throws RecordNotFoundException {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new RecordNotFoundException("De account met ID " + accountId + " bestaat niet."));
         List<Match> helpGivers = account.getHelpGivers();
         List<Match> helpReceivers = account.getHelpReceivers();
-        List<MatchDto> accountMatchDtos = new ArrayList<>();
+        List<MatchOutputDto> accountMatchOutputDtos = new ArrayList<>();
         for (Match m : helpGivers) {
             if (!m.isGiverAccepted() || !m.isReceiverAccepted()) {
-                MatchDto accountMatchDto = transferMatchToDto(m);
-                accountMatchDtos.add(accountMatchDto);
+                MatchOutputDto accountMatchOutputDto = transferMatchToOutputDto(m);
+                accountMatchOutputDtos.add(accountMatchOutputDto);
             }
         }
         for (Match m : helpReceivers) {
             if (!m.isGiverAccepted() || !m.isReceiverAccepted()) {
-                MatchDto accountMatchDto = transferMatchToDto(m);
-                accountMatchDtos.add(accountMatchDto);
+                MatchOutputDto accountMatchOutputDto = transferMatchToOutputDto(m);
+                accountMatchOutputDtos.add(accountMatchOutputDto);
             }
         }
-        return accountMatchDtos;
+        return accountMatchOutputDtos;
     }
 
 
 //todo eigenlijk moet ik helpreceiver omnoemen naar account1 en helpgiver account2 bijv.
-    public MatchDto proposeMatch(Long helpGiverId, Long helpReceiverId, MatchInputDto matchInputDto) throws RecordNotFoundException {
+    public MatchOutputDto proposeMatch(Long helpGiverId, Long helpReceiverId, MatchInputDto matchInputDto) throws RecordNotFoundException {
         Account giver = accountRepository.findById(helpGiverId).orElseThrow(() -> new RecordNotFoundException("De gebruiker met id " + helpGiverId + " bestaat niet"));
         Account receiver = accountRepository.findById(helpReceiverId).orElseThrow(() -> new RecordNotFoundException("De gebruiker met id " + helpReceiverId + " bestaat niet"));
 
@@ -107,7 +107,7 @@ public class MatchService {
         match.setActivities(sharedActivities);
 
         match = matchRepository.save(match);
-        return transferMatchToDto(match); }
+        return transferMatchToOutputDto(match); }
     }
     private List<Activities> getSharedActivities(List<Activities> giverActivitiesToGive, List<Activities> receiverActivitiesToReceive, List<Activities> giverActivitiesToReceive, List<Activities> receiverActivitiesToGive) {
         List<Activities> sharedActivities = new ArrayList<>();
@@ -133,7 +133,7 @@ public class MatchService {
         }
     }
 
-    public MatchDto acceptMatch(Long matchId, Long accountId) throws RecordNotFoundException {
+    public MatchOutputDto acceptMatch(Long matchId, Long accountId) throws RecordNotFoundException {
         Match match = matchRepository.findById(matchId).orElseThrow(() -> new RecordNotFoundException("Match niet gevonden"));
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new RecordNotFoundException("Account niet gevonden"));
         if (!match.getHelpGiver().equals(account) && !match.getHelpReceiver().equals(account)) {
@@ -146,10 +146,10 @@ public class MatchService {
             }
 
             matchRepository.save(match);
-            return transferMatchToDto(match);
+            return transferMatchToOutputDto(match);
         }
 
-    public MatchDto updateMatch(Long id, MatchInputDto matchInputDto) throws RecordNotFoundException {
+    public MatchOutputDto updateMatch(Long id, MatchInputDto matchInputDto) throws RecordNotFoundException {
         Match match = matchRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("De match met ID " + id + " bestaat niet"));
 
             match.setReceiverAccepted(matchInputDto.isReceiverAccepted());
@@ -161,28 +161,28 @@ public class MatchService {
             match.setFrequency(matchInputDto.getFrequency());
 
             Match returnMatch = matchRepository.save(match);
-            return transferMatchToDto(returnMatch);
+            return transferMatchToOutputDto(returnMatch);
         }
 
-    public MatchDto transferMatchToDto(Match match) {
-        MatchDto matchDto = new MatchDto();
-        matchDto.id = match.getId();
-        matchDto.giverAccepted = match.isGiverAccepted();
-        matchDto.receiverAccepted = match.isReceiverAccepted();
-        matchDto.startMatch = match.getStartMatch();
-        matchDto.contactPerson = match.getContactPerson();
-        matchDto.endMatch = match.getEndMatch();
-        matchDto.frequency = match.getFrequency();
-        matchDto.availability = match.getAvailability();
-        matchDto.helpGiverName = match.getHelpGiver().getName();
-        matchDto.helpReceiverName = match.getHelpReceiver().getName();
-        matchDto.activities = match.getActivities();
-        matchDto.matchReviews = match.getMatchReviews();
-        return matchDto;
+    public MatchOutputDto transferMatchToOutputDto(Match match) {
+        MatchOutputDto matchOutputDto = new MatchOutputDto();
+        matchOutputDto.id = match.getId();
+        matchOutputDto.giverAccepted = match.isGiverAccepted();
+        matchOutputDto.receiverAccepted = match.isReceiverAccepted();
+        matchOutputDto.startMatch = match.getStartMatch();
+        matchOutputDto.contactPerson = match.getContactPerson();
+        matchOutputDto.endMatch = match.getEndMatch();
+        matchOutputDto.frequency = match.getFrequency();
+        matchOutputDto.availability = match.getAvailability();
+        matchOutputDto.helpGiverName = match.getHelpGiver().getName();
+        matchOutputDto.helpReceiverName = match.getHelpReceiver().getName();
+        matchOutputDto.activities = match.getActivities();
+        matchOutputDto.matchReviews = match.getMatchReviews();
+        return matchOutputDto;
     }
 
     public Match transferInputDtoToMatch(MatchInputDto matchInputDto) {
-        var match = new Match();
+        Match match = new Match();
         match.setGiverAccepted(matchInputDto.isGiverAccepted());
         match.setReceiverAccepted(matchInputDto.isReceiverAccepted());
         match.setContactPerson(matchInputDto.getContactPerson());
