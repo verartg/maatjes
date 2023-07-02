@@ -94,7 +94,6 @@ public class AppointmentService {
                 }
             }
         }
-
         List<Match> matchesHelpGiving = account.getHelpGivers();
         for (Match match : matchesHelpGiving) {
             List<Appointment> appointments = match.getAppointments();

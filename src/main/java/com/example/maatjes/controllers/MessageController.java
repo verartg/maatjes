@@ -23,7 +23,7 @@ public class MessageController {
         return new ResponseEntity<>(messageOutputDto, HttpStatus.ACCEPTED);
     }
 
-    @GetMapping("/match/{matchId}")
+    @GetMapping("/{matchId}")
     public ResponseEntity<List<MessageOutputDto>> getAllMessagesWithMatchId(@PathVariable Long matchId) {
         List<MessageOutputDto> messages = messageService.getAllMessagesWithMatchId(matchId);
         return new ResponseEntity<>(messages, HttpStatus.OK);

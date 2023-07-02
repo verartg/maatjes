@@ -33,15 +33,11 @@ public class MessageService {
 
     public MessageOutputDto writeMessage(Long matchId, Long accountId, MessageInputDto messageInputDto) throws RecordNotFoundException, AccountNotAssociatedException {
 //todo als ik de principle heb, dan hoef ik alleen maar de matchid mee te geven om bij de writer en receiver te komen van de review.
-        //ik ga op zoek naar de match
         Match match = matchRepository.findById(matchId).orElseThrow(() -> new RecordNotFoundException("Match niet gevonden"));
-        //ik ga op zoek naar de schrijver van de message.
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new RecordNotFoundException("Account niet gevonden"));
-        //als de schrijver message niet overeenkomt met gever of receiver in de match, mag het niet.
         if (!match.getHelpReceiver().equals(account) && !match.getHelpGiver().equals(account)) {
             throw new AccountNotAssociatedException("Je kunt alleen naar iemand van je matches een bericht sturen.");
         }
-
         Message message = transferInputDtoToMessage(messageInputDto);
         message.setCreatedAt(LocalTime.now().truncatedTo(ChronoUnit.SECONDS));
         message.setCreatedAtDate(LocalDate.now());
@@ -53,16 +49,14 @@ public class MessageService {
         return transferMessageOutputToDto(message);
     }
 
-    public List<MessageOutputDto> getAllMessagesWithMatchId(Long matchId) {
+    public List<MessageOutputDto> getAllMessagesWithMatchId(Long matchId) throws RecordNotFoundException {
         Match match = matchRepository.findById(matchId)
                 .orElseThrow(() -> new RecordNotFoundException("Match niet gevonden"));
         List<Message> messages = match.getMessages();
         List<MessageOutputDto> messageOutputDtos = new ArrayList<>();
-
         for (Message message : messages) {
                 messageOutputDtos.add(transferMessageOutputToDto(message));
         }
-
         messageOutputDtos.sort(Comparator.comparing(MessageOutputDto::getCreatedAt));
         return messageOutputDtos;
     }

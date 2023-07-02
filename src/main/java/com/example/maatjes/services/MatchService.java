@@ -29,35 +29,28 @@ public class MatchService {
     public MatchOutputDto proposeMatch(Long helpGiverId, Long helpReceiverId, MatchInputDto matchInputDto) throws RecordNotFoundException {
         Account giver = accountRepository.findById(helpGiverId).orElseThrow(() -> new RecordNotFoundException("De gebruiker met id " + helpGiverId + " bestaat niet"));
         Account receiver = accountRepository.findById(helpReceiverId).orElseThrow(() -> new RecordNotFoundException("De gebruiker met id " + helpReceiverId + " bestaat niet"));
-
         List<Activities> giverActivitiesToGive = giver.getActivitiesToGive();
         List<Activities> giverActivitiesToReceive = giver.getActivitiesToReceive();
-
         List<Activities> receiverActivitiesToGive = receiver.getActivitiesToGive();
         List<Activities> receiverActivitiesToReceive = receiver.getActivitiesToReceive();
         List<Activities> sharedActivities = getSharedActivities(giverActivitiesToGive, receiverActivitiesToReceive, giverActivitiesToReceive, receiverActivitiesToGive);
-
         if (sharedActivities == null) {
             throw new RecordNotFoundException("Geen gemeenschappelijke activiteiten gevonden voor beide accounts");
         } else {
-
             Match match = transferInputDtoToMatch(matchInputDto);
             match.setHelpGiver(giver);
             match.setHelpReceiver(receiver);
             match.setActivities(sharedActivities);
-
             match = matchRepository.save(match);
             return transferMatchToOutputDto(match); }
     }
 
     private List<Activities> getSharedActivities(List<Activities> giverActivitiesToGive, List<Activities> receiverActivitiesToReceive, List<Activities> giverActivitiesToReceive, List<Activities> receiverActivitiesToGive) {
         List<Activities> sharedActivities = new ArrayList<>();
-
         for (Activities activity : giverActivitiesToGive) {
             if (receiverActivitiesToReceive.contains(activity)) {
                 sharedActivities.add(activity);}
         }
-
         for (Activities activity : giverActivitiesToReceive) {
             if (receiverActivitiesToGive.contains(activity)) {
                 sharedActivities.add(activity);}
@@ -84,7 +77,6 @@ public class MatchService {
     }
 
     //todo matches filteren op contactperson voor de admin om eigen matches op te halen.
-
     public List<MatchOutputDto> getAcceptedMatchesByAccountId(Long accountId) throws RecordNotFoundException {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new RecordNotFoundException("De account met ID " + accountId + " bestaat niet."));
         List<Match> helpGivers = account.getHelpGivers();
