@@ -61,10 +61,24 @@ public class AccountService {
         return transferAccountToOutputDto(account);
     }
 
+//    public AccountOutputDto updateAccount(Long accountId, AccountInputDto accountInputDto) throws RecordNotFoundException {
+//        Optional<Account> accountOptional = accountRepository.findById(accountId);
+//        if (accountOptional.isPresent()) {
+//            Account account = accountOptional.get();
+//
+//            transferInputDtoToAccount(accountInputDto);
+//            Account returnAccount = accountRepository.save(account);
+//            return transferAccountToOutputDto(returnAccount);
+//        } else {
+//            throw new RecordNotFoundException("Account not found");
+//        }
+//    }
+
     public AccountOutputDto updateAccount(Long accountId, AccountInputDto accountInputDto) throws RecordNotFoundException {
         Optional<Account> accountOptional = accountRepository.findById(accountId);
         if (accountOptional.isPresent()) {
             Account account1 = accountOptional.get();
+
 
             account1.setName(accountInputDto.getName());
             LocalDate currentDate = LocalDate.now();

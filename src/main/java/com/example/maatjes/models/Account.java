@@ -24,6 +24,7 @@ public class Account {
     @GeneratedValue
     private Long id;
     private String name;
+    private String password;
     private int age;
     private char sex;
     private String phoneNumber;
