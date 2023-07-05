@@ -18,7 +18,6 @@ import java.util.List;
 @NoArgsConstructor
 
 public class AccountOutputDto {
-    public Long id;
     public String name;
     public int age;
     public char sex;

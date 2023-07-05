@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Getter
@@ -18,13 +19,12 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "Account")
+@Table(name = "Accounts")
 public class Account {
     @Id
     @GeneratedValue
-    private Long id;
+    private Long accountId;
     private String name;
-    private String password;
     private int age;
     private char sex;
     private String phoneNumber;
@@ -57,6 +57,9 @@ public class Account {
     @Enumerated(EnumType.STRING)
     private List<Activities> activitiesToReceive = new ArrayList<>();
 
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
+    private User user;
+
     @OneToMany(mappedBy = "helpGiver", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Match> helpReceivers;
@@ -72,4 +75,5 @@ public class Account {
     @OneToMany (mappedBy = "writtenFor", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Review> receivedReviews;
+
 }

@@ -6,6 +6,7 @@ import com.example.maatjes.exceptions.FileSizeExceededException;
 import com.example.maatjes.exceptions.RecordNotFoundException;
 import com.example.maatjes.models.Account;
 import com.example.maatjes.repositories.AccountRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,6 +29,7 @@ public class AccountService {
 
     public AccountOutputDto createAccount(AccountInputDto accountInputDto) {
         Account account = transferInputDtoToAccount(accountInputDto);
+
         accountRepository.save(account);
         return transferAccountToOutputDto(account);
     }
@@ -78,7 +80,6 @@ public class AccountService {
         Optional<Account> accountOptional = accountRepository.findById(accountId);
         if (accountOptional.isPresent()) {
             Account account1 = accountOptional.get();
-
 
             account1.setName(accountInputDto.getName());
             LocalDate currentDate = LocalDate.now();
@@ -152,7 +153,6 @@ public class AccountService {
 
     public AccountOutputDto transferAccountToOutputDto(Account account) {
         AccountOutputDto accountOutputDto = new AccountOutputDto();
-        accountOutputDto.id = account.getId();
         accountOutputDto.name = account.getName();
         accountOutputDto.age = account.getAge();
         accountOutputDto.sex = account.getSex();
@@ -174,6 +174,8 @@ public class AccountService {
         accountOutputDto.helpReceivers = account.getHelpReceivers();
         accountOutputDto.givenReviews = account.getGivenReviews();
         accountOutputDto.receivedReviews = account.getReceivedReviews();
+        //todo onderste wel of niet?
+        //accountOutputDto.roles = account.getRoles();
         return accountOutputDto;
         }
 

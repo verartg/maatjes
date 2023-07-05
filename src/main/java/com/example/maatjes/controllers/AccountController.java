@@ -7,10 +7,6 @@ import com.example.maatjes.util.FieldErrorHandling;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,16 +22,6 @@ public class AccountController {
         this.accountService = accountService;
     }
 
-    @GetMapping("/hello")
-    public String sayHello() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        if (auth.getPrincipal() instanceof UserDetails) {
-            UserDetails ud = (UserDetails) auth.getPrincipal();
-            return "Hello " + ud.getUsername();
-        }
-        return "Hello stranger";
-    }
     @PostMapping("/createaccount")
     public ResponseEntity<Object> createAccount(@Valid @RequestBody AccountInputDto accountInputDto, BindingResult bindingResult) {
         if (bindingResult.hasFieldErrors()){
