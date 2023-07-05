@@ -49,5 +49,4 @@ public class AccountInputDto {
     public List<Activities> activitiesToReceive;
     public Availability availability;
     public Frequency frequency;
-    public String[] roles;
 }

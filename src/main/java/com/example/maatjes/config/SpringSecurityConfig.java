@@ -67,13 +67,7 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.GET,"/users").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST,"/users/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.POST, "/cimodules").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/cimodules/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.POST, "/remotecontrollers").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/remotecontrollers/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.GET, "/televisions").hasRole("USER")
-                .requestMatchers(HttpMethod.POST, "/wallbrackets").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/wallbrackets/**").hasRole("ADMIN")
+
                 .requestMatchers("/authenticated").authenticated()
                 .requestMatchers("/authenticate").permitAll()/*allen dit punt mag toegankelijk zijn voor niet ingelogde gebruikers*/
                 .anyRequest().denyAll()

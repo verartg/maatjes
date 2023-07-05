@@ -43,7 +43,7 @@ public class ReviewService {
             throw new AccountNotAssociatedException("Match moet eerst worden geaccepteerd voordat je een review kunt schrijven");}
 
         for (Review r: match.getMatchReviews()) {
-            if (Objects.equals(r.getWrittenBy().getId(), accountId)){
+            if (Objects.equals(r.getWrittenBy().getAccountId(), accountId)){
                 throw new BadRequestException("Je kunt maar één review schrijven over je match");
             }
         }
