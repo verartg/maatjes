@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -17,6 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SpringSecurityConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
@@ -54,12 +56,20 @@ public class SpringSecurityConfig {
                 .httpBasic().disable()
                 .cors().and()
                 .authorizeHttpRequests()
+                //Authentication
+                .requestMatchers(HttpMethod.GET, "/authenticated").hasRole("USER")
+                .requestMatchers(HttpMethod.POST, "/authenticate").permitAll() //iedereen kan proberen in te loggen.
+
                 //User
-                .requestMatchers(HttpMethod.GET, "/users").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.GET, "/users/{username}").hasRole("")
+                .requestMatchers(HttpMethod.GET, "/users").hasRole("ADMIN") //alleen admin kan alle users ophalen
+                .requestMatchers(HttpMethod.POST, "/users").permitAll()//iedereen kan zich registreren
+                .requestMatchers(HttpMethod.GET, "/users/{username}/authorities").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/users/{username}/authorites").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/users/{username}/authorites/{authority}").hasRole("ADMIN")
+
                 //account
                 .requestMatchers(HttpMethod.POST, "/createaccount").hasRole("USER")
-
+//                .requestMatchers(HttpMethod., "/").hasRole("")
 
                 .requestMatchers(HttpMethod.POST, "/users").permitAll()
                 .requestMatchers(HttpMethod.POST, "/accounts/createaccount").permitAll()

@@ -4,6 +4,7 @@ import com.example.maatjes.dtos.inputDtos.UserDto;
 import com.example.maatjes.exceptions.BadRequestException;
 import com.example.maatjes.services.UserService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -15,7 +16,7 @@ import java.util.Map;
 @RestController
 @RequestMapping(value = "/users")
 public class UserController {
-
+//todo benamingen aanpassen
     private final UserService userService;
 
     public UserController(UserService userService) {
@@ -28,38 +29,32 @@ public class UserController {
         return ResponseEntity.ok().body(userDtos);
     }
 
-    @GetMapping(value = "/{username}")
+    @GetMapping("/{username}")
+    @PreAuthorize("hasRole('ADMIN') or #username == authentication.principal.username")
     public ResponseEntity<UserDto> getUser(@PathVariable("username") String username) {
-
         UserDto optionalUser = userService.getUser(username);
-
-
         return ResponseEntity.ok().body(optionalUser);
-
     }
 
-    @PostMapping(value = "")
-    public ResponseEntity<UserDto> createKlant(@RequestBody UserDto dto) {;
-
-        String newUsername = userService.createUser(dto);
+    @PostMapping
+    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {
+        String newUsername = userService.createUser(userDto);
         userService.addAuthority(newUsername, "ROLE_USER");
-
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{username}")
                 .buildAndExpand(newUsername).toUri();
-
         return ResponseEntity.created(location).build();
     }
 
     @PutMapping(value = "/{username}")
-    public ResponseEntity<UserDto> updateKlant(@PathVariable("username") String username, @RequestBody UserDto dto) {
-
+    @PreAuthorize("#username == authentication.principal.username")
+    public ResponseEntity<UserDto> updateUser(@PathVariable("username") String username, @RequestBody UserDto dto) {
         userService.updateUser(username, dto);
-
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping(value = "/{username}")
-    public ResponseEntity<Object> deleteKlant(@PathVariable("username") String username) {
+    @PreAuthorize("hasRole('ADMIN') or #username == authentication.principal.username")
+    public ResponseEntity<Object> deleteUser(@PathVariable("username") String username) {
         userService.deleteUser(username);
         return ResponseEntity.noContent().build();
     }
