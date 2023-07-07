@@ -30,7 +30,6 @@ public class UserController {
     }
 
     @GetMapping("/{username}")
-    @PreAuthorize("hasRole('ADMIN') or #username == authentication.principal.username")
     public ResponseEntity<UserDto> getUser(@PathVariable("username") String username) {
         UserDto optionalUser = userService.getUser(username);
         return ResponseEntity.ok().body(optionalUser);
@@ -46,14 +45,12 @@ public class UserController {
     }
 
     @PutMapping("/{username}")
-    @PreAuthorize("#username == authentication.principal.username")
     public ResponseEntity<UserDto> updateUser(@PathVariable("username") String username, @RequestBody UserDto dto) {
         userService.updateUser(username, dto);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{username}")
-    @PreAuthorize("hasRole('ADMIN') or #username == authentication.principal.username")
     public ResponseEntity<Object> deleteUser(@PathVariable("username") String username) {
         userService.deleteUser(username);
         return ResponseEntity.noContent().build();
@@ -81,5 +78,4 @@ public class UserController {
         userService.removeAuthority(username, authority);
         return ResponseEntity.noContent().build();
     }
-
 }

@@ -8,6 +8,10 @@ import com.example.maatjes.models.Account;
 import com.example.maatjes.models.User;
 import com.example.maatjes.repositories.AccountRepository;
 import com.example.maatjes.repositories.UserRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -57,14 +61,50 @@ public class AccountService {
         return accountOutputDtos;
     }
 
-    public AccountOutputDto getAccount(Long accountId) throws RecordNotFoundException {
-        Optional<Account> optionalAccount = accountRepository.findById(accountId);
-        if (optionalAccount.isEmpty()) {
+//    public AccountOutputDto getAccount(String username) throws RecordNotFoundException {
+//        Optional<Account> optionalAccount = accountRepository.findById(username);
+//        if (optionalAccount.isEmpty()) {
+//            throw new RecordNotFoundException("Account niet gevonden");
+//        }
+//        Account account = optionalAccount.get();
+//        return transferAccountToOutputDto(account);
+//    }
+    @PreAuthorize("hasRole('ADMIN') or #username == authentication.getName()")
+    public AccountOutputDto getAccount(String username) throws RecordNotFoundException {
+        Optional<User> optionalUser = userRepository.findById(username);
+        if (optionalUser.isEmpty()) {
+            throw new RecordNotFoundException("Gebruiker niet gevonden");
+        }
+        User user = optionalUser.get();
+        Account account = user.getAccount();
+        if (account == null) {
             throw new RecordNotFoundException("Account niet gevonden");
         }
-        Account account = optionalAccount.get();
         return transferAccountToOutputDto(account);
     }
+
+//    public Iterable<CarOutputDto> getAllCarsfromUser() {
+//
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+//            String currentUserName = authentication.getName();
+//            //or else throw
+//            Optional<User> currentuser = userRepository.findById(currentUserName);
+//            if (currentuser.isPresent()) {
+//                User user = currentuser.get();
+//                ArrayList<CarOutputDto> carOutputDtos = new ArrayList<>();
+//                Iterable<Car> allcars = carRepository.findByUser(user);
+//                for (Car a : allcars) {
+//                    CarOutputDto carDto = transferCarToDto(a);
+//                    carOutputDtos.add(carDto);
+//                }
+//                return carOutputDtos;
+//            } else {
+//                throw new RecordNotFoundException("this users seems to have no values");
+//            }
+//        }
+//        throw new RecordNotFoundException("no user is logged in at the moment");
+//    }
 //    public AccountOutputDto getAccount(String username) throws RecordNotFoundException {
 //        Optional<User> optionalUser = userRepository.findByUsername(username);
 //        if (optionalUser.isEmpty()) {

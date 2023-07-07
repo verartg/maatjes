@@ -39,10 +39,9 @@ public class AccountController {
         return new ResponseEntity<>(accountService.getAccountsByFilters(city, givesHelp), HttpStatus.OK);
     }
 
-    @GetMapping("/{accountId}")
-    @PreAuthorize("#username == authentication.principal.username")
-    public ResponseEntity<AccountOutputDto> getAccount(@PathVariable("accountId") Long accountId) {
-        return new ResponseEntity<>(accountService.getAccount(accountId), HttpStatus.OK);
+    @GetMapping("/{username}")
+    public ResponseEntity<AccountOutputDto> getAccount(@PathVariable String username) {
+        return new ResponseEntity<>(accountService.getAccount(username), HttpStatus.OK);
     }
 
 //    @GetMapping("/{accountId}")

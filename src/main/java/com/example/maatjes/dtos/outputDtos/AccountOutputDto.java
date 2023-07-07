@@ -5,6 +5,7 @@ import com.example.maatjes.enums.Availability;
 import com.example.maatjes.enums.Frequency;
 import com.example.maatjes.models.Match;
 import com.example.maatjes.models.Review;
+import com.example.maatjes.models.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,4 +40,5 @@ public class AccountOutputDto {
     public List<Match> helpGivers;
     public List<Review> givenReviews;
     public List<Review> receivedReviews;
+    public User user;
 }

@@ -6,6 +6,7 @@ import com.example.maatjes.models.Authority;
 import com.example.maatjes.models.User;
 import com.example.maatjes.repositories.UserRepository;
 import com.example.maatjes.util.RandomStringGenerator;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ public class UserService {
         return collection;
     }
 
+//   todo deze maakt het kapot @PreAuthorize("#username == authentication.getName()")
     public UserDto getUser(String username) {
         UserDto dto = new UserDto();
         Optional<User> user = userRepository.findById(username);
@@ -54,15 +56,17 @@ public class UserService {
         return newUser.getUsername();
     }
 
-    public void deleteUser(String username) {
-        userRepository.deleteById(username);
-    }
-
+    @PreAuthorize("#username == authentication.getName()")
     public void updateUser(String username, UserDto newUser) {
         if (!userRepository.existsById(username)) throw new RecordNotFoundException("Gebruiker met de gebruikersnaam " + username + " niet gevonden");
         User user = userRepository.findById(username).get();
         user.setPassword(newUser.getPassword());
         userRepository.save(user);
+    }
+
+    @PreAuthorize("#username == authentication.getName()")
+    public void deleteUser(String username) {
+        userRepository.deleteById(username);
     }
 
     public Set<Authority> getAuthorities(String username) {

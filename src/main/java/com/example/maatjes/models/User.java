@@ -36,11 +36,11 @@ public class User {
     @Column
     private String email;
 
-//    @OneToOne
-//    @JoinColumn(name = "account_id")
-//    private Account account;
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne
+    @JoinColumn(name = "account_id")
     private Account account;
+//    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+//    private Account account;
 
     @OneToMany(
             targetEntity = Authority.class,
