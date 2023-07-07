@@ -7,6 +7,8 @@ import com.example.maatjes.util.FieldErrorHandling;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,9 +40,16 @@ public class AccountController {
     }
 
     @GetMapping("/{accountId}")
+    @PreAuthorize("#username == authentication.principal.username")
     public ResponseEntity<AccountOutputDto> getAccount(@PathVariable("accountId") Long accountId) {
         return new ResponseEntity<>(accountService.getAccount(accountId), HttpStatus.OK);
     }
+
+//    @GetMapping("/{accountId}")
+//    @PreAuthorize("#username == authentication.principal.username")
+//    public ResponseEntity<AccountOutputDto> getAccount(@PathVariable("accountId") Long accountId, @AuthenticationPrincipal(expression = "username") String username) {
+//        return new ResponseEntity<>(accountService.getAccount(username), HttpStatus.OK);
+//    }
 
     @PutMapping("/{accountId}")
     public ResponseEntity<Object> updateAccount(@PathVariable Long accountId, @Valid @RequestBody AccountInputDto accountInputDto, BindingResult bindingResult) {

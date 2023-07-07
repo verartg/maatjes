@@ -29,9 +29,9 @@ public class AuthenticationController {
     }
 
     /*
-         Deze methode geeft de principal (basis user gegevens) terug van de ingelogde gebruiker
+         Deze methode geeft de principal (basis user gegevens) terug van de ingelogde gebruiker. niet vergeten JWT token mee te sturen
      */
-    @GetMapping(value = "/authenticated")
+    @GetMapping("/authenticated")
     public ResponseEntity<Object> authenticated(Authentication authentication, Principal principal) {
         return ResponseEntity.ok().body(principal);
     }
@@ -39,7 +39,7 @@ public class AuthenticationController {
     /*
     Deze methode geeft het JWT token terug wanneer de gebruiker de juiste inloggegevens op geeft.
      oftewel: inloggen*/
-    @PostMapping(value = "/authenticate")
+    @PostMapping("/authenticate")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
         String username = authenticationRequest.getUsername();
         String password = authenticationRequest.getPassword();

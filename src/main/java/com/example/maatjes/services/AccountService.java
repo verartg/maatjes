@@ -5,8 +5,9 @@ import com.example.maatjes.dtos.inputDtos.AccountInputDto;
 import com.example.maatjes.exceptions.FileSizeExceededException;
 import com.example.maatjes.exceptions.RecordNotFoundException;
 import com.example.maatjes.models.Account;
+import com.example.maatjes.models.User;
 import com.example.maatjes.repositories.AccountRepository;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import com.example.maatjes.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,9 +23,11 @@ import java.util.Optional;
 @Service
 public class AccountService {
     private final AccountRepository accountRepository;
+    private final UserRepository userRepository;
 
-    public AccountService(AccountRepository accountRepository) {
+    public AccountService(AccountRepository accountRepository, UserRepository userRepository) {
         this.accountRepository = accountRepository;
+        this.userRepository = userRepository;
     }
 
     public AccountOutputDto createAccount(AccountInputDto accountInputDto) {
@@ -62,6 +65,18 @@ public class AccountService {
         Account account = optionalAccount.get();
         return transferAccountToOutputDto(account);
     }
+//    public AccountOutputDto getAccount(String username) throws RecordNotFoundException {
+//        Optional<User> optionalUser = userRepository.findByUsername(username);
+//        if (optionalUser.isEmpty()) {
+//            throw new RecordNotFoundException("User not found");
+//        }
+//        User user = optionalUser.get();
+//        Account account = user.getAccount();
+//        if (account == null) {
+//            throw new RecordNotFoundException("Account not found");
+//        }
+//        return transferAccountToOutputDto(account);
+//    }
 
 //    public AccountOutputDto updateAccount(Long accountId, AccountInputDto accountInputDto) throws RecordNotFoundException {
 //        Optional<Account> accountOptional = accountRepository.findById(accountId);

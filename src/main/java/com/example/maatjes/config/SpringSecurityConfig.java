@@ -59,17 +59,22 @@ public class SpringSecurityConfig {
                 //Authentication
                 .requestMatchers(HttpMethod.GET, "/authenticated").hasRole("USER")
                 .requestMatchers(HttpMethod.POST, "/authenticate").permitAll() //iedereen kan proberen in te loggen.
-
                 //User
                 .requestMatchers(HttpMethod.GET, "/users").hasRole("ADMIN") //alleen admin kan alle users ophalen
                 .requestMatchers(HttpMethod.POST, "/users").permitAll()//iedereen kan zich registreren
                 .requestMatchers(HttpMethod.GET, "/users/{username}/authorities").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST, "/users/{username}/authorites").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/users/{username}/authorites/{authority}").hasRole("ADMIN")
-
                 //account
-                .requestMatchers(HttpMethod.POST, "/createaccount").hasRole("USER")
+                .requestMatchers(HttpMethod.POST, "/accounts/createaccount").hasRole("USER")
+                .requestMatchers(HttpMethod.GET, "/accounts").hasRole("ADMIN")
+                //onderstaande denk ik  admin, alhoewel ik bij een proposematch de info beschikbaar wil maken voor account, maar dat kan ik denk ik bij de match regelen?
+//                .requestMatchers(HttpMethod.GET, "/accounts/{accountId}").hasRole("ADMIN")
+//                .requestMatchers(HttpMethod.PUT, "/accounts/{accountId}").hasRole("")
 //                .requestMatchers(HttpMethod., "/").hasRole("")
+//                .requestMatchers(HttpMethod., "/").hasRole("")
+
+
 
                 .requestMatchers(HttpMethod.POST, "/users").permitAll()
                 .requestMatchers(HttpMethod.POST, "/accounts/createaccount").permitAll()
