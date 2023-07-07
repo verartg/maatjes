@@ -1,4 +1,4 @@
-package com.example.maatjes.dtos.inputDtos;
+package com.example.maatjes.dtos.outputDtos;
 
 import com.example.maatjes.models.Authority;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -13,12 +13,10 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDto {
+public class UserOutputDto {
     public String username;
-    public String password;
-    public Boolean enabled;
-    public String apikey;
     public String email;
+    //todo onderstaande wil ik niet tonen aan iedereen.
     @JsonSerialize
     public Set<Authority> authorities;
 }

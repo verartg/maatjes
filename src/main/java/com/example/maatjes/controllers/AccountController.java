@@ -7,8 +7,6 @@ import com.example.maatjes.util.FieldErrorHandling;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,34 +42,28 @@ public class AccountController {
         return new ResponseEntity<>(accountService.getAccount(username), HttpStatus.OK);
     }
 
-//    @GetMapping("/{accountId}")
-//    @PreAuthorize("#username == authentication.principal.username")
-//    public ResponseEntity<AccountOutputDto> getAccount(@PathVariable("accountId") Long accountId, @AuthenticationPrincipal(expression = "username") String username) {
-//        return new ResponseEntity<>(accountService.getAccount(username), HttpStatus.OK);
-//    }
-
-    @PutMapping("/{accountId}")
-    public ResponseEntity<Object> updateAccount(@PathVariable Long accountId, @Valid @RequestBody AccountInputDto accountInputDto, BindingResult bindingResult) {
+    @PutMapping("/{username}")
+    public ResponseEntity<Object> updateAccount(@PathVariable String username, @Valid @RequestBody AccountInputDto accountInputDto, BindingResult bindingResult) {
         if (bindingResult.hasFieldErrors()){
             return ResponseEntity.badRequest().body(FieldErrorHandling.getErrorToStringHandling(bindingResult));
         }
-        return new ResponseEntity<>(accountService.updateAccount(accountId, accountInputDto), HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(accountService.updateAccount(username, accountInputDto), HttpStatus.ACCEPTED);
     }
 
-    @PutMapping("/{accountId}/upload")
-    public ResponseEntity<Object> uploadIdentificationDocument(@PathVariable Long accountId, @RequestParam("file") MultipartFile file) throws Exception{
-        return new ResponseEntity<>(accountService.uploadIdentificationDocument(accountId, file), HttpStatus.ACCEPTED);
+    @PutMapping("/{username}/upload")
+    public ResponseEntity<Object> uploadIdentificationDocument(@PathVariable String username, @RequestParam("file") MultipartFile file) throws Exception{
+        return new ResponseEntity<>(accountService.uploadIdentificationDocument(username, file), HttpStatus.ACCEPTED);
     }
 
-    @DeleteMapping("/{accountId}/upload")
-    public ResponseEntity<Object> removeIdentificationDocument(@PathVariable Long accountId) {
-        accountService.removeIdentificationDocument(accountId);
+    @DeleteMapping("/{username}/upload")
+    public ResponseEntity<Object> removeIdentificationDocument(@PathVariable String username) {
+        accountService.removeIdentificationDocument(username);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @DeleteMapping("/{accountId}")
-    public ResponseEntity<Object> removeAccount(@PathVariable Long accountId) {
-        accountService.removeAccount(accountId);
+    @DeleteMapping("/{username}")
+    public ResponseEntity<Object> removeAccount(@PathVariable String username) {
+        accountService.removeAccount(username);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

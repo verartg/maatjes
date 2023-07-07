@@ -57,10 +57,6 @@ public class Account {
     @Enumerated(EnumType.STRING)
     private List<Activities> activitiesToReceive = new ArrayList<>();
 
-//    @OneToOne
-//    @JoinColumn(name = "user_id")
-//    private User user;
-//
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     private User user;
 

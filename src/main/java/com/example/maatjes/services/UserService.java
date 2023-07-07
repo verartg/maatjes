@@ -1,16 +1,23 @@
 package com.example.maatjes.services;
 
-import com.example.maatjes.dtos.inputDtos.UserDto;
+import com.example.maatjes.dtos.inputDtos.UserInputDto;
+import com.example.maatjes.dtos.outputDtos.UserOutputDto;
+import com.example.maatjes.exceptions.BadRequestException;
 import com.example.maatjes.exceptions.RecordNotFoundException;
 import com.example.maatjes.models.Authority;
 import com.example.maatjes.models.User;
 import com.example.maatjes.repositories.UserRepository;
 import com.example.maatjes.util.RandomStringGenerator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
@@ -18,29 +25,31 @@ import java.util.Set;
 public class UserService {
     private final UserRepository userRepository;
 
+    @Autowired
+    @Lazy
+    private PasswordEncoder passwordEncoder;
+
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
-    public List<UserDto> getUsers() {
-        List<UserDto> collection = new ArrayList<>();
-        List<User> list = userRepository.findAll();
-        for (User user : list) {
-            collection.add(fromUser(user));
-        }
-        return collection;
-    }
+//    public List<UserInputDto> getUsers() {
+//        List<UserInputDto> collection = new ArrayList<>();
+//        List<User> list = userRepository.findAll();
+//        for (User user : list) {
+//            collection.add(fromUser(user));
+//        }
+//        return collection;
+//    }
 
-//   todo deze maakt het kapot @PreAuthorize("#username == authentication.getName()")
-    public UserDto getUser(String username) {
-        UserDto dto = new UserDto();
-        Optional<User> user = userRepository.findById(username);
-        if (user.isPresent()){
-            dto = fromUser(user.get());
-        }else {
-            throw new RecordNotFoundException("Gebruiker met de gebruikersnaam " + username + " niet gevonden");
-        }
-        return dto;
+    @PreAuthorize("#username == authentication.getName()")
+    public UserOutputDto getUser(String username) throws RecordNotFoundException {
+        User user = userRepository.findById(username).orElseThrow(() -> new RecordNotFoundException("Deze gebruiker bestaat niet."));
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        if (!CheckAuthorization.isAuthorized(user, (Collection<GrantedAuthority>) authentication.getAuthorities(), authentication.getName())) {
+//            throw new BadRequestException("You're not allowed to view this profile.");
+//        }
+        return transferUserToOutputDto(user);
     }
 
     //todo onderste wil ik misschien niet op straat gooien.
@@ -48,19 +57,24 @@ public class UserService {
         return userRepository.existsById(username);
     }
 
-    public String createUser(UserDto userDto) {
+    public UserOutputDto createUser(UserInputDto userInputDto) throws BadRequestException {
+        if (userRepository.existsById(userInputDto.username)) {
+            throw new BadRequestException("Invalid request: another user exists with the username: " + userInputDto.username);
+        }
+        User user = new User();
         String randomString = RandomStringGenerator.generateAlphaNumeric(20);
-        userDto.setApikey(randomString);
-        //todo hier moet nog een password encoder kopen, anders kan admin alle passwords krijgen
-        User newUser = userRepository.save(toUser(userDto));
-        return newUser.getUsername();
+        user = transferUserInputDtoToUser(user, userInputDto, passwordEncoder);
+        user.setApikey(randomString);
+        user.addAuthority(new Authority(user.getUsername(), "ROLE_USER"));
+        userRepository.save(user);
+        return transferUserToOutputDto(user);
     }
 
     @PreAuthorize("#username == authentication.getName()")
-    public void updateUser(String username, UserDto newUser) {
+    public void updateUser(String username, UserInputDto userInputDto) {
         if (!userRepository.existsById(username)) throw new RecordNotFoundException("Gebruiker met de gebruikersnaam " + username + " niet gevonden");
         User user = userRepository.findById(username).get();
-        user.setPassword(newUser.getPassword());
+        user = transferUserInputDtoToUser(user, userInputDto, passwordEncoder);
         userRepository.save(user);
     }
 
@@ -69,11 +83,11 @@ public class UserService {
         userRepository.deleteById(username);
     }
 
-    public Set<Authority> getAuthorities(String username) {
-        if (!userRepository.existsById(username)) throw new RecordNotFoundException("Gebruiker met de gebruikersnaam " + username + " niet gevonden");
-        User user = userRepository.findById(username).get();
-        UserDto userDto = fromUser(user);
-        return userDto.getAuthorities();
+    public Set<Authority> getUserAuthorities(String username) throws RecordNotFoundException {
+        User user = userRepository.findById(username).orElseThrow(() -> new RecordNotFoundException("User with ID " + username + " doesn't exist."));
+        UserOutputDto userOutputDto = transferUserToOutputDto(user);
+        userOutputDto.authorities = user.getAuthorities();
+        return userOutputDto.authorities;
     }
 
     public void addAuthority(String username, String authority) {
@@ -91,26 +105,42 @@ public class UserService {
         userRepository.save(user);
     }
 
-    //todo vars moeten weg.
-    //todo benamingen functies beter beschrijven
-    public static UserDto fromUser(User user){
-        var dto = new UserDto();
-        dto.username = user.getUsername();
-        dto.password = user.getPassword();
-        dto.enabled = user.isEnabled();
-        dto.apikey = user.getApikey();
-        dto.email = user.getEmail();
-        dto.authorities = user.getAuthorities();
-        return dto;
+//    public static UserInputDto fromUser(User user){
+//        var dto = new UserInputDto();
+//        dto.username = user.getUsername();
+//        dto.password = user.getPassword();
+//        dto.enabled = user.isEnabled();
+//        dto.apikey = user.getApikey();
+//        dto.email = user.getEmail();
+//        dto.authorities = user.getAuthorities();
+//        return dto;
+//    }
+//
+//    public User toUser(UserInputDto userInputDto) {
+//        var user = new User();
+//        user.setUsername(userInputDto.getUsername());
+//        user.setPassword(userInputDto.getPassword());
+//        user.setEnabled(userInputDto.getEnabled());
+//        user.setApikey(userInputDto.getApikey());
+//        user.setEmail(userInputDto.getEmail());
+//        return user;
+//    }
+
+    public static UserOutputDto transferUserToOutputDto(User user) {
+        UserOutputDto userOutputDto = new UserOutputDto();
+        userOutputDto.username = user.getUsername();
+        userOutputDto.email = user.getEmail();
+        return userOutputDto;
     }
 
-    public User toUser(UserDto userDto) {
-        var user = new User();
-        user.setUsername(userDto.getUsername());
-        user.setPassword(userDto.getPassword());
-        user.setEnabled(userDto.getEnabled());
-        user.setApikey(userDto.getApikey());
-        user.setEmail(userDto.getEmail());
+    public static User transferUserInputDtoToUser(User user, UserInputDto userInputDto, PasswordEncoder passwordEncoder) {
+
+        if (userInputDto.password != null) {
+            user.setPassword(passwordEncoder.encode(userInputDto.password));
+        }
+        user.setEmail(userInputDto.email);
+        user.setEnabled(true);
+        user.setUsername(userInputDto.getUsername());
         return user;
     }
 

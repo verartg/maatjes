@@ -83,93 +83,54 @@ public class AccountService {
         return transferAccountToOutputDto(account);
     }
 
-//    public Iterable<CarOutputDto> getAllCarsfromUser() {
-//
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        if (!(authentication instanceof AnonymousAuthenticationToken)) {
-//            String currentUserName = authentication.getName();
-//            //or else throw
-//            Optional<User> currentuser = userRepository.findById(currentUserName);
-//            if (currentuser.isPresent()) {
-//                User user = currentuser.get();
-//                ArrayList<CarOutputDto> carOutputDtos = new ArrayList<>();
-//                Iterable<Car> allcars = carRepository.findByUser(user);
-//                for (Car a : allcars) {
-//                    CarOutputDto carDto = transferCarToDto(a);
-//                    carOutputDtos.add(carDto);
-//                }
-//                return carOutputDtos;
-//            } else {
-//                throw new RecordNotFoundException("this users seems to have no values");
-//            }
-//        }
-//        throw new RecordNotFoundException("no user is logged in at the moment");
-//    }
-//    public AccountOutputDto getAccount(String username) throws RecordNotFoundException {
-//        Optional<User> optionalUser = userRepository.findByUsername(username);
-//        if (optionalUser.isEmpty()) {
-//            throw new RecordNotFoundException("User not found");
-//        }
-//        User user = optionalUser.get();
-//        Account account = user.getAccount();
-//        if (account == null) {
-//            throw new RecordNotFoundException("Account not found");
-//        }
-//        return transferAccountToOutputDto(account);
-//    }
-
-//    public AccountOutputDto updateAccount(Long accountId, AccountInputDto accountInputDto) throws RecordNotFoundException {
-//        Optional<Account> accountOptional = accountRepository.findById(accountId);
-//        if (accountOptional.isPresent()) {
-//            Account account = accountOptional.get();
-//
-//            transferInputDtoToAccount(accountInputDto);
-//            Account returnAccount = accountRepository.save(account);
-//            return transferAccountToOutputDto(returnAccount);
-//        } else {
-//            throw new RecordNotFoundException("Account not found");
-//        }
-//    }
-
-    public AccountOutputDto updateAccount(Long accountId, AccountInputDto accountInputDto) throws RecordNotFoundException {
-        Optional<Account> accountOptional = accountRepository.findById(accountId);
-        if (accountOptional.isPresent()) {
-            Account account1 = accountOptional.get();
-
-            account1.setName(accountInputDto.getName());
+    @PreAuthorize("#username == authentication.getName()")
+    public AccountOutputDto updateAccount(String username, AccountInputDto accountInputDto) throws RecordNotFoundException {
+        Optional<User> optionalUser = userRepository.findById(username);
+        if (optionalUser.isEmpty()) {
+            throw new RecordNotFoundException("Gebruiker niet gevonden");
+        }
+        User user = optionalUser.get();
+        Account account = user.getAccount();
+        if (account == null) {
+            throw new RecordNotFoundException("Account niet gevonden");
+        }
+            account.setName(accountInputDto.getName());
             LocalDate currentDate = LocalDate.now();
             Period age = Period.between(accountInputDto.getBirthdate(), currentDate);
             int ageYears = age.getYears();
             //todo check qua leeftijd? 18 jaar of ouder?
-            account1.setAge(ageYears);
-            account1.setSex(accountInputDto.getSex());
-            account1.setPhoneNumber(accountInputDto.getPhoneNumber());
-            account1.setEmailAddress(accountInputDto.getEmailAddress());
-            account1.setStreet(accountInputDto.getStreet());
-            account1.setHouseNumber(accountInputDto.getHouseNumber());
-            account1.setPostalCode(accountInputDto.getPostalCode());
-            account1.setCity(accountInputDto.getCity());
-            account1.setBio(accountInputDto.getBio());
-            account1.setDocument(accountInputDto.getDocument());
-            account1.setGivesHelp(accountInputDto.isGivesHelp());
-            account1.setNeedsHelp(accountInputDto.isNeedsHelp());
-            account1.setActivitiesToGive(accountInputDto.getActivitiesToGive());
-            account1.setActivitiesToReceive(accountInputDto.getActivitiesToReceive());
-            account1.setAvailability(accountInputDto.getAvailability());
-            account1.setFrequency(accountInputDto.getFrequency());
-            Account returnAccount = accountRepository.save(account1);
+            account.setAge(ageYears);
+            account.setSex(accountInputDto.getSex());
+            account.setPhoneNumber(accountInputDto.getPhoneNumber());
+            account.setEmailAddress(accountInputDto.getEmailAddress());
+            account.setStreet(accountInputDto.getStreet());
+            account.setHouseNumber(accountInputDto.getHouseNumber());
+            account.setPostalCode(accountInputDto.getPostalCode());
+            account.setCity(accountInputDto.getCity());
+            account.setBio(accountInputDto.getBio());
+            account.setDocument(accountInputDto.getDocument());
+            account.setGivesHelp(accountInputDto.isGivesHelp());
+            account.setNeedsHelp(accountInputDto.isNeedsHelp());
+            account.setActivitiesToGive(accountInputDto.getActivitiesToGive());
+            account.setActivitiesToReceive(accountInputDto.getActivitiesToReceive());
+            account.setAvailability(accountInputDto.getAvailability());
+            account.setFrequency(accountInputDto.getFrequency());
+            Account returnAccount = accountRepository.save(account);
             return transferAccountToOutputDto(returnAccount);
-        } else {
-            throw new RecordNotFoundException("Account niet gevonden");
         }
-    }
 
     @Transactional
-    public AccountOutputDto uploadIdentificationDocument(Long accountId, MultipartFile file) throws FileSizeExceededException, IOException, RecordNotFoundException {
-        Optional<Account> accountOptional = accountRepository.findById(accountId);
-        if (accountOptional.isPresent()) {
-            Account account1 = accountOptional.get();
-
+    @PreAuthorize("#username == authentication.getName()")
+    public AccountOutputDto uploadIdentificationDocument(String username, MultipartFile file) throws FileSizeExceededException, IOException, RecordNotFoundException {
+        Optional<User> optionalUser = userRepository.findById(username);
+        if (optionalUser.isEmpty()) {
+            throw new RecordNotFoundException("Gebruiker niet gevonden");
+        }
+        User user = optionalUser.get();
+        Account account = user.getAccount();
+        if (account == null) {
+            throw new RecordNotFoundException("Account niet gevonden");
+        }
             long fileSize = file.getBytes().length;
             long maxFileSize = 1000000; // 1MB in bytes
             if (fileSize > maxFileSize) {
@@ -177,32 +138,40 @@ public class AccountService {
             }
             byte[] documentData = file.getBytes();
 
-            account1.setDocument(documentData);
-            Account returnaccount = accountRepository.save(account1);
+            account.setDocument(documentData);
+            Account returnaccount = accountRepository.save(account);
 
             return transferAccountToOutputDto(returnaccount);
-        } else {
-            throw new RecordNotFoundException("Account niet gevonden");
-        }
     }
 
     @Transactional
-    public void removeIdentificationDocument (@RequestBody Long accountId) throws RecordNotFoundException {
-        Optional<Account> optionalAccount = accountRepository.findById(accountId);
-        if (optionalAccount.isPresent()) {
-            Account account = optionalAccount.get();
-            account.setDocument(null);
-        } else {
+    @PreAuthorize("#username == authentication.getName()")
+    public void removeIdentificationDocument (@RequestBody String username) throws RecordNotFoundException {
+        Optional<User> optionalUser = userRepository.findById(username);
+        if (optionalUser.isEmpty()) {
+            throw new RecordNotFoundException("Gebruiker niet gevonden");
+        }
+        User user = optionalUser.get();
+        Account account = user.getAccount();
+        if (account == null) {
             throw new RecordNotFoundException("Account niet gevonden");
         }
+            account.setDocument(null);
     }
 
-    public void removeAccount(@RequestBody Long accountId) throws RecordNotFoundException {
-        Optional<Account> optionalAccount = accountRepository.findById(accountId);
-        if (optionalAccount.isPresent()) {
-            accountRepository.deleteById(accountId);
-        } else {
+    @PreAuthorize("hasRole('ADMIN') or #username == authentication.getName()")
+    public void removeAccount(@RequestBody String username) throws RecordNotFoundException {
+        Optional<User> optionalUser = userRepository.findById(username);
+        if (optionalUser.isEmpty()) {
+            throw new RecordNotFoundException("Gebruiker niet gevonden");
+        }
+        User user = optionalUser.get();
+        Account account = user.getAccount();
+
+        if (account == null) {
             throw new RecordNotFoundException("Account niet gevonden");
+        } else {
+            accountRepository.deleteById(account.getAccountId());
         }
     }
 
@@ -229,8 +198,6 @@ public class AccountService {
         accountOutputDto.helpReceivers = account.getHelpReceivers();
         accountOutputDto.givenReviews = account.getGivenReviews();
         accountOutputDto.receivedReviews = account.getReceivedReviews();
-        //todo onderste wel of niet?
-        //accountOutputDto.roles = account.getRoles();
         return accountOutputDto;
         }
 

@@ -1,10 +1,13 @@
 package com.example.maatjes.controllers;
 
-import com.example.maatjes.dtos.inputDtos.UserDto;
+import com.example.maatjes.dtos.inputDtos.UserInputDto;
+import com.example.maatjes.dtos.outputDtos.UserOutputDto;
 import com.example.maatjes.exceptions.BadRequestException;
 import com.example.maatjes.services.UserService;
+import com.example.maatjes.util.FieldErrorHandling;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -23,29 +26,30 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<UserDto>> getUsers() {
-        List<UserDto> userDtos = userService.getUsers();
-        return ResponseEntity.ok().body(userDtos);
-    }
+//    @GetMapping
+//    public ResponseEntity<List<UserInputDto>> getUsers() {
+//        List<UserInputDto> userInputDtos = userService.getUsers();
+//        return ResponseEntity.ok().body(userInputDtos);
+//    }
 
     @GetMapping("/{username}")
-    public ResponseEntity<UserDto> getUser(@PathVariable("username") String username) {
-        UserDto optionalUser = userService.getUser(username);
+    public ResponseEntity<UserOutputDto> getUser(@PathVariable("username") String username) {
+        UserOutputDto optionalUser = userService.getUser(username);
         return ResponseEntity.ok().body(optionalUser);
     }
 
     @PostMapping
-    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {
-        String newUsername = userService.createUser(userDto);
-        userService.addAuthority(newUsername, "ROLE_USER");
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{username}")
-                .buildAndExpand(newUsername).toUri();
-        return ResponseEntity.created(location).build();
+    public ResponseEntity<Object> createUser(@Valid @RequestBody UserInputDto userInputDto, BindingResult bindingResult) {
+        if (bindingResult.hasFieldErrors()) {
+            return ResponseEntity.badRequest().body(FieldErrorHandling.getErrorToStringHandling(bindingResult));
+        }
+        UserOutputDto userOutputDto = userService.createUser(userInputDto);
+        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentRequest().path("/" + userOutputDto.username).toUriString());
+        return ResponseEntity.created(uri).body(userOutputDto);
     }
 
     @PutMapping("/{username}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable("username") String username, @RequestBody UserDto dto) {
+    public ResponseEntity<UserInputDto> updateUser(@PathVariable("username") String username, @RequestBody UserInputDto dto) {
         userService.updateUser(username, dto);
         return ResponseEntity.noContent().build();
     }
@@ -58,7 +62,7 @@ public class UserController {
 
     @GetMapping("/{username}/authorities")
     public ResponseEntity<Object> getUserAuthorities(@PathVariable("username") String username) {
-        return ResponseEntity.ok().body(userService.getAuthorities(username));
+        return ResponseEntity.ok().body(userService.getUserAuthorities(username));
     }
 
     @PostMapping("/{username}/authorities")

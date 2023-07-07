@@ -58,24 +58,25 @@ public class SpringSecurityConfig {
                 .authorizeHttpRequests()
                 //Authentication
                 .requestMatchers(HttpMethod.GET, "/authenticated").authenticated()
-                .requestMatchers(HttpMethod.POST, "/authenticate").permitAll() //iedereen kan proberen in te loggen.
-                //User
-                .requestMatchers(HttpMethod.GET, "/users").hasRole("ADMIN") //alleen admin kan alle users ophalen
-                .requestMatchers(HttpMethod.GET, "/users/{username}").hasRole("ADMIN") //alleen admin kan een user ophalen.
-                .requestMatchers(HttpMethod.POST, "/users").permitAll()//iedereen kan zich registreren
-                .requestMatchers(HttpMethod.PUT, "/users/{username}").hasAnyRole("ADMIN", "USER")
+                .requestMatchers(HttpMethod.POST, "/authenticate").permitAll() //iedereen kan proberen in te loggen.    DOET HET
+                //User.
+//                .requestMatchers(HttpMethod.GET, "/users").hasRole("ADMIN") //alleen admin kan alle users ophalen
+                .requestMatchers(HttpMethod.GET, "/users/{username}").hasAnyRole("ADMIN", "USER") //            DOET HET
+                .requestMatchers(HttpMethod.POST, "/users").permitAll()//iedereen kan zich registreren                  DOET HET
+                .requestMatchers(HttpMethod.PUT, "/users/{username}").hasAnyRole("ADMIN", "USER")//   ik was hier gebleven. Ik kan m'n gegevens aanpassen, maar dan moet ik ook m'n username opnieuw invoeren.
                 .requestMatchers(HttpMethod.DELETE, "/users/{username}").hasAnyRole("ADMIN", "USER")
                 .requestMatchers(HttpMethod.GET, "/users/{username}/authorities").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST, "/users/{username}/authorities").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/users/{username}/authorities/{authority}").hasRole("ADMIN")
                 //account
-                .requestMatchers(HttpMethod.POST, "/accounts/createaccount").hasRole("USER")
+                .requestMatchers(HttpMethod.POST, "/accounts/createaccount").authenticated()
                 .requestMatchers(HttpMethod.GET, "/accounts").hasRole("ADMIN")
-                //onderstaande denk ik  admin, alhoewel ik bij een proposematch de info beschikbaar wil maken voor account, maar dat kan ik denk ik bij de match regelen?
+                //volgende denk ik  admin, alhoewel ik bij een proposematch de info beschikbaar wil maken voor account, maar dat kan ik denk ik bij de match regelen?
                 .requestMatchers(HttpMethod.GET, "/accounts/{username}").hasAnyRole("USER", "ADMIN")
-//                .requestMatchers(HttpMethod.PUT, "/accounts/{accountId}").hasRole("")
-//                .requestMatchers(HttpMethod., "/").hasRole("")
-//                .requestMatchers(HttpMethod., "/").hasRole("")
+                .requestMatchers(HttpMethod.PUT, "/accounts/{username}").hasAnyRole("USER", "ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/accounts/{username}/upload").hasAnyRole("USER", "ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/accounts/{username}/upload").hasAnyRole("USER", "ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/accounts/{username}").hasAnyRole("USER", "ADMIN")
 
                 .anyRequest().denyAll()
                 .and()
