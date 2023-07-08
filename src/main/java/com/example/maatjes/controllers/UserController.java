@@ -40,14 +40,12 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> createUser(@Valid @RequestBody UserInputDto userInputDto, BindingResult bindingResult) {
+    public ResponseEntity<String> createUser(@Valid @RequestBody UserInputDto userInputDto, BindingResult bindingResult) {
         if (bindingResult.hasFieldErrors()) {
             return ResponseEntity.badRequest().body(FieldErrorHandling.getErrorToStringHandling(bindingResult));
         }
-        UserOutputDto userOutputDto = userService.createUser(userInputDto);
-        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentRequest().path("/" + userOutputDto.username).toUriString());
-        return ResponseEntity.created(uri).body(userOutputDto);
-        //todo of zet ik hier : "je user is succesvol aangemaakt, je kunt gaan inloggen"
+        String message = userService.createUser(userInputDto);
+        return ResponseEntity.ok().body(message);
     }
 
     @PutMapping("/{username}")

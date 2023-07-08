@@ -23,7 +23,6 @@ public class AccountOutputDto {
     public int age;
     public char sex;
     public String phoneNumber;
-    public String emailAddress;
     public String street;
     public String houseNumber;
     public String postalCode;
@@ -40,5 +39,5 @@ public class AccountOutputDto {
     public List<Match> helpGivers;
     public List<Review> givenReviews;
     public List<Review> receivedReviews;
-    public User user;
+    public UserOutputDto user;
 }

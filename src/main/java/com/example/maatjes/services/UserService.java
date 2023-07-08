@@ -63,7 +63,7 @@ public class UserService {
         return userRepository.existsById(username);
     }
 
-    public UserOutputDto createUser(UserInputDto userInputDto) throws BadRequestException {
+    public String createUser(UserInputDto userInputDto) throws BadRequestException {
         if (userRepository.existsById(userInputDto.getUsername())) {
             throw new BadRequestException("Er bestaat al een andere gebruiker met de naam " + userInputDto.getUsername());
         }
@@ -73,7 +73,7 @@ public class UserService {
         user.setApikey(randomString);
         user.addAuthority(new Authority(user.getUsername(), "ROLE_USER"));
         userRepository.save(user);
-        return transferUserToOutputDto(user);
+        return "Je user is succesvol aangemaakt, je kunt nu inloggen";
     }
 
     @PreAuthorize("#username == authentication.getName()")

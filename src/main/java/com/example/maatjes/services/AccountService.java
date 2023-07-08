@@ -1,7 +1,9 @@
 package com.example.maatjes.services;
 
+import com.example.maatjes.controllers.UserController;
 import com.example.maatjes.dtos.outputDtos.AccountOutputDto;
 import com.example.maatjes.dtos.inputDtos.AccountInputDto;
+import com.example.maatjes.exceptions.BadRequestException;
 import com.example.maatjes.exceptions.FileSizeExceededException;
 import com.example.maatjes.exceptions.RecordNotFoundException;
 import com.example.maatjes.models.Account;
@@ -9,7 +11,6 @@ import com.example.maatjes.models.User;
 import com.example.maatjes.repositories.AccountRepository;
 import com.example.maatjes.repositories.UserRepository;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -28,16 +29,31 @@ import java.util.Optional;
 public class AccountService {
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
+    private final UserController userController;
 
-    public AccountService(AccountRepository accountRepository, UserRepository userRepository) {
+    public AccountService(AccountRepository accountRepository, UserRepository userRepository, UserController userController) {
         this.accountRepository = accountRepository;
         this.userRepository = userRepository;
+        this.userController = userController;
     }
 
     public AccountOutputDto createAccount(AccountInputDto accountInputDto) {
-        Account account = transferInputDtoToAccount(accountInputDto);
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User user = userRepository.findById(username)
+                .orElseThrow(() -> new RecordNotFoundException("Deze gebruiker bestaat niet."));
+        if (user.getAccount() != null) {
+            throw new BadRequestException("Je hebt al een account.");
+        }
+
+        Account account = transferInputDtoToAccount(accountInputDto);
+        account.setUser(user);
+        user.setAccount(account);
         accountRepository.save(account);
+
+        user.getAccount().setAccountId(account.getAccountId());
+        userRepository.save(user);
         return transferAccountToOutputDto(account);
     }
 
@@ -180,7 +196,6 @@ public class AccountService {
         accountOutputDto.age = account.getAge();
         accountOutputDto.sex = account.getSex();
         accountOutputDto.phoneNumber = account.getPhoneNumber();
-        accountOutputDto.emailAddress = account.getEmailAddress();
         accountOutputDto.street = account.getStreet();
         accountOutputDto.houseNumber = account.getHouseNumber();
         accountOutputDto.postalCode = account.getPostalCode();
@@ -197,6 +212,7 @@ public class AccountService {
         accountOutputDto.helpReceivers = account.getHelpReceivers();
         accountOutputDto.givenReviews = account.getGivenReviews();
         accountOutputDto.receivedReviews = account.getReceivedReviews();
+        accountOutputDto.setUser(UserService.transferUserToOutputDto(account.getUser()));
         return accountOutputDto;
         }
 

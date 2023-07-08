@@ -28,7 +28,6 @@ public class Account {
     private int age;
     private char sex;
     private String phoneNumber;
-    private String emailAddress;
     private String street;
     private String houseNumber;
     private String postalCode;

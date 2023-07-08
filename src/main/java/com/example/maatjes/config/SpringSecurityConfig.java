@@ -58,6 +58,7 @@ public class SpringSecurityConfig {
                 .cors().and()
                 .authorizeHttpRequests()
                 //Authentication
+                //todo MOET IK NOG 403 forbidden response returnen voor user? Als iemand niet authenticated is komt er een forbidden. hoe zet ik daar een informatieve respons voor?
                 .requestMatchers(HttpMethod.GET, "/authenticated").authenticated()   //                                 DOET HET
                 .requestMatchers(HttpMethod.POST, "/login").permitAll() //iedereen kan proberen in te loggen.           DOET HET
                 //User
@@ -66,14 +67,14 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/users").permitAll()//iedereen kan zich registreren                  DOET HET
                 .requestMatchers(HttpMethod.PUT, "/users/{username}").hasAnyRole("ADMIN", "USER")              //DOET HET
                 .requestMatchers(HttpMethod.DELETE, "/users/{username}").hasAnyRole("ADMIN", "USER")        //  DOET HET
-                .requestMatchers(HttpMethod.GET, "/users/{username}/authorities").hasRole("ADMIN")                  // DOET HET todo MOET IK NOG 403 forbidden response returnen voor user?
-                .requestMatchers(HttpMethod.POST, "/users/{username}/authorities").hasRole("ADMIN")                 // DOET HET todo MOET IK NOG 403 forbidden response returnen voor user?
-                .requestMatchers(HttpMethod.DELETE, "/users/{username}/authorities/{authority}").hasRole("ADMIN")   // DOET HET todo MOET IK NOG 403 forbidden response returnen voor user?
+                .requestMatchers(HttpMethod.GET, "/users/{username}/authorities").hasRole("ADMIN")                  // DOET HET
+                .requestMatchers(HttpMethod.POST, "/users/{username}/authorities").hasRole("ADMIN")                 // DOET HET
+                .requestMatchers(HttpMethod.DELETE, "/users/{username}/authorities/{authority}").hasRole("ADMIN")   // DOET HET
                 //account
-                .requestMatchers(HttpMethod.POST, "/accounts/createaccount").authenticated()
+                .requestMatchers(HttpMethod.POST, "/accounts/createaccount").authenticated()                        //DOET HET
                 .requestMatchers(HttpMethod.GET, "/accounts").hasRole("ADMIN")
-                //volgende denk ik  admin, alhoewel ik bij een proposematch de info beschikbaar wil maken voor account, maar dat kan ik denk ik bij de match regelen?
-                .requestMatchers(HttpMethod.GET, "/accounts/{username}").hasAnyRole("USER", "ADMIN")
+                //todo hieronder mag iedereen, maar dan moet ik wel outputdto aanpassen.
+                .requestMatchers(HttpMethod.GET, "/accounts/{username}").authenticated()
                 .requestMatchers(HttpMethod.PUT, "/accounts/{username}").hasAnyRole("USER", "ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/accounts/{username}/upload").hasAnyRole("USER", "ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/accounts/{username}/upload").hasAnyRole("USER", "ADMIN")
