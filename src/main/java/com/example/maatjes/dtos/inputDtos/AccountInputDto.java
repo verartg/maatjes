@@ -24,8 +24,6 @@ public class AccountInputDto {
     public String name;
     public char sex;
     public String phoneNumber;
-    @Email(message = "Ongeldig emailadres") @NotBlank
-    public String emailAddress;
     public String street;
     public String houseNumber;
     @Pattern(regexp = "\\d{4}[A-Za-z]{2}", message = "Ongeldige postcode")

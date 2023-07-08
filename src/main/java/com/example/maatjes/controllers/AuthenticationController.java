@@ -2,11 +2,11 @@ package com.example.maatjes.controllers;
 
 import com.example.maatjes.dtos.inputDtos.AuthenticationRequest;
 import com.example.maatjes.dtos.outputDtos.AuthenticationResponse;
+import com.example.maatjes.exceptions.BadCredentialsException;
 import com.example.maatjes.services.CustomUserDetailsService;
 import com.example.maatjes.util.JwtUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.Authentication;
@@ -39,8 +39,8 @@ public class AuthenticationController {
     /*
     Deze methode geeft het JWT token terug wanneer de gebruiker de juiste inloggegevens op geeft.
      oftewel: inloggen*/
-    @PostMapping("/authenticate")
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
+    @PostMapping("/login")
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws BadCredentialsException {
         String username = authenticationRequest.getUsername();
         String password = authenticationRequest.getPassword();
         try {
@@ -48,9 +48,8 @@ public class AuthenticationController {
                     new UsernamePasswordAuthenticationToken(username, password)
             );
         }
-        catch (BadCredentialsException ex) {
-            //todo onderstaande naar nederlands.
-            throw new Exception("Incorrect username or password", ex);
+        catch (Exception e ) {
+            throw new BadCredentialsException( "Gebruikersnaam of wachtwoord incorrect");
         }
         final UserDetails userDetails = userDetailsService
                 .loadUserByUsername(username);

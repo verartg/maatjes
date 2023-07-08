@@ -57,14 +57,14 @@ public class SpringSecurityConfig {
                 .cors().and()
                 .authorizeHttpRequests()
                 //Authentication
-                .requestMatchers(HttpMethod.GET, "/authenticated").authenticated()
-                .requestMatchers(HttpMethod.POST, "/authenticate").permitAll() //iedereen kan proberen in te loggen.    DOET HET
-                //User.
+                .requestMatchers(HttpMethod.GET, "/authenticated").authenticated()   //                                 DOET HET
+                .requestMatchers(HttpMethod.POST, "/login").permitAll() //iedereen kan proberen in te loggen.           DOET HET
+                //User
 //                .requestMatchers(HttpMethod.GET, "/users").hasRole("ADMIN") //alleen admin kan alle users ophalen
-                .requestMatchers(HttpMethod.GET, "/users/{username}").hasAnyRole("ADMIN", "USER") //            DOET HET
+                .requestMatchers(HttpMethod.GET, "/users/{username}").hasAnyRole("ADMIN", "USER")             // DOET HET
                 .requestMatchers(HttpMethod.POST, "/users").permitAll()//iedereen kan zich registreren                  DOET HET
-                .requestMatchers(HttpMethod.PUT, "/users/{username}").hasAnyRole("ADMIN", "USER")//   ik was hier gebleven. Ik kan m'n gegevens aanpassen, maar dan moet ik ook m'n username opnieuw invoeren.
-                .requestMatchers(HttpMethod.DELETE, "/users/{username}").hasAnyRole("ADMIN", "USER")
+                .requestMatchers(HttpMethod.PUT, "/users/{username}").hasAnyRole("ADMIN", "USER")              //DOET HET
+                .requestMatchers(HttpMethod.DELETE, "/users/{username}").hasAnyRole("ADMIN", "USER")        //  DOET HET
                 .requestMatchers(HttpMethod.GET, "/users/{username}/authorities").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST, "/users/{username}/authorities").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/users/{username}/authorities/{authority}").hasRole("ADMIN")

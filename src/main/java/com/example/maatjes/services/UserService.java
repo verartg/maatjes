@@ -2,6 +2,7 @@ package com.example.maatjes.services;
 
 import com.example.maatjes.dtos.inputDtos.UserInputDto;
 import com.example.maatjes.dtos.outputDtos.UserOutputDto;
+import com.example.maatjes.exceptions.AccessDeniedException;
 import com.example.maatjes.exceptions.BadRequestException;
 import com.example.maatjes.exceptions.RecordNotFoundException;
 import com.example.maatjes.models.Authority;
@@ -42,14 +43,20 @@ public class UserService {
 //        return collection;
 //    }
 
-    @PreAuthorize("#username == authentication.getName()")
-    public UserOutputDto getUser(String username) throws RecordNotFoundException {
-        User user = userRepository.findById(username).orElseThrow(() -> new RecordNotFoundException("Deze gebruiker bestaat niet."));
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        if (!CheckAuthorization.isAuthorized(user, (Collection<GrantedAuthority>) authentication.getAuthorities(), authentication.getName())) {
-//            throw new BadRequestException("You're not allowed to view this profile.");
-//        }
-        return transferUserToOutputDto(user);
+    public UserOutputDto getUser(String username) throws RecordNotFoundException, AccessDeniedException{
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
+            User user = userRepository.findById(username)
+                    .orElseThrow(() -> new RecordNotFoundException("Deze gebruiker bestaat niet."));
+            return transferUserToOutputDto(user);
+        } else if (username.equals(authentication.getName())) {
+            User user = userRepository.findById(username)
+                    .orElseThrow(() -> new RecordNotFoundException("Deze gebruiker bestaat niet."));
+            return transferUserToOutputDto(user);
+        } else {
+            throw new AccessDeniedException("Je hebt geen toegang tot deze user");
+        }
     }
 
     //todo onderste wil ik misschien niet op straat gooien.
@@ -59,7 +66,7 @@ public class UserService {
 
     public UserOutputDto createUser(UserInputDto userInputDto) throws BadRequestException {
         if (userRepository.existsById(userInputDto.username)) {
-            throw new BadRequestException("Invalid request: another user exists with the username: " + userInputDto.username);
+            throw new BadRequestException("Er bestaat al een andere gebruiker met de naam " + userInputDto.username);
         }
         User user = new User();
         String randomString = RandomStringGenerator.generateAlphaNumeric(20);
@@ -71,16 +78,28 @@ public class UserService {
     }
 
     @PreAuthorize("#username == authentication.getName()")
-    public void updateUser(String username, UserInputDto userInputDto) {
+    public UserOutputDto updateUser(String username, UserInputDto userInputDto) throws RecordNotFoundException, BadRequestException, AccessDeniedException {
+        //onderste recordnotfoundexception vervangen door UsernameNotFoundException?
         if (!userRepository.existsById(username)) throw new RecordNotFoundException("Gebruiker met de gebruikersnaam " + username + " niet gevonden");
         User user = userRepository.findById(username).get();
+        if (!userInputDto.getUsername().equals(username)) {
+            throw new BadRequestException("Je kunt je gebruikersnaam niet aanpassen.");
+        }
         user = transferUserInputDtoToUser(user, userInputDto, passwordEncoder);
         userRepository.save(user);
+        return transferUserToOutputDto(user);
     }
 
-    @PreAuthorize("#username == authentication.getName()")
-    public void deleteUser(String username) {
-        userRepository.deleteById(username);
+    public String deleteUser(String username) throws RecordNotFoundException, AccessDeniedException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN")) || username.equals(authentication.getName())) {
+            User user = userRepository.findById(username).orElseThrow(() -> new RecordNotFoundException("Deze gebruiker bestaat niet."));
+            userRepository.deleteById(user.getUsername());
+            return "Gebruiker succesvol verwijderd";
+        } else {
+            throw new AccessDeniedException("Je hebt geen toegang tot deze user");
+        }
     }
 
     public Set<Authority> getUserAuthorities(String username) throws RecordNotFoundException {

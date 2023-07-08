@@ -102,7 +102,6 @@ public class AccountService {
             account.setAge(ageYears);
             account.setSex(accountInputDto.getSex());
             account.setPhoneNumber(accountInputDto.getPhoneNumber());
-            account.setEmailAddress(accountInputDto.getEmailAddress());
             account.setStreet(accountInputDto.getStreet());
             account.setHouseNumber(accountInputDto.getHouseNumber());
             account.setPostalCode(accountInputDto.getPostalCode());
@@ -210,7 +209,6 @@ public class AccountService {
         account.setAge(ageYears);
         account.setSex(accountInputDto.getSex());
         account.setPhoneNumber(accountInputDto.getPhoneNumber());
-        account.setEmailAddress(accountInputDto.getEmailAddress());
         account.setStreet(accountInputDto.getStreet());
         account.setHouseNumber(accountInputDto.getHouseNumber());
         account.setPostalCode(accountInputDto.getPostalCode());

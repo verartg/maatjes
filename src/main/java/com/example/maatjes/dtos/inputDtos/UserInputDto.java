@@ -18,9 +18,9 @@ public class UserInputDto {
     @NotBlank
     public String username;
     @NotBlank (message = "Je moet je wachtwoord invullen")
-    @Pattern(regexp = "^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[\\!\\#\\@\\$\\%\\&\\/\\(\\)\\=\\?\\*\\-\\+\\_\\.\\:\\;\\,\\{\\}\\^])[A-Za-z0-9!#@$%&/()=?*+-_.:;,{}]{8,20}", message = "Je wachtwoord moet het volgende bevatten: " +
-            "1. Minimaal 1 kleine letter. 2. Minimaal 1 grote letter. 3. Minimaal 1 getal. 4. Minimaal 1 symbool. 5. Je wachtwoord moet tussen de 8 en 20 karakters bevatten.")
+    @Pattern(regexp = "^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[\\!\\#\\@\\$\\%\\&\\/\\(\\)\\=\\?\\*\\-\\+\\_\\.\\:\\;\\,\\{\\}\\^])[A-Za-z0-9!#@$%&/()=?*+-_.:;,{}]{8,20}", message = "Je wachtwoord moet bestaan uit: Eén kleine letter, één grote letter, één getal, één symbool en tussen de 8 tot 20 karakters.")
     public String password;
+    @Email(message = "Ongeldig emailadres") @NotBlank
     public String email;
     @JsonSerialize
     public Set<Authority> authorities;
