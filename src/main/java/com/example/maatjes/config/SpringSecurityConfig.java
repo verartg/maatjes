@@ -43,9 +43,10 @@ public class SpringSecurityConfig {
     // Je kunt dit ook in een aparte configuratie klasse zetten.
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 
+        return new BCryptPasswordEncoder();
+
+    }
     // Authorizatie met jwt
     @Bean
     protected SecurityFilterChain filter (HttpSecurity http) throws Exception {
@@ -65,9 +66,9 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/users").permitAll()//iedereen kan zich registreren                  DOET HET
                 .requestMatchers(HttpMethod.PUT, "/users/{username}").hasAnyRole("ADMIN", "USER")              //DOET HET
                 .requestMatchers(HttpMethod.DELETE, "/users/{username}").hasAnyRole("ADMIN", "USER")        //  DOET HET
-                .requestMatchers(HttpMethod.GET, "/users/{username}/authorities").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.POST, "/users/{username}/authorities").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/users/{username}/authorities/{authority}").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/users/{username}/authorities").hasRole("ADMIN")                  // DOET HET todo MOET IK NOG 403 forbidden response returnen voor user?
+                .requestMatchers(HttpMethod.POST, "/users/{username}/authorities").hasRole("ADMIN")                 // DOET HET todo MOET IK NOG 403 forbidden response returnen voor user?
+                .requestMatchers(HttpMethod.DELETE, "/users/{username}/authorities/{authority}").hasRole("ADMIN")   // DOET HET todo MOET IK NOG 403 forbidden response returnen voor user?
                 //account
                 .requestMatchers(HttpMethod.POST, "/accounts/createaccount").authenticated()
                 .requestMatchers(HttpMethod.GET, "/accounts").hasRole("ADMIN")

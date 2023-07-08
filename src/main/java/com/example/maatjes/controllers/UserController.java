@@ -3,10 +3,10 @@ package com.example.maatjes.controllers;
 import com.example.maatjes.dtos.inputDtos.UserInputDto;
 import com.example.maatjes.dtos.outputDtos.UserOutputDto;
 import com.example.maatjes.exceptions.AccessDeniedException;
-import com.example.maatjes.exceptions.BadRequestException;
 import com.example.maatjes.services.UserService;
 import com.example.maatjes.util.FieldErrorHandling;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,14 +15,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.List;
-import java.util.Map;
 
 @CrossOrigin
 @RestController
 @RequestMapping("/users")
 public class UserController {
-//todo benamingen aanpassen
+
     private final UserService userService;
 
     public UserController(UserService userService) {
@@ -73,21 +71,14 @@ public class UserController {
         return ResponseEntity.ok().body(userService.getUserAuthorities(username));
     }
 
-    @PostMapping("/{username}/authorities")
-    public ResponseEntity<Object> addUserAuthority(@PathVariable("username") String username, @RequestBody Map<String, Object> fields) {
-        try {
-            String authorityName = (String) fields.get("authority");
-            userService.addAuthority(username, authorityName);
-            return ResponseEntity.noContent().build();
-        }
-        catch (Exception ex) {
-            throw new BadRequestException();
-        }
+    @PostMapping(value = "/{username}/authorities")
+    public ResponseEntity<UserOutputDto> addUserAuthority(@PathVariable("username") String username, @RequestParam("authority") String authority) {
+        UserOutputDto userOutputDto = userService.addUserAuthority(username, authority.toUpperCase());
+        return new ResponseEntity<>(userOutputDto, HttpStatus.CREATED);
     }
-
     @DeleteMapping("/{username}/authorities/{authority}")
-    public ResponseEntity<Object> deleteUserAuthority(@PathVariable("username") String username, @PathVariable("authority") String authority) {
-        userService.removeAuthority(username, authority);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<String> deleteUserAuthority(@PathVariable("username") String username, @PathVariable("authority") String authority) {
+        String message = userService.removeAuthority(username, authority);
+        return ResponseEntity.ok().body(message);
     }
 }
