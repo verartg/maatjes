@@ -3,8 +3,9 @@ package com.example.maatjes.services;
 import com.example.maatjes.controllers.UserController;
 import com.example.maatjes.dtos.outputDtos.AccountOutputDto;
 import com.example.maatjes.dtos.inputDtos.AccountInputDto;
+import com.example.maatjes.exceptions.AccessDeniedException;
 import com.example.maatjes.exceptions.BadRequestException;
-import com.example.maatjes.exceptions.FileSizeExceededException;
+//import com.example.maatjes.exceptions.MaxUploadSizeExceededException;
 import com.example.maatjes.exceptions.RecordNotFoundException;
 import com.example.maatjes.models.Account;
 import com.example.maatjes.models.User;
@@ -16,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -52,7 +54,7 @@ public class AccountService {
         user.setAccount(account);
         accountRepository.save(account);
 
-        user.getAccount().setAccountId(account.getAccountId());
+//        user.getAccount().setAccountId(account.getAccountId());
         userRepository.save(user);
         return transferAccountToOutputDto(account);
     }
@@ -85,7 +87,7 @@ public class AccountService {
 //        Account account = optionalAccount.get();
 //        return transferAccountToOutputDto(account);
 //    }
-    @PreAuthorize("hasRole('ADMIN') or #username == authentication.getName()")
+
     public AccountOutputDto getAccount(String username) throws RecordNotFoundException {
         Optional<User> optionalUser = userRepository.findById(username);
         if (optionalUser.isEmpty()) {
@@ -99,7 +101,6 @@ public class AccountService {
         return transferAccountToOutputDto(account);
     }
 
-    @PreAuthorize("#username == authentication.getName()")
     public AccountOutputDto updateAccount(String username, AccountInputDto accountInputDto) throws RecordNotFoundException {
         Optional<User> optionalUser = userRepository.findById(username);
         if (optionalUser.isEmpty()) {
@@ -135,8 +136,8 @@ public class AccountService {
         }
 
     @Transactional
-    @PreAuthorize("#username == authentication.getName()")
-    public AccountOutputDto uploadIdentificationDocument(String username, MultipartFile file) throws FileSizeExceededException, IOException, RecordNotFoundException {
+    public AccountOutputDto uploadIdentificationDocument(String username, MultipartFile file)
+            throws MaxUploadSizeExceededException, IOException, RecordNotFoundException {
         Optional<User> optionalUser = userRepository.findById(username);
         if (optionalUser.isEmpty()) {
             throw new RecordNotFoundException("Gebruiker niet gevonden");
@@ -146,22 +147,22 @@ public class AccountService {
         if (account == null) {
             throw new RecordNotFoundException("Account niet gevonden");
         }
-            long fileSize = file.getBytes().length;
-            long maxFileSize = 1000000; // 1MB in bytes
-            if (fileSize > maxFileSize) {
-                throw new FileSizeExceededException("Bestand is te groot");
-            }
-            byte[] documentData = file.getBytes();
 
-            account.setDocument(documentData);
-            Account returnaccount = accountRepository.save(account);
+        long fileSize = file.getSize();
+        long maxFileSize = 1000000; // 1MB in bytes
+        if (fileSize > maxFileSize) {
+            throw new MaxUploadSizeExceededException(maxFileSize);
+        }
 
-            return transferAccountToOutputDto(returnaccount);
+        byte[] documentData = file.getBytes();
+        account.setDocument(documentData);
+        Account returnAccount = accountRepository.save(account);
+
+        return transferAccountToOutputDto(returnAccount);
     }
 
     @Transactional
-    @PreAuthorize("#username == authentication.getName()")
-    public void removeIdentificationDocument (@RequestBody String username) throws RecordNotFoundException {
+    public String removeIdentificationDocument (@RequestBody String username) throws RecordNotFoundException {
         Optional<User> optionalUser = userRepository.findById(username);
         if (optionalUser.isEmpty()) {
             throw new RecordNotFoundException("Gebruiker niet gevonden");
@@ -170,49 +171,65 @@ public class AccountService {
         Account account = user.getAccount();
         if (account == null) {
             throw new RecordNotFoundException("Account niet gevonden");
+        }
+
+        if (account.getDocument() == null) {
+            throw new RecordNotFoundException("De gebruiker heeft nog geen document geüpload");
         }
             account.setDocument(null);
+        return "Document succesvol verwijderd";
     }
 
-    @PreAuthorize("hasRole('ADMIN') or #username == authentication.getName()")
-    public void removeAccount(@RequestBody String username) throws RecordNotFoundException {
-        Optional<User> optionalUser = userRepository.findById(username);
-        if (optionalUser.isEmpty()) {
-            throw new RecordNotFoundException("Gebruiker niet gevonden");
-        }
-        User user = optionalUser.get();
-        Account account = user.getAccount();
+    public String removeAccount(@RequestBody String username) throws RecordNotFoundException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+        boolean isSelf = authentication.getName().equals(username);
 
-        if (account == null) {
-            throw new RecordNotFoundException("Account niet gevonden");
+        if (isAdmin || isSelf) {
+            Optional<User> optionalUser = userRepository.findById(username);
+            if (optionalUser.isEmpty()) {
+                throw new RecordNotFoundException("Gebruiker niet gevonden");
+            }
+
+            User user = optionalUser.get();
+            Account account = user.getAccount();
+
+            if (account == null) {
+                throw new RecordNotFoundException("Account niet gevonden");
+            } else {
+                // Remove the account association from the user
+                user.setAccount(null);
+                userRepository.save(user);
+
+                // Delete the account
+                //todo bij deze stap wordt ook de user verwijderd...whyyyyyy
+                accountRepository.deleteById(account.getAccountId());
+            }
         } else {
-            accountRepository.deleteById(account.getAccountId());
+            throw new AccessDeniedException("Je hebt geen toegang tot deze gebruiker");
         }
+        return "Account succesvol verwijderd";
     }
+
+
 
     public AccountOutputDto transferAccountToOutputDto(Account account) {
         AccountOutputDto accountOutputDto = new AccountOutputDto();
         accountOutputDto.name = account.getName();
         accountOutputDto.age = account.getAge();
         accountOutputDto.sex = account.getSex();
-        accountOutputDto.phoneNumber = account.getPhoneNumber();
-        accountOutputDto.street = account.getStreet();
-        accountOutputDto.houseNumber = account.getHouseNumber();
-        accountOutputDto.postalCode = account.getPostalCode();
         accountOutputDto.city = account.getCity();
         accountOutputDto.bio = account.getBio();
-        accountOutputDto.document = account.getDocument();
         accountOutputDto.givesHelp = account.isGivesHelp();
         accountOutputDto.needsHelp = account.isNeedsHelp();
         accountOutputDto.activitiesToGive = account.getActivitiesToGive();
         accountOutputDto.activitiesToReceive = account.getActivitiesToReceive();
         accountOutputDto.availability = account.getAvailability();
         accountOutputDto.frequency = account.getFrequency();
-        accountOutputDto.helpGivers = account.getHelpGivers();
-        accountOutputDto.helpReceivers = account.getHelpReceivers();
         accountOutputDto.givenReviews = account.getGivenReviews();
         accountOutputDto.receivedReviews = account.getReceivedReviews();
-        accountOutputDto.setUser(UserService.transferUserToOutputDto(account.getUser()));
+//        accountOutputDto.user = account.getUser();
+//        accountOutputDto.setUser(UserService.transferUserToOutputDto(account.getUser()));
         return accountOutputDto;
         }
 

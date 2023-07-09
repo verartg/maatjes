@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 @ControllerAdvice
 public class ExceptionController {
@@ -20,10 +21,17 @@ public class ExceptionController {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(FileSizeExceededException.class)
-    public ResponseEntity<Object> exception(FileSizeExceededException exception) {
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.PAYLOAD_TOO_LARGE);
-}
+//    @ExceptionHandler(FileSizeExceededException.class)
+//    public ResponseEntity<Object> handleFileSizeExceededException(FileSizeExceededException exception) {
+//        String errorMessage = exception.getMessage();
+//        return new ResponseEntity<>(errorMessage, HttpStatus.PAYLOAD_TOO_LARGE);
+//    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<Object> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException exception) {
+        String errorMessage = "Je bestand is te groot, upload een document van maximaal 1MB";
+        return new ResponseEntity<>(errorMessage, HttpStatus.PAYLOAD_TOO_LARGE);
+    }
 
     @ExceptionHandler(AccountNotAssociatedException.class)
     public ResponseEntity<Object> exception(AccountNotAssociatedException exception) {

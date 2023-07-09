@@ -72,13 +72,18 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.DELETE, "/users/{username}/authorities/{authority}").hasRole("ADMIN")   // DOET HET
                 //account
                 .requestMatchers(HttpMethod.POST, "/accounts/createaccount").authenticated()                        //DOET HET
-                .requestMatchers(HttpMethod.GET, "/accounts").hasRole("ADMIN")
-                //todo hieronder mag iedereen, maar dan moet ik wel outputdto aanpassen.
-                .requestMatchers(HttpMethod.GET, "/accounts/{username}").authenticated()
-                .requestMatchers(HttpMethod.PUT, "/accounts/{username}").hasAnyRole("USER", "ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/accounts/{username}/upload").hasAnyRole("USER", "ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/accounts/{username}/upload").hasAnyRole("USER", "ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/accounts/{username}").hasAnyRole("USER", "ADMIN")
+                .requestMatchers(HttpMethod.GET, "/accounts").hasRole("ADMIN")                                      //DOET HET
+                //todo hieronder mag iedereen die ingelogd is, maar zou ik dan niet beter de naam naar username veranderen?
+                .requestMatchers(HttpMethod.GET, "/accounts/{username}").authenticated()                            //DOET HET
+                .requestMatchers(HttpMethod.PUT, "/accounts/{username}").hasAnyRole("USER", "ADMIN")            //DOET HET
+                .requestMatchers(HttpMethod.PUT, "/accounts/{username}/upload").hasAnyRole("USER", "ADMIN")     //DOET HET
+                .requestMatchers(HttpMethod.DELETE, "/accounts/{username}/upload").hasAnyRole("USER", "ADMIN")  //DOET HET
+                .requestMatchers(HttpMethod.DELETE, "/accounts/{username}").hasAnyRole("USER", "ADMIN")         //DOET HET
+                //match
+
+                //appointment
+                //message
+                //review
 
                 .anyRequest().denyAll()
                 .and()

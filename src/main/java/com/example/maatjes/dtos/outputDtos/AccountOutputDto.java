@@ -22,22 +22,14 @@ public class AccountOutputDto {
     public String name;
     public int age;
     public char sex;
-    public String phoneNumber;
-    public String street;
-    public String houseNumber;
-    public String postalCode;
     public String city;
     public String bio;
-    public byte[] document;
     public boolean givesHelp;
     public boolean needsHelp;
     public Availability availability;
     public Frequency frequency;
     public List<Activities> activitiesToGive;
     public List<Activities> activitiesToReceive;
-    public List<Match> helpReceivers;
-    public List<Match> helpGivers;
     public List<Review> givenReviews;
     public List<Review> receivedReviews;
-    public UserOutputDto user;
 }
