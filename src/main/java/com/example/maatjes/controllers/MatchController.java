@@ -20,12 +20,12 @@ public class MatchController {
         this.matchService = matchService;
     }
 
-    @PostMapping("/{helpGiverId}/{helpReceiverId}")
-    public ResponseEntity<Object> proposeMatch(@PathVariable("helpGiverId") Long helpGiverId, @PathVariable("helpReceiverId") Long helpReceiverId, @Valid @RequestBody MatchInputDto matchInputDto, BindingResult bindingResult){
+    @PostMapping
+    public ResponseEntity<Object> proposeMatch(@Valid @RequestBody MatchInputDto matchInputDto, BindingResult bindingResult){
         if (bindingResult.hasFieldErrors()) {
             return ResponseEntity.badRequest().body(FieldErrorHandling.getErrorToStringHandling(bindingResult));
         }
-        return new ResponseEntity<>(matchService.proposeMatch(helpGiverId, helpReceiverId, matchInputDto), HttpStatus.CREATED);
+        return new ResponseEntity<>(matchService.proposeMatch(matchInputDto), HttpStatus.CREATED);
     }
 
     @GetMapping

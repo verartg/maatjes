@@ -1,5 +1,5 @@
 INSERT INTO accounts (account_id, name, age, sex, phone_number, street, house_number, postal_code, city, bio, gives_help, needs_help, availability, frequency) VALUES (1001, 'Lisa de Jong', 39, 'V', '0645123456', 'Cedar Avenue', '24', '3456MN', 'Utrecht', 'Ik lees graag voor en ben ook handig met klussen.', true, false, 'DONDERDAGAVOND', 'EEN_KEER_PER_WEEK');
--- INSERT INTO accounts (account_id, name, age, sex, phone_number, street, house_number, postal_code, city, bio, gives_help, needs_help, availability, frequency) VALUES (1002, 'Peter van Dijk', 45, 'M', '0645987654', 'Elm Avenue', '17', '4567OP', 'Amsterdam', 'Ik ben handig met klussen en maak graag tijd voor een gezellig kopje koffie.', true, true, 'WOENSDAGOCHTEND', 'TWEE_KEER_PER_WEEK');
+INSERT INTO accounts (account_id, name, age, sex, phone_number, street, house_number, postal_code, city, bio, gives_help, needs_help, availability, frequency) VALUES (1002, 'Peter van Dijk', 45, 'M', '0645987654', 'Elm Avenue', '17', '4567OP', 'Amsterdam', 'Ik ben handig met klussen en maak graag tijd voor een gezellig kopje koffie.', true, true, 'WOENSDAGOCHTEND', 'TWEE_KEER_PER_WEEK');
 INSERT INTO accounts (account_id, name, age, sex, phone_number, street, house_number, postal_code, city, bio, gives_help, needs_help, availability, frequency) VALUES (1003, 'Sanne Bakker', 32, 'V', '0645123456', 'Boslaan', '10', '2345QR', 'Rotterdam', 'Ik hou van wandelen in mijn vrije tijd en wil graag anderen helpen.', true, false, 'MAANDAGOCHTEND', 'EENMALIG');
 -- INSERT INTO accounts (account_id, name, age, sex, phone_number, street, house_number, postal_code, city, bio, gives_help, needs_help, availability, frequency) VALUES (1004, 'Jan de Vries', 52, 'M', '0645678901', 'Kerkplein', '5', '5678ST', 'Den Haag', 'Ik drink graag een kopje koffie en help ook graag met wandelen.', true, true, 'ZATERDAGOCHTEND', 'TWEE_KEER_PER_WEEK');
 -- INSERT INTO accounts (account_id, name, age, sex, phone_number, street, house_number, postal_code, city, bio, gives_help, needs_help, availability, frequency) VALUES (1005, 'Marieke Hendriks', 28, 'V', '0645123456', 'Schoolstraat', '12', '7890UV', 'Utrecht', 'Ik ben goed met klussen en maak ook graag tijd vrij voor een gezellig kopje koffie.', true, true, 'WOENSDAGAVOND', 'TWEE_KEER_PER_WEEK');
@@ -22,20 +22,23 @@ INSERT INTO accounts (account_id, name, age, sex, phone_number, street, house_nu
 INSERT INTO users(username, password, enabled, apikey, email) VALUES ('admin', '$2a$12$JcVipE0dj3iS7H79ySeZZeciEKkz0vkNnXyEUsCO82HWcWT6revPy',true,null,'admin@admin.admin' );
 INSERT INTO users(username, password, enabled, apikey, email) VALUES ('user', '$2a$12$JcVipE0dj3iS7H79ySeZZeciEKkz0vkNnXyEUsCO82HWcWT6revPy',true,null,'admin@admin.admin' );
 INSERT INTO users(username, password, enabled, apikey, email) VALUES ('sanneb1', '$2a$12$JcVipE0dj3iS7H79ySeZZeciEKkz0vkNnXyEUsCO82HWcWT6revPy',true,null,'sanne@user.nl' );
+INSERT INTO users(username, password, enabled, apikey, email) VALUES ('peter1991', '$2a$12$zR4nKDSL/ob18z.z9nlvg./AM7llclJSb0ujAjUwkHKCeu.Zladee',true,null,'peter@user.nl' );
+-- INSERT INTO users(username, password, enabled, apikey, email) VALUES ('lisa', '$2a$12$zR4nKDSL/ob18z.z9nlvg./AM7llclJSb0ujAjUwkHKCeu.Zladee',true,null,'lisa@user.nl' );
 
 UPDATE users SET account_id = 1001 WHERE username = 'user';
+UPDATE users SET account_id = 1002 WHERE username = 'peter1991';
 UPDATE users SET account_id = 1003 WHERE username = 'sanneb1';
+
 
 INSERT INTO authorities(username, authority) VALUES ('admin', 'ROLE_ADMIN');
 INSERT INTO authorities(username, authority) VALUES ('admin', 'ROLE_USER');
 INSERT INTO authorities(username, authority) VALUES ('user', 'ROLE_USER');
 INSERT INTO authorities(username, authority) VALUES ('sanneb1', 'ROLE_USER');
 
---INSERT INTO activities_to_receive (account_id, activity)
---VALUES
-  --  (1001, 'TUINIEREN');
---     (1001, 'NEDERLANDS_LEREN'),
---     (1002, 'KLUSSEN'),
+INSERT INTO activities_to_receive (account_account_id, activity) VALUES (1001, 'TUINIEREN');
+INSERT INTO activities_to_receive (account_account_id, activity) VALUES (1001, 'NEDERLANDS_LEREN');
+INSERT INTO activities_to_receive (account_account_id, activity) VALUES (1002, 'KLUSSEN');
+
 --     (1003, 'BOODSCHAPPEN'),
 --     (1004, 'SCHOONMAKEN'),
 --     (1005, 'ADMINISTRATIE'),
@@ -46,12 +49,11 @@ INSERT INTO authorities(username, authority) VALUES ('sanneb1', 'ROLE_USER');
 --     (1010, 'HOND_UITLATEN');
 
 
---INSERT INTO activities_to_give (account_id, activity)
---VALUES
---    (1001, 'VOORLEZEN'),
---    (1001, 'GEZELSCHAP');
---     (1002, 'TUINIEREN'),
---     (1002, 'WANDELEN'),
+INSERT INTO activities_to_give (account_account_id, activity) VALUES (1001, 'VOORLEZEN');
+INSERT INTO activities_to_give (account_account_id, activity) VALUES (1001, 'GEZELSCHAP');
+INSERT INTO activities_to_give (account_account_id, activity) VALUES (1002, 'TUINIEREN');
+INSERT INTO activities_to_give (account_account_id, activity) VALUES (1002, 'WANDELEN');
+
 --     (1003, 'GEZELSCHAP'),
 --     (1004, 'ADMINISTRATIE'),
 --     (1005, 'HOND_UITLATEN'),

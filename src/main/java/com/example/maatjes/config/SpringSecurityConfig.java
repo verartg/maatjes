@@ -80,6 +80,10 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.DELETE, "/accounts/{username}/upload").hasAnyRole("USER", "ADMIN")  //DOET HET
                 .requestMatchers(HttpMethod.DELETE, "/accounts/{username}").hasAnyRole("USER", "ADMIN")         //DOET HET
                 //match
+                .requestMatchers(HttpMethod.POST, "/matches").hasRole("ADMIN")                                          //DOET HET
+                .requestMatchers(HttpMethod.GET, "/matches").hasRole("ADMIN")                                           //DOET HET
+                .requestMatchers(HttpMethod.GET, "/matches/{matchId}").hasAnyRole("USER", "ADMIN")              //DOET HET
+                .requestMatchers(HttpMethod.GET, "/matches/{matchId}").hasAnyRole("USER", "ADMIN")              //DOET HET
 
                 //appointment
                 //message

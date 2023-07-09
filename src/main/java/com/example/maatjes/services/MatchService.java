@@ -3,13 +3,14 @@ package com.example.maatjes.services;
 import com.example.maatjes.dtos.outputDtos.MatchOutputDto;
 import com.example.maatjes.dtos.inputDtos.MatchInputDto;
 import com.example.maatjes.enums.Activities;
-import com.example.maatjes.exceptions.AccountNotAssociatedException;
+import com.example.maatjes.exceptions.*;
 import com.example.maatjes.exceptions.IllegalArgumentException;
-import com.example.maatjes.exceptions.RecordNotFoundException;
 import com.example.maatjes.models.Account;
 import com.example.maatjes.models.Match;
 import com.example.maatjes.repositories.AccountRepository;
 import com.example.maatjes.repositories.MatchRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -25,17 +26,15 @@ public class MatchService {
         this.accountRepository = accountRepository;
     }
 
-    //todo eigenlijk moet ik helpreceiver omnoemen naar account1 en helpgiver account2 bijv.
-    public MatchOutputDto proposeMatch(Long helpGiverId, Long helpReceiverId, MatchInputDto matchInputDto) throws RecordNotFoundException {
-        Account giver = accountRepository.findById(helpGiverId).orElseThrow(() -> new RecordNotFoundException("De gebruiker met id " + helpGiverId + " bestaat niet"));
-        Account receiver = accountRepository.findById(helpReceiverId).orElseThrow(() -> new RecordNotFoundException("De gebruiker met id " + helpReceiverId + " bestaat niet"));
+    //todo nog nadenken over of je wel twee keer dezelfde match mag maken.
+    public MatchOutputDto proposeMatch(MatchInputDto matchInputDto) throws RecordNotFoundException, BadRequestException {
+        Account giver = accountRepository.findById(matchInputDto.helpGiverId).orElseThrow(() -> new RecordNotFoundException("De gebruiker met id " + matchInputDto.helpGiverId + " bestaat niet"));
+        Account receiver = accountRepository.findById(matchInputDto.helpReceiverId).orElseThrow(() -> new RecordNotFoundException("De gebruiker met id " + matchInputDto.helpReceiverId + " bestaat niet"));
         List<Activities> giverActivitiesToGive = giver.getActivitiesToGive();
-        List<Activities> giverActivitiesToReceive = giver.getActivitiesToReceive();
-        List<Activities> receiverActivitiesToGive = receiver.getActivitiesToGive();
         List<Activities> receiverActivitiesToReceive = receiver.getActivitiesToReceive();
-        List<Activities> sharedActivities = getSharedActivities(giverActivitiesToGive, receiverActivitiesToReceive, giverActivitiesToReceive, receiverActivitiesToGive);
+        List<Activities> sharedActivities = getSharedActivities(giverActivitiesToGive, receiverActivitiesToReceive);
         if (sharedActivities == null) {
-            throw new RecordNotFoundException("Geen gemeenschappelijke activiteiten gevonden voor beide accounts");
+            throw new BadRequestException("Geen gemeenschappelijke activiteiten gevonden voor beide accounts");
         } else {
             Match match = transferInputDtoToMatch(matchInputDto);
             match.setHelpGiver(giver);
@@ -45,14 +44,10 @@ public class MatchService {
             return transferMatchToOutputDto(match); }
     }
 
-    private List<Activities> getSharedActivities(List<Activities> giverActivitiesToGive, List<Activities> receiverActivitiesToReceive, List<Activities> giverActivitiesToReceive, List<Activities> receiverActivitiesToGive) {
+    private List<Activities> getSharedActivities(List<Activities> giverActivitiesToGive, List<Activities> receiverActivitiesToReceive) {
         List<Activities> sharedActivities = new ArrayList<>();
         for (Activities activity : giverActivitiesToGive) {
             if (receiverActivitiesToReceive.contains(activity)) {
-                sharedActivities.add(activity);}
-        }
-        for (Activities activity : giverActivitiesToReceive) {
-            if (receiverActivitiesToGive.contains(activity)) {
                 sharedActivities.add(activity);}
         }
         return sharedActivities.isEmpty() ? null : sharedActivities;
@@ -68,12 +63,38 @@ public class MatchService {
         return matchOutputDtos;
     }
 
-    public MatchOutputDto getMatch(Long matchId) throws RecordNotFoundException {
+//    public MatchOutputDto getMatch(Long matchId) throws RecordNotFoundException {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        boolean isAdmin = authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+//        boolean isSelf = authentication.getName().equals(username);
+//
+//        if (isAdmin || isSelf) {
+//            Optional<Match> optionalMatch = matchRepository.findById(matchId);
+//            if (optionalMatch.isEmpty()) {
+//                throw new RecordNotFoundException("Match niet gevonden");}
+//            Match match = optionalMatch.get();
+//        return transferMatchToOutputDto(match);}
+//    }
+
+    public MatchOutputDto getMatch(Long matchId) throws RecordNotFoundException, AccessDeniedException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+        String authenticatedUsername = authentication.getName();
+
         Optional<Match> optionalMatch = matchRepository.findById(matchId);
         if (optionalMatch.isEmpty()) {
-            throw new RecordNotFoundException("Match niet gevonden");}
+            throw new RecordNotFoundException("Match not found");
+        }
         Match match = optionalMatch.get();
-        return transferMatchToOutputDto(match);
+
+        boolean isSelf = authenticatedUsername.equals(match.getHelpGiver().getUser().getUsername()) ||
+                authenticatedUsername.equals(match.getHelpReceiver().getUser().getUsername());
+
+        if (isAdmin || isSelf) {
+            return transferMatchToOutputDto(match);
+        } else {
+            throw new AccessDeniedException("Access denied");
+        }
     }
 
     //todo matches filteren op contactperson voor de admin om eigen matches op te halen.
