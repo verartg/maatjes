@@ -81,7 +81,7 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.DELETE, "/accounts/{username}").hasAnyRole("USER", "ADMIN")         //DOET HET
                 //match
                 .requestMatchers(HttpMethod.POST, "/matches").hasRole("ADMIN")                                          //DOET HET
-                //todo of wil ik een filter voor username?
+                //todo of wil ik een filter voor username? Eigenlijk wel
                 .requestMatchers(HttpMethod.GET, "/matches").hasRole("ADMIN")                                           //DOET HET
                 .requestMatchers(HttpMethod.GET, "/matches/{matchId}").hasAnyRole("USER", "ADMIN")              //DOET HET
                 .requestMatchers(HttpMethod.GET, "/matches/{username}/accepted").hasRole("USER")                    //DOET HET
@@ -97,7 +97,9 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/appointments/{appointmentId}").hasRole("USER")                   //DOET HET
                 .requestMatchers(HttpMethod.DELETE, "/appointments/{appointmentId}").hasRole("USER")                //DOET HET
                 //message
-
+                .requestMatchers(HttpMethod.POST, "/messages/{matchId}").hasRole("USER")                            //DOET HET
+                .requestMatchers(HttpMethod.GET, "/messages/{matchId}").hasRole("USER")                             //DOET HET
+                .requestMatchers(HttpMethod.DELETE, "/messages").hasRole("ADMIN")                                   //DOET HET
                 //review
 
                 .anyRequest().denyAll()

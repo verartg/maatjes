@@ -17,9 +17,9 @@ public class MessageController {
         this.messageService = messageService;
     }
 
-    @PostMapping("/{matchId}/{accountId}")
-    public ResponseEntity<Object> writeMessage(@PathVariable("matchId") Long matchId, @PathVariable ("accountId") Long accountId, @RequestBody MessageInputDto messageInputDto) {
-        MessageOutputDto messageOutputDto = messageService.writeMessage(matchId, accountId, messageInputDto);
+    @PostMapping("/{matchId}")
+    public ResponseEntity<Object> writeMessage(@PathVariable Long matchId, @RequestBody MessageInputDto messageInputDto) {
+        MessageOutputDto messageOutputDto = messageService.writeMessage(matchId, messageInputDto);
         return new ResponseEntity<>(messageOutputDto, HttpStatus.ACCEPTED);
     }
 

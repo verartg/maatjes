@@ -156,10 +156,10 @@ public class MatchService {
                 .orElseThrow(() -> new RecordNotFoundException("Match niet gevonden"));
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String authenticatedUsername = authentication.getName();
+        String username = authentication.getName();
 
-        boolean isGiver = authenticatedUsername.equals(match.getHelpGiver().getUser().getUsername());
-        boolean isReceiver = authenticatedUsername.equals(match.getHelpReceiver().getUser().getUsername());
+        boolean isGiver = username.equals(match.getHelpGiver().getUser().getUsername());
+        boolean isReceiver = username.equals(match.getHelpReceiver().getUser().getUsername());
 
         if (!isGiver && !isReceiver) {
             throw new AccessDeniedException("Je bent niet geautoriseerd om deze match te accepteren");
@@ -204,6 +204,8 @@ public class MatchService {
         }
         return "Match succesvol verwijderd";
     }
+
+    //todo remove matches that have ended! I think I need to put a filter on that on the get all matches
 
 
     public MatchOutputDto transferMatchToOutputDto(Match match) {
