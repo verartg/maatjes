@@ -34,23 +34,23 @@ public class MatchController {
     }
 
     @GetMapping("/{matchId}")
-    public ResponseEntity<MatchOutputDto> getMatch(@PathVariable("matchId") Long matchId) {
+    public ResponseEntity<MatchOutputDto> getMatch(@PathVariable Long matchId) {
         return new ResponseEntity<>(matchService.getMatch(matchId), HttpStatus.OK);
     }
 
-    @GetMapping("/{accountId}/accepted")
-    public ResponseEntity<List<MatchOutputDto>> getAcceptedMatchesByAccountId(@PathVariable("accountId") Long accountId) {
-        return new ResponseEntity<>(matchService.getAcceptedMatchesByAccountId(accountId), HttpStatus.OK);
+    @GetMapping("/{username}/accepted")
+    public ResponseEntity<List<MatchOutputDto>> getAcceptedMatchesByUsername(@PathVariable String username) {
+        return new ResponseEntity<>(matchService.getAcceptedMatchesByUsername(username), HttpStatus.OK);
     }
 
-    @GetMapping("/{accountId}/proposed")
-    public ResponseEntity<List<MatchOutputDto>> getProposedMatchesByAccountId(@PathVariable("accountId") Long accountId) {
-        return new ResponseEntity<>(matchService.getProposedMatchesByAccountId(accountId), HttpStatus.OK);
+    @GetMapping("/{username}/proposed")
+    public ResponseEntity<List<MatchOutputDto>> getProposedMatchesByUsername(@PathVariable String username) {
+        return new ResponseEntity<>(matchService.getProposedMatchesByUsername(username), HttpStatus.OK);
     }
 
-    @PutMapping("/{matchId}/{accountId}")
-    public ResponseEntity<Object> acceptMatch(@PathVariable("matchId") Long matchId, @PathVariable("accountId") Long accountId) {
-        return new ResponseEntity<>(matchService.acceptMatch(matchId, accountId), HttpStatus.ACCEPTED);
+    @PutMapping("/{matchId}/accept")
+    public ResponseEntity<Object> acceptMatch(@PathVariable Long matchId) {
+        return new ResponseEntity<>(matchService.acceptMatch(matchId), HttpStatus.ACCEPTED);
     }
 
     @PutMapping("/{matchId}")
@@ -62,8 +62,8 @@ public class MatchController {
     }
 
     @DeleteMapping("/{matchId}")
-    public ResponseEntity<Object> removeMatch(@PathVariable Long matchId) {
-        matchService.removeMatch(matchId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public ResponseEntity<String> removeMatch(@PathVariable Long matchId) {
+        String message = matchService.removeMatch(matchId);
+        return ResponseEntity.ok().body(message);
     }
 }

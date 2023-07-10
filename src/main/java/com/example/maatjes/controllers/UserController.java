@@ -34,11 +34,11 @@ public class UserController {
 //    }
 
     @GetMapping("/{username}")
-    public ResponseEntity<UserOutputDto> getUser(@PathVariable("username") String username) {
+    public ResponseEntity<UserOutputDto> getUser(@PathVariable String username) {
         UserOutputDto optionalUser = userService.getUser(username);
         return ResponseEntity.ok().body(optionalUser);
     }
-
+    //todo @Valid BindingResult toevoegen!
     @PostMapping
     public ResponseEntity<String> createUser(@Valid @RequestBody UserInputDto userInputDto, BindingResult bindingResult) {
         if (bindingResult.hasFieldErrors()) {
@@ -48,8 +48,9 @@ public class UserController {
         return ResponseEntity.ok().body(message);
     }
 
+    //todo @Valid BindingResult toevoegen!
     @PutMapping("/{username}")
-    public ResponseEntity<Object> updateUser(@PathVariable("username") String username, @RequestBody UserInputDto dto) {
+    public ResponseEntity<Object> updateUser(@PathVariable String username, @RequestBody UserInputDto dto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!username.equals(authentication.getName())) {
             throw new AccessDeniedException("Je hebt geen toegang tot deze user");
@@ -59,23 +60,24 @@ public class UserController {
     }
 
     @DeleteMapping("/{username}")
-    public ResponseEntity<String> deleteUser(@PathVariable("username") String username) {
+    public ResponseEntity<String> deleteUser(@PathVariable String username) {
         String message = userService.deleteUser(username);
         return ResponseEntity.ok().body(message);
     }
 
     @GetMapping("/{username}/authorities")
-    public ResponseEntity<Object> getUserAuthorities(@PathVariable("username") String username) {
+    public ResponseEntity<Object> getUserAuthorities(@PathVariable String username) {
         return ResponseEntity.ok().body(userService.getUserAuthorities(username));
     }
 
-    @PostMapping(value = "/{username}/authorities")
-    public ResponseEntity<UserOutputDto> addUserAuthority(@PathVariable("username") String username, @RequestParam("authority") String authority) {
+    //todo @Valid BindingResult toevoegen?
+    @PostMapping("/{username}/authorities")
+    public ResponseEntity<UserOutputDto> addUserAuthority(@PathVariable String username, @RequestParam("authority") String authority) {
         UserOutputDto userOutputDto = userService.addUserAuthority(username, authority.toUpperCase());
         return new ResponseEntity<>(userOutputDto, HttpStatus.CREATED);
     }
     @DeleteMapping("/{username}/authorities/{authority}")
-    public ResponseEntity<String> deleteUserAuthority(@PathVariable("username") String username, @PathVariable("authority") String authority) {
+    public ResponseEntity<String> deleteUserAuthority(@PathVariable String username, @PathVariable("authority") String authority) {
         String message = userService.removeAuthority(username, authority);
         return ResponseEntity.ok().body(message);
     }

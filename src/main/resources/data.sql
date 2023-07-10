@@ -20,20 +20,21 @@ INSERT INTO accounts (account_id, name, age, sex, phone_number, street, house_nu
 -- INSERT INTO accounts (account_id, name, age, sex, phone_number, street, house_number, postal_code, city, bio, gives_help, needs_help, availability, frequency) VALUES (1020, 'Pieter van der Velden', 44, 'M', '0645678901', 'Bosweg', '19', '4567EF', 'Den Haag', 'Ik wandel graag in mijn vrije tijd en help ook graag met wandelen.', true, true, 'VRIJDAGAVOND', 'EEN_KEER_PER_WEEK');
 
 INSERT INTO users(username, password, enabled, apikey, email) VALUES ('admin', '$2a$12$JcVipE0dj3iS7H79ySeZZeciEKkz0vkNnXyEUsCO82HWcWT6revPy',true,null,'admin@admin.admin' );
-INSERT INTO users(username, password, enabled, apikey, email) VALUES ('user', '$2a$12$JcVipE0dj3iS7H79ySeZZeciEKkz0vkNnXyEUsCO82HWcWT6revPy',true,null,'admin@admin.admin' );
+INSERT INTO users(username, password, enabled, apikey, email) VALUES ('lisa', '$2a$12$JcVipE0dj3iS7H79ySeZZeciEKkz0vkNnXyEUsCO82HWcWT6revPy',true,null,'admin@admin.admin' );
 INSERT INTO users(username, password, enabled, apikey, email) VALUES ('sanneb1', '$2a$12$JcVipE0dj3iS7H79ySeZZeciEKkz0vkNnXyEUsCO82HWcWT6revPy',true,null,'sanne@user.nl' );
 INSERT INTO users(username, password, enabled, apikey, email) VALUES ('peter1991', '$2a$12$zR4nKDSL/ob18z.z9nlvg./AM7llclJSb0ujAjUwkHKCeu.Zladee',true,null,'peter@user.nl' );
 -- INSERT INTO users(username, password, enabled, apikey, email) VALUES ('lisa', '$2a$12$zR4nKDSL/ob18z.z9nlvg./AM7llclJSb0ujAjUwkHKCeu.Zladee',true,null,'lisa@user.nl' );
 
-UPDATE users SET account_id = 1001 WHERE username = 'user';
+UPDATE users SET account_id = 1001 WHERE username = 'lisa';
 UPDATE users SET account_id = 1002 WHERE username = 'peter1991';
 UPDATE users SET account_id = 1003 WHERE username = 'sanneb1';
 
 
 INSERT INTO authorities(username, authority) VALUES ('admin', 'ROLE_ADMIN');
 INSERT INTO authorities(username, authority) VALUES ('admin', 'ROLE_USER');
-INSERT INTO authorities(username, authority) VALUES ('user', 'ROLE_USER');
+INSERT INTO authorities(username, authority) VALUES ('lisa', 'ROLE_USER');
 INSERT INTO authorities(username, authority) VALUES ('sanneb1', 'ROLE_USER');
+INSERT INTO authorities(username, authority) VALUES ('peter1991', 'ROLE_USER');
 
 INSERT INTO activities_to_receive (account_account_id, activity) VALUES (1001, 'TUINIEREN');
 INSERT INTO activities_to_receive (account_account_id, activity) VALUES (1001, 'NEDERLANDS_LEREN');

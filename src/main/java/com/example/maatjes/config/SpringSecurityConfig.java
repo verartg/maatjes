@@ -81,10 +81,14 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.DELETE, "/accounts/{username}").hasAnyRole("USER", "ADMIN")         //DOET HET
                 //match
                 .requestMatchers(HttpMethod.POST, "/matches").hasRole("ADMIN")                                          //DOET HET
+                //todo of wil ik een filter voor username?
                 .requestMatchers(HttpMethod.GET, "/matches").hasRole("ADMIN")                                           //DOET HET
                 .requestMatchers(HttpMethod.GET, "/matches/{matchId}").hasAnyRole("USER", "ADMIN")              //DOET HET
-                .requestMatchers(HttpMethod.GET, "/matches/{matchId}").hasAnyRole("USER", "ADMIN")              //DOET HET
-
+                .requestMatchers(HttpMethod.GET, "/matches/{username}/accepted").hasRole("USER")                    //DOET HET
+                .requestMatchers(HttpMethod.GET, "/matches/{username}/proposed").hasRole("USER")                    //DOET HET
+                .requestMatchers(HttpMethod.PUT, "/matches/{matchId}/accept").hasRole("USER")                   //DOET HET
+                .requestMatchers(HttpMethod.PUT, "/matches/{matchId}").hasRole("ADMIN")                         //DOET HET
+                .requestMatchers(HttpMethod.DELETE, "/matches/{matchId}").hasRole("ADMIN")                      //DOET HET
                 //appointment
                 //message
                 //review
