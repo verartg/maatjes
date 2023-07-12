@@ -21,6 +21,8 @@ public class Review {
     private boolean verified;
 
     //todo private String feedbackAdmin?;
+    //todo datum?
+    //todo written for a username?
 
     @ManyToOne
     @JsonIgnore

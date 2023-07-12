@@ -35,8 +35,18 @@ public class AppointmentService {
     }
 
     public AppointmentOutputDto createAppointment(AppointmentInputDto appointmentInputDto) throws RecordNotFoundException, BadRequestException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
         Match match = matchRepository.findById(appointmentInputDto.getMatchId())
                 .orElseThrow(() -> new RecordNotFoundException("Match niet gevonden"));
+
+        boolean isAssociatedUser = username.equals(match.getHelpGiver().getUser().getUsername())
+                || username.equals(match.getHelpReceiver().getUser().getUsername());
+
+        if (!isAssociatedUser) {
+            throw new AccessDeniedException("Je hebt geen toegang tot deze match");
+        }
 
         if (!match.isGiverAccepted() || !match.isReceiverAccepted()) {
             throw new BadRequestException("Match moet eerst worden geaccepteerd voordat een afspraak kan worden ingepland");
@@ -44,22 +54,15 @@ public class AppointmentService {
 
         Appointment appointment = transferInputDtoToAppointment(appointmentInputDto);
         appointment.setMatch(match);
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        String createdForName = username.equals(match.getHelpGiver().getUser().getUsername())
-                ? match.getHelpReceiver().getUser().getUsername()
-                : match.getHelpGiver().getUser().getUsername();
-
-        appointment.setCreatedForName(createdForName);
         appointment.setCreatedByName(username);
-
+        appointment.setCreatedForName(match.getHelpGiver().getUser().getUsername().equals(username) ? match.getHelpReceiver().getUser().getUsername() : match.getHelpGiver().getUser().getUsername());
         appointment = appointmentRepository.save(appointment);
         match.getAppointments().add(appointment);
         matchRepository.save(match);
 
         return transferAppointmentToOutputDto(appointment);
     }
+
 
     //    private Account determineLoggedInAccount() {
 //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

@@ -2,68 +2,72 @@ package com.example.maatjes.services;
 
 import com.example.maatjes.dtos.outputDtos.ReviewOutputDto;
 import com.example.maatjes.dtos.inputDtos.ReviewInputDto;
-import com.example.maatjes.exceptions.AccountNotAssociatedException;
+import com.example.maatjes.exceptions.AccessDeniedException;
 import com.example.maatjes.exceptions.BadRequestException;
 import com.example.maatjes.exceptions.RecordNotFoundException;
 import com.example.maatjes.models.Account;
 import com.example.maatjes.models.Match;
 import com.example.maatjes.models.Review;
+import com.example.maatjes.models.User;
 import com.example.maatjes.repositories.AccountRepository;
 import com.example.maatjes.repositories.MatchRepository;
 import com.example.maatjes.repositories.ReviewRepository;
+import com.example.maatjes.repositories.UserRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final MatchRepository matchRepository;
     private final AccountRepository accountRepository;
+    private final UserRepository userRepository;
 
-    public ReviewService(ReviewRepository reviewRepository, MatchRepository matchRepository, AccountRepository accountRepository) {
+    public ReviewService(ReviewRepository reviewRepository, MatchRepository matchRepository, AccountRepository accountRepository, UserRepository userRepository) {
         this.reviewRepository = reviewRepository;
         this.matchRepository = matchRepository;
         this.accountRepository = accountRepository;
+        this.userRepository = userRepository;
     }
 
-    public ReviewOutputDto createReview (Long matchId, Long accountId, ReviewInputDto reviewInputDto) throws RecordNotFoundException, AccountNotAssociatedException, BadRequestException {
-        Match match = matchRepository.findById(matchId).orElseThrow(() -> new RecordNotFoundException("Match niet gevonden"));
-        //todo omschrijven naar schrijverReview
-        //todo als ik de principle heb, dan hoef ik alleen maar de matchid mee te geven om bij de writer en receiver te komen van de review.
-        Account account = accountRepository.findById(accountId).orElseThrow(() -> new RecordNotFoundException("Account niet gevonden"));
-        if (!match.getHelpGiver().equals(account) && !match.getHelpReceiver().equals(account)) {
-            throw new AccountNotAssociatedException("Je kunt alleen een beoordeling schrijven over je eigen matches");
+    public ReviewOutputDto createReview (ReviewInputDto reviewInputDto) throws RecordNotFoundException, AccessDeniedException, BadRequestException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+                Match match = matchRepository.findById(reviewInputDto.getMatchId()).orElseThrow(() -> new RecordNotFoundException("Match niet gevonden"));
+        boolean isAssociatedUser = username.equals(match.getHelpGiver().getUser().getUsername())
+                || username.equals(match.getHelpReceiver().getUser().getUsername());
+
+        if (!isAssociatedUser) {
+            throw new AccessDeniedException("Je kunt alleen een beoordeling schrijven over je eigen matches");
         }
+
         if (!match.isGiverAccepted() || !match.isReceiverAccepted()) {
-            throw new AccountNotAssociatedException("Match moet eerst worden geaccepteerd voordat je een review kunt schrijven");}
+            throw new BadRequestException("Match moet eerst worden geaccepteerd voordat er een review kan worden geschreven");
+        }
 
         for (Review r: match.getMatchReviews()) {
-            if (Objects.equals(r.getWrittenBy().getAccountId(), accountId)){
+            if (Objects.equals(r.getWrittenBy().getUser().getUsername(), username)){
                 throw new BadRequestException("Je kunt maar één review schrijven over je match");
             }
         }
                 Review review = transferInputDtoToReview(reviewInputDto);
                 review.setMatch(match);
-                review.setWrittenBy(account);
-                review.setWrittenFor(match.getHelpReceiver().equals(account) ? match.getHelpGiver() : match.getHelpReceiver());
+                User user = userRepository.findById(username)
+                        .orElseThrow(() -> new RecordNotFoundException("User niet gevonden"));
+                Account writer = user.getAccount();
+                review.setWrittenBy(writer);
+
+                review.setWrittenFor(match.getHelpReceiver().equals(writer) ? match.getHelpGiver() : match.getHelpReceiver());
                 reviewRepository.save(review);
                 return transferReviewToOutputDto(review);
             }
-
-    public List<ReviewOutputDto> getAllReviews() {
-        List<Review> reviews = reviewRepository.findAll();
-        List<ReviewOutputDto> reviewOutputDtos = new ArrayList<>();
-        for (Review review : reviews) {
-            ReviewOutputDto reviewOutputDto = transferReviewToOutputDto(review);
-            reviewOutputDtos.add(reviewOutputDto);
-        }
-        return reviewOutputDtos;
-    }
 
     public List<ReviewOutputDto> getReviewsWrittenByAccount(Long accountId) throws RecordNotFoundException {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new RecordNotFoundException("Account niet gevonden"));
@@ -118,8 +122,14 @@ public class ReviewService {
         return transferReviewToOutputDto(review);
     }
 
-    public ReviewOutputDto updateReview(Long reviewId, ReviewInputDto reviewInputDto) throws RecordNotFoundException {
+    public ReviewOutputDto updateReview(Long reviewId, ReviewInputDto reviewInputDto) throws RecordNotFoundException, AccessDeniedException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
         Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new RecordNotFoundException("De review met ID " + reviewId + " bestaat niet."));
+        if (!review.getWrittenBy().getUser().getUsername().equals(username)) {
+            throw new AccessDeniedException("Je kunt alleen je eigen review aanpassen");
+        }
         review.setRating(reviewInputDto.getRating());
         review.setDescription(reviewInputDto.getDescription());
         review.setVerified(false);
@@ -127,13 +137,18 @@ public class ReviewService {
         return  transferReviewToOutputDto(returnReview);
     }
 
-    public void removeReview(@RequestBody Long reviewId) throws RecordNotFoundException {
-        Optional<Review> optionalReview = reviewRepository.findById(reviewId);
-        if (optionalReview.isPresent()) {
-           reviewRepository.deleteById(reviewId);
+    public String removeReview(@RequestBody Long reviewId) throws RecordNotFoundException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+
+        Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new RecordNotFoundException("Review niet gevonden"));
+        boolean isSelf = review.getWrittenBy().getUser().getUsername().equals(authentication.getName());
+        if (isAdmin || isSelf) {
+            reviewRepository.deleteById(reviewId);
         } else {
-            throw new RecordNotFoundException("Review niet gevonden");
+            throw new AccessDeniedException("Je hebt geen toegang tot deze review");
         }
+        return "Review succesvol verwijderd";
     }
 
     public ReviewOutputDto transferReviewToOutputDto(Review review) {

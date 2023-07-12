@@ -19,6 +19,7 @@ public class ReviewInputDto {
     public double rating;
     public String description;
     public boolean verified = false;
+    public Long matchId;
     //todo private String feedbackAdmin?;
 }
 

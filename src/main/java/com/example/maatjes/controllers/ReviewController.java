@@ -21,21 +21,17 @@ public class ReviewController {
         this.reviewService = reviewService;
     }
 
-    @PostMapping("/{matchId}/{accountId}")
-    public ResponseEntity<Object> createReview (@PathVariable("matchId") Long matchId, @PathVariable ("accountId") Long accountId, @Valid @RequestBody ReviewInputDto reviewInputDto, BindingResult bindingResult) {
+    @PostMapping("/new")
+    public ResponseEntity<Object> createReview (@Valid @RequestBody ReviewInputDto reviewInputDto, BindingResult bindingResult) {
         if (bindingResult.hasFieldErrors()){
             return ResponseEntity.badRequest().body(FieldErrorHandling.getErrorToStringHandling(bindingResult));
         }
-        return new ResponseEntity<>(reviewService.createReview(matchId, accountId, reviewInputDto), HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(reviewService.createReview(reviewInputDto), HttpStatus.ACCEPTED);
     }
 
-    @GetMapping
-    public ResponseEntity<List<ReviewOutputDto>> getAllReviews() {
-        return new ResponseEntity<>(reviewService.getAllReviews(), HttpStatus.OK);
-    }
-
+    //todo moet ik geen getReview?
     @GetMapping("/by/{accountId}")
-    public ResponseEntity<List<ReviewOutputDto>> getReviewsWrittenByAccount(@PathVariable("accountId") Long accountId) {
+    public ResponseEntity<List<ReviewOutputDto>> getReviewsWrittenByAccount(@PathVariable Long accountId) {
         List<ReviewOutputDto> reviewOutputDtos = reviewService.getReviewsWrittenByAccount(accountId);
         return new ResponseEntity<>(reviewOutputDtos, HttpStatus.OK);
     }
@@ -65,8 +61,8 @@ public class ReviewController {
     }
 
     @DeleteMapping("/{reviewId}")
-    public ResponseEntity<Object> removeReview(@PathVariable Long reviewId) {
-        reviewService.removeReview(reviewId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public ResponseEntity<String> removeReview(@PathVariable Long reviewId) {
+        String message = reviewService.removeReview(reviewId);
+        return ResponseEntity.ok().body(message);
     }
 }

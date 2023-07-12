@@ -101,7 +101,13 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/messages/{matchId}").hasRole("USER")                             //DOET HET
                 .requestMatchers(HttpMethod.DELETE, "/messages").hasRole("ADMIN")                                   //DOET HET
                 //review
-
+                .requestMatchers(HttpMethod.POST, "/reviews/new").hasRole("USER")                                   //DOET HET
+                .requestMatchers(HttpMethod.GET, "/reviews/by/{accountId}").authenticated()                         //DOET HET
+                .requestMatchers(HttpMethod.GET, "/reviews/for/{accountId}").authenticated()                        //DOET HET
+                .requestMatchers(HttpMethod.GET, "/reviews/toverify").hasRole("ADMIN")                              //DOET HET
+                .requestMatchers(HttpMethod.PUT, "/reviews/verify/{reviewId}").hasRole("ADMIN")                     //DOET HET
+                .requestMatchers(HttpMethod.PUT, "/reviews/{reviewId}").hasRole("USER")                             //DOET HET
+                .requestMatchers(HttpMethod.DELETE, "/reviews/{reviewId}").hasAnyRole("USER", "ADMIN")       //DOET HET
                 .anyRequest().denyAll()
                 .and()
                 .sessionManagement()

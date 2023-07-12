@@ -83,15 +83,11 @@ public class MatchService {
     public MatchOutputDto getMatch(Long matchId) throws RecordNotFoundException, AccessDeniedException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         boolean isAdmin = authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
-        String authenticatedUsername = authentication.getName();
+        String username = authentication.getName();
 
-        Optional<Match> optionalMatch = matchRepository.findById(matchId);
-        if (optionalMatch.isEmpty()) {
-            throw new RecordNotFoundException("Match niet gevonden");
-        }
-        Match match = optionalMatch.get();
+        Match match = matchRepository.findById(matchId).orElseThrow(() -> new RecordNotFoundException("Match niet gevonden"));
 
-        boolean isSelf = authenticatedUsername.equals(match.getHelpGiver().getUser().getUsername()) || authenticatedUsername.equals(match.getHelpReceiver().getUser().getUsername());
+        boolean isSelf = username.equals(match.getHelpGiver().getUser().getUsername()) || username.equals(match.getHelpReceiver().getUser().getUsername());
 
         if (isAdmin || isSelf) {
             return transferMatchToOutputDto(match);
