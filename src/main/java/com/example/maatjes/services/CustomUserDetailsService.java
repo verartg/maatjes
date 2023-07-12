@@ -1,7 +1,5 @@
 package com.example.maatjes.services;
 
-import com.example.maatjes.dtos.inputDtos.UserInputDto;
-import com.example.maatjes.dtos.outputDtos.UserOutputDto;
 import com.example.maatjes.exceptions.UsernameNotFoundException;
 import com.example.maatjes.models.Authority;
 import com.example.maatjes.models.User;
@@ -27,18 +25,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         this.userService = userService;
         this.userRepository = userRepository;
     }
-
-//    @Override
-//    public UserDetails loadUserByUsername(String username) {
-//        User user = userService.getUser(username);
-//        String password = user.getPassword();
-//        Set<Authority> authorities = user.getAuthorities();
-//        List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-//        for (Authority authority: authorities) {
-//            grantedAuthorities.add(new SimpleGrantedAuthority(authority.getAuthority()));
-//        }
-//        return new org.springframework.security.core.userdetails.User(username, password, grantedAuthorities);
-//    }
 
     @Override
     public UserDetails loadUserByUsername(String username) {

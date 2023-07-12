@@ -12,9 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 
 @CrossOrigin
 @RestController
@@ -26,12 +24,6 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
-
-//    @GetMapping
-//    public ResponseEntity<List<UserInputDto>> getUsers() {
-//        List<UserInputDto> userInputDtos = userService.getUsers();
-//        return ResponseEntity.ok().body(userInputDtos);
-//    }
 
     @GetMapping("/{username}")
     public ResponseEntity<UserOutputDto> getUser(@PathVariable String username) {

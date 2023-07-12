@@ -33,15 +33,6 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-//    public List<UserInputDto> getUsers() {
-//        List<UserInputDto> collection = new ArrayList<>();
-//        List<User> list = userRepository.findAll();
-//        for (User user : list) {
-//            collection.add(fromUser(user));
-//        }
-//        return collection;
-//    }
-
     public UserOutputDto getUser(String username) throws RecordNotFoundException, AccessDeniedException{
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
