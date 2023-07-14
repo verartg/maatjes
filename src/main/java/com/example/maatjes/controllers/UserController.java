@@ -30,7 +30,7 @@ public class UserController {
         UserOutputDto optionalUser = userService.getUser(username);
         return ResponseEntity.ok().body(optionalUser);
     }
-    //todo @Valid BindingResult toevoegen!
+
     @PostMapping
     public ResponseEntity<String> createUser(@Valid @RequestBody UserInputDto userInputDto, BindingResult bindingResult) {
         if (bindingResult.hasFieldErrors()) {
@@ -40,12 +40,14 @@ public class UserController {
         return ResponseEntity.ok().body(message);
     }
 
-    //todo @Valid BindingResult toevoegen!
     @PutMapping("/{username}")
-    public ResponseEntity<Object> updateUser(@PathVariable String username, @RequestBody UserInputDto dto) {
+    public ResponseEntity<Object> updateUser(@PathVariable String username, @Valid @RequestBody UserInputDto dto, BindingResult bindingResult) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!username.equals(authentication.getName())) {
             throw new AccessDeniedException("Je hebt geen toegang tot deze user");
+        }
+        if (bindingResult.hasFieldErrors()) {
+            return ResponseEntity.badRequest().body(FieldErrorHandling.getErrorToStringHandling(bindingResult));
         }
         UserOutputDto userOutputDto = userService.updateUser(username, dto);
         return ResponseEntity.ok().body(userOutputDto);
@@ -62,7 +64,6 @@ public class UserController {
         return ResponseEntity.ok().body(userService.getUserAuthorities(username));
     }
 
-    //todo @Valid BindingResult toevoegen?
     @PostMapping("/{username}/authorities")
     public ResponseEntity<UserOutputDto> addUserAuthority(@PathVariable String username, @RequestParam("authority") String authority) {
         UserOutputDto userOutputDto = userService.addUserAuthority(username, authority.toUpperCase());

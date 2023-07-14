@@ -49,11 +49,6 @@ public class UserService {
         }
     }
 
-    //todo onderste wil ik misschien niet op straat gooien. Misschien gewoon weggooien?
-    public boolean userExists(String username) {
-        return userRepository.existsById(username);
-    }
-
     public String createUser(UserInputDto userInputDto) throws BadRequestException {
         if (userRepository.existsById(userInputDto.getUsername())) {
             throw new BadRequestException("Er bestaat al een andere gebruiker met de naam " + userInputDto.getUsername());

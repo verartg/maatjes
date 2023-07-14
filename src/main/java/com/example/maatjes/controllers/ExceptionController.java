@@ -33,11 +33,6 @@ public class ExceptionController {
         return new ResponseEntity<>(errorMessage, HttpStatus.PAYLOAD_TOO_LARGE);
     }
 
-    @ExceptionHandler(AccountNotAssociatedException.class)
-    public ResponseEntity<Object> exception(AccountNotAssociatedException exception) {
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
-    }
-
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<Object> exception(BadRequestException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);

@@ -29,7 +29,12 @@ public class ReviewController {
         return new ResponseEntity<>(reviewService.createReview(reviewInputDto), HttpStatus.ACCEPTED);
     }
 
-    //todo moet ik geen getReview?
+    @GetMapping("/{reviewId}")
+    public ResponseEntity<ReviewOutputDto> getReview(@PathVariable Long reviewId) {
+        ReviewOutputDto review = reviewService.getReview(reviewId);
+        return ResponseEntity.ok().body(review);
+    }
+
     @GetMapping("/by/{accountId}")
     public ResponseEntity<List<ReviewOutputDto>> getReviewsWrittenByAccount(@PathVariable Long accountId) {
         List<ReviewOutputDto> reviewOutputDtos = reviewService.getReviewsWrittenByAccount(accountId);

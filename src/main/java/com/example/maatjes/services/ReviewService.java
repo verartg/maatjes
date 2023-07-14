@@ -69,6 +69,11 @@ public class ReviewService {
                 return transferReviewToOutputDto(review);
             }
 
+    public ReviewOutputDto getReview(Long reviewId) throws RecordNotFoundException {
+        Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new RecordNotFoundException("Review niet gevonden"));
+        return transferReviewToOutputDto(review);
+    }
+
     public List<ReviewOutputDto> getReviewsWrittenByAccount(Long accountId) throws RecordNotFoundException {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new RecordNotFoundException("Account niet gevonden"));
         List<Review> reviews = reviewRepository.findByWrittenBy(account);

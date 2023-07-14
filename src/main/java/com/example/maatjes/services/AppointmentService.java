@@ -118,7 +118,6 @@ public class AppointmentService {
         return appointmentOutputDtos;
     }
 
-//todo check of wel klopt met apointment/accountid
     public AppointmentOutputDto getAppointment(Long appointmentId) throws RecordNotFoundException, AccessDeniedException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();

@@ -58,7 +58,6 @@ public class SpringSecurityConfig {
                 .cors().and()
                 .authorizeHttpRequests()
                 //Authentication
-                //todo MOET IK NOG 403 forbidden response returnen voor user? Als iemand niet authenticated is komt er een forbidden. hoe zet ik daar een informatieve respons voor?
                 .requestMatchers(HttpMethod.GET, "/authenticated").authenticated()   //                                 DOET HET
                 .requestMatchers(HttpMethod.POST, "/login").permitAll() //iedereen kan proberen in te loggen.           DOET HET
                 //User
@@ -73,11 +72,11 @@ public class SpringSecurityConfig {
                 //account
                 .requestMatchers(HttpMethod.POST, "/accounts/createaccount").authenticated()                        //DOET HET
                 .requestMatchers(HttpMethod.GET, "/accounts").hasRole("ADMIN")                                      //DOET HET
-                //todo hieronder mag iedereen die ingelogd is, maar zou ik dan niet beter de naam naar username veranderen?
                 .requestMatchers(HttpMethod.GET, "/accounts/{username}").authenticated()                            //DOET HET
+                .requestMatchers(HttpMethod.GET, "/accounts/{username}/identification").hasAnyRole("USER", "ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/accounts/{username}").hasAnyRole("USER", "ADMIN")            //DOET HET
-                .requestMatchers(HttpMethod.PUT, "/accounts/{username}/upload").hasAnyRole("USER", "ADMIN")     //DOET HET
-                .requestMatchers(HttpMethod.DELETE, "/accounts/{username}/upload").hasAnyRole("USER", "ADMIN")  //DOET HET
+                .requestMatchers(HttpMethod.PUT, "/accounts/{username}/identification").hasAnyRole("USER", "ADMIN")     //DOET HET
+                .requestMatchers(HttpMethod.DELETE, "/accounts/{username}/identification").hasAnyRole("USER", "ADMIN")  //DOET HET
                 .requestMatchers(HttpMethod.DELETE, "/accounts/{username}").hasAnyRole("USER", "ADMIN")         //DOET HET
                 //match
                 .requestMatchers(HttpMethod.POST, "/matches").hasRole("ADMIN")                                          //DOET HET
@@ -89,6 +88,7 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/matches/{matchId}/accept").hasRole("USER")                       //DOET HET
                 .requestMatchers(HttpMethod.PUT, "/matches/{matchId}").hasRole("ADMIN")                             //DOET HET
                 .requestMatchers(HttpMethod.DELETE, "/matches/{matchId}").hasRole("ADMIN")                          //DOET HET
+                .requestMatchers(HttpMethod.DELETE, "/matches/expired").hasRole("ADMIN")                            //DOET HET
                 //appointment
                 .requestMatchers(HttpMethod.POST, "/appointments/addappointment").hasRole("USER")                   //DOET HET
                 .requestMatchers(HttpMethod.GET, "/appointments/match/{matchId}").hasRole("USER")                   //DOET HET
@@ -102,6 +102,7 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.DELETE, "/messages").hasRole("ADMIN")                                   //DOET HET
                 //review
                 .requestMatchers(HttpMethod.POST, "/reviews/new").hasRole("USER")                                   //DOET HET
+                .requestMatchers(HttpMethod.GET, "/reviews/{reviewId}").authenticated()                             //DOET HET
                 .requestMatchers(HttpMethod.GET, "/reviews/by/{accountId}").authenticated()                         //DOET HET
                 .requestMatchers(HttpMethod.GET, "/reviews/for/{accountId}").authenticated()                        //DOET HET
                 .requestMatchers(HttpMethod.GET, "/reviews/toverify").hasRole("ADMIN")                              //DOET HET

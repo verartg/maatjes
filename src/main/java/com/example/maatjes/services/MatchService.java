@@ -3,6 +3,7 @@ package com.example.maatjes.services;
 import com.example.maatjes.dtos.outputDtos.MatchOutputDto;
 import com.example.maatjes.dtos.inputDtos.MatchInputDto;
 import com.example.maatjes.enums.Activities;
+import com.example.maatjes.enums.ContactPerson;
 import com.example.maatjes.exceptions.*;
 import com.example.maatjes.exceptions.IllegalArgumentException;
 import com.example.maatjes.models.Account;
@@ -16,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -30,22 +32,43 @@ public class MatchService {
         this.userRepository = userRepository;
     }
 
-    //todo nog nadenken over of je wel twee keer dezelfde match mag maken.
     public MatchOutputDto proposeMatch(MatchInputDto matchInputDto) throws RecordNotFoundException, BadRequestException {
-        Account giver = accountRepository.findById(matchInputDto.helpGiverId).orElseThrow(() -> new RecordNotFoundException("De gebruiker met id " + matchInputDto.helpGiverId + " bestaat niet"));
-        Account receiver = accountRepository.findById(matchInputDto.helpReceiverId).orElseThrow(() -> new RecordNotFoundException("De gebruiker met id " + matchInputDto.helpReceiverId + " bestaat niet"));
+        Account giver = accountRepository.findById(matchInputDto.helpGiverId)
+                .orElseThrow(() -> new RecordNotFoundException("De gebruiker met id " + matchInputDto.helpGiverId + " bestaat niet"));
+
+        Account receiver = accountRepository.findById(matchInputDto.helpReceiverId)
+                .orElseThrow(() -> new RecordNotFoundException("De gebruiker met id " + matchInputDto.helpReceiverId + " bestaat niet"));
+
         List<Activities> giverActivitiesToGive = giver.getActivitiesToGive();
         List<Activities> receiverActivitiesToReceive = receiver.getActivitiesToReceive();
         List<Activities> sharedActivities = getSharedActivities(giverActivitiesToGive, receiverActivitiesToReceive);
+
         if (sharedActivities == null) {
             throw new BadRequestException("Geen gemeenschappelijke activiteiten gevonden voor beide accounts");
         } else {
+            List<Match> matches = matchRepository.findAll();
+            boolean isDuplicateMatch = false;
+
+            for (Match match : matches) {
+                if (match.getHelpGiver().equals(giver) && match.getHelpReceiver().equals(receiver)
+                        && match.getActivities().containsAll(sharedActivities)) {
+                    isDuplicateMatch = true;
+                    break;
+                }
+            }
+
+            if (isDuplicateMatch) {
+                throw new BadRequestException("Dezelfde match bestaat al of is al voorgesteld.");
+            }
+
             Match match = transferInputDtoToMatch(matchInputDto);
             match.setHelpGiver(giver);
             match.setHelpReceiver(receiver);
             match.setActivities(sharedActivities);
             match = matchRepository.save(match);
-            return transferMatchToOutputDto(match); }
+
+            return transferMatchToOutputDto(match);
+        }
     }
 
     private List<Activities> getSharedActivities(List<Activities> giverActivitiesToGive, List<Activities> receiverActivitiesToReceive) {
@@ -57,8 +80,14 @@ public class MatchService {
         return sharedActivities.isEmpty() ? null : sharedActivities;
     }
 
-    public List<MatchOutputDto> getMatches() {
-        List<Match> matches = matchRepository.findAll();
+    public List<MatchOutputDto> getMatches(Optional<ContactPerson> contactPerson) {
+        List<Match> matches;
+        if (contactPerson.isPresent()) {
+            matches = matchRepository.findAllByContactPerson(contactPerson.get());
+        } else {
+            matches = matchRepository.findAll();
+        }
+
         List<MatchOutputDto> matchOutputDtos = new ArrayList<>();
         for (Match match : matches) {
             MatchOutputDto matchOutputDto = transferMatchToOutputDto(match);
@@ -66,19 +95,6 @@ public class MatchService {
         }
         return matchOutputDtos;
     }
-
-//    public MatchOutputDto getMatch(Long matchId) throws RecordNotFoundException {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        boolean isAdmin = authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
-//        boolean isSelf = authentication.getName().equals(username);
-//
-//        if (isAdmin || isSelf) {
-//            Optional<Match> optionalMatch = matchRepository.findById(matchId);
-//            if (optionalMatch.isEmpty()) {
-//                throw new RecordNotFoundException("Match niet gevonden");}
-//            Match match = optionalMatch.get();
-//        return transferMatchToOutputDto(match);}
-//    }
 
     public MatchOutputDto getMatch(Long matchId) throws RecordNotFoundException, AccessDeniedException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -96,7 +112,6 @@ public class MatchService {
         }
     }
 
-    //todo matches filteren op contactperson voor de admin om eigen matches op te halen.
     public List<MatchOutputDto> getAcceptedMatchesByUsername(String username) throws RecordNotFoundException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!username.equals(authentication.getName())) {
@@ -201,8 +216,12 @@ public class MatchService {
         return "Match succesvol verwijderd";
     }
 
-    //todo remove matches that have ended! I think I need to put a filter on that on the get all matches
-
+    public String removeExpiredMatches() {
+        LocalDate currentDate = LocalDate.now();
+        List<Match> expiredMatches = matchRepository.findAllByEndMatchBefore(currentDate);
+        matchRepository.deleteAll(expiredMatches);
+        return "Verlopen matches succesvol verwijderd.";
+    }
 
     public MatchOutputDto transferMatchToOutputDto(Match match) {
         MatchOutputDto matchOutputDto = new MatchOutputDto();

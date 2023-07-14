@@ -2,6 +2,7 @@ package com.example.maatjes.controllers;
 
 import com.example.maatjes.dtos.outputDtos.MatchOutputDto;
 import com.example.maatjes.dtos.inputDtos.MatchInputDto;
+import com.example.maatjes.enums.ContactPerson;
 import com.example.maatjes.services.MatchService;
 import com.example.maatjes.util.FieldErrorHandling;
 import jakarta.validation.Valid;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/matches")
@@ -29,8 +31,10 @@ public class MatchController {
     }
 
     @GetMapping
-    public ResponseEntity<List<MatchOutputDto>> getMatches(){
-        return new ResponseEntity<>(matchService.getMatches(), HttpStatus.OK);
+    public ResponseEntity<List<MatchOutputDto>> getMatches(@RequestParam(value = "contactPerson", required = false) ContactPerson contactPerson) {
+        Optional<ContactPerson> contactPersonOptional = Optional.ofNullable(contactPerson);
+        List<MatchOutputDto> matches = matchService.getMatches(contactPersonOptional);
+        return new ResponseEntity<>(matches, HttpStatus.OK);
     }
 
     @GetMapping("/{matchId}")
@@ -64,6 +68,12 @@ public class MatchController {
     @DeleteMapping("/{matchId}")
     public ResponseEntity<String> removeMatch(@PathVariable Long matchId) {
         String message = matchService.removeMatch(matchId);
+        return ResponseEntity.ok().body(message);
+    }
+
+    @DeleteMapping("/expired")
+    public ResponseEntity<String> removeExpiredMatches() {
+        String message = matchService.removeExpiredMatches();
         return ResponseEntity.ok().body(message);
     }
 }

@@ -16,7 +16,6 @@ import java.util.Set;
 public class UserOutputDto {
     public String username;
     public String email;
-    //todo onderstaande wil ik niet tonen aan iedereen.
     @JsonSerialize
     public Set<Authority> authorities;
 }

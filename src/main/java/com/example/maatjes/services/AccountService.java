@@ -11,6 +11,10 @@ import com.example.maatjes.models.Account;
 import com.example.maatjes.models.User;
 import com.example.maatjes.repositories.AccountRepository;
 import com.example.maatjes.repositories.UserRepository;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -79,15 +83,6 @@ public class AccountService {
         return accountOutputDtos;
     }
 
-//    public AccountOutputDto getAccount(String username) throws RecordNotFoundException {
-//        Optional<Account> optionalAccount = accountRepository.findById(username);
-//        if (optionalAccount.isEmpty()) {
-//            throw new RecordNotFoundException("Account niet gevonden");
-//        }
-//        Account account = optionalAccount.get();
-//        return transferAccountToOutputDto(account);
-//    }
-
     public AccountOutputDto getAccount(String username) throws RecordNotFoundException {
         Optional<User> optionalUser = userRepository.findById(username);
         if (optionalUser.isEmpty()) {
@@ -99,6 +94,23 @@ public class AccountService {
             throw new RecordNotFoundException("Account niet gevonden");
         }
         return transferAccountToOutputDto(account);
+    }
+
+    public byte[] getIdentificationDocument(String username) throws RecordNotFoundException {
+        Optional<User> optionalUser = userRepository.findById(username);
+        if (optionalUser.isEmpty()) {
+            throw new RecordNotFoundException("Gebruiker niet gevonden");
+        }
+        User user = optionalUser.get();
+        Account account = user.getAccount();
+        if (account == null) {
+            throw new RecordNotFoundException("Account niet gevonden");
+        }
+        byte[] document = account.getDocument();
+        if (document == null) {
+            throw new RecordNotFoundException("Document niet gevonden");
+        }
+        return document;
     }
 
     public AccountOutputDto updateAccount(String username, AccountInputDto accountInputDto) throws RecordNotFoundException {
@@ -115,7 +127,11 @@ public class AccountService {
             LocalDate currentDate = LocalDate.now();
             Period age = Period.between(accountInputDto.getBirthdate(), currentDate);
             int ageYears = age.getYears();
-            //todo check qua leeftijd? 18 jaar of ouder?
+
+            if (ageYears < 18) {
+                throw new IllegalArgumentException("Only adults can create an account.");
+            }
+
             account.setAge(ageYears);
             account.setSex(accountInputDto.getSex());
             account.setPhoneNumber(accountInputDto.getPhoneNumber());
@@ -137,7 +153,7 @@ public class AccountService {
 
     @Transactional
     public AccountOutputDto uploadIdentificationDocument(String username, MultipartFile file)
-            throws MaxUploadSizeExceededException, IOException, RecordNotFoundException {
+            throws MaxUploadSizeExceededException, IOException, RecordNotFoundException, BadRequestException {
         Optional<User> optionalUser = userRepository.findById(username);
         if (optionalUser.isEmpty()) {
             throw new RecordNotFoundException("Gebruiker niet gevonden");
@@ -152,6 +168,11 @@ public class AccountService {
         long maxFileSize = 1000000; // 1MB in bytes
         if (fileSize > maxFileSize) {
             throw new MaxUploadSizeExceededException(maxFileSize);
+        }
+
+        String fileType = file.getContentType();
+        if (!fileType.equals("application/pdf")) {
+            throw new BadRequestException("Ongeldig documenttype. Alleen PDF-bestanden zijn toegestaan.");
         }
 
         byte[] documentData = file.getBytes();
@@ -239,6 +260,11 @@ public class AccountService {
         LocalDate currentDate = LocalDate.now();
         Period age = Period.between(accountInputDto.getBirthdate(), currentDate);
         int ageYears = age.getYears();
+
+        if (ageYears < 18) {
+            throw new IllegalArgumentException("Je moet boven de achttien zijn");
+        }
+
         account.setAge(ageYears);
         account.setSex(accountInputDto.getSex());
         account.setPhoneNumber(accountInputDto.getPhoneNumber());

@@ -3,10 +3,13 @@ package com.example.maatjes.controllers;
 import com.example.maatjes.dtos.outputDtos.AccountOutputDto;
 import com.example.maatjes.dtos.inputDtos.AccountInputDto;
 import com.example.maatjes.exceptions.AccessDeniedException;
+import com.example.maatjes.exceptions.RecordNotFoundException;
 import com.example.maatjes.services.AccountService;
 import com.example.maatjes.util.FieldErrorHandling;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -45,6 +48,20 @@ public class AccountController {
         return new ResponseEntity<>(accountService.getAccount(username), HttpStatus.OK);
     }
 
+    @GetMapping("/{username}/identification")
+    public ResponseEntity<byte[]> getIdentificationDocument(@PathVariable("username") String username) throws RecordNotFoundException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!username.equals(authentication.getName())) {
+            throw new AccessDeniedException("Je kunt alleen je eigen identificatie document opvragen");
+        }
+        byte[] document = accountService.getIdentificationDocument(username);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+
+        return ResponseEntity.ok().headers(headers).body(document);
+    }
+
     @PutMapping("/{username}")
     public ResponseEntity<Object> updateAccount(@PathVariable String username, @Valid @RequestBody AccountInputDto accountInputDto, BindingResult bindingResult) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -57,7 +74,7 @@ public class AccountController {
         return new ResponseEntity<>(accountService.updateAccount(username, accountInputDto), HttpStatus.ACCEPTED);
     }
 
-    @PutMapping("/{username}/upload")
+    @PutMapping("/{username}/identification")
     public ResponseEntity<Object> uploadIdentificationDocument(@PathVariable String username, @RequestParam("file") MultipartFile file) throws Exception{
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!username.equals(authentication.getName())) {
@@ -66,7 +83,7 @@ public class AccountController {
         return new ResponseEntity<>(accountService.uploadIdentificationDocument(username, file), HttpStatus.ACCEPTED);
     }
 
-    @DeleteMapping("/{username}/upload")
+    @DeleteMapping("/{username}/identification")
     public ResponseEntity<String> removeIdentificationDocument(@PathVariable String username) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!username.equals(authentication.getName())) {
