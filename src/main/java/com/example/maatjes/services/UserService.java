@@ -33,6 +33,36 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    public String createUser(UserInputDto userInputDto) throws BadRequestException {
+        if (userRepository.existsById(userInputDto.getUsername())) {
+            throw new BadRequestException("Er bestaat al een andere gebruiker met de naam " + userInputDto.getUsername());
+        }
+
+        String randomString = RandomStringGenerator.generateAlphaNumeric(20);
+        User user = transferUserInputDtoToUser(new User(), userInputDto, passwordEncoder);
+        user.setApikey(randomString);
+        user.addAuthority(new Authority(user.getUsername(), "ROLE_USER"));
+        userRepository.save(user);
+        return "Je user is succesvol aangemaakt, je kunt nu inloggen";
+    }
+
+    public UserOutputDto addUserAuthority(String username, String authority) throws RecordNotFoundException, BadRequestException {
+        if (!userRepository.existsById(username)) throw new RecordNotFoundException("Gebruiker met de gebruikersnaam " + username + " niet gevonden");
+        User user = userRepository.findById(username).get();
+        for (Authority a : user.getAuthorities()) {
+            if (a.getAuthority().equals("ROLE_" + authority)) {
+                throw new BadRequestException("Deze gebruiker heeft al de " + authority + " rol");
+            }
+        }
+        try {
+            user.addAuthority(new Authority(user.getUsername(), "ROLE_" + authority));
+        } catch (Exception e) {
+            throw new BadRequestException("Deze authoriteit kan niet worden toegevoegd.");
+        }
+        userRepository.save(user);
+        return transferUserToOutputDto(user);
+    }
+
     public UserOutputDto getUser(String username) throws RecordNotFoundException, AccessDeniedException{
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -49,17 +79,11 @@ public class UserService {
         }
     }
 
-    public String createUser(UserInputDto userInputDto) throws BadRequestException {
-        if (userRepository.existsById(userInputDto.getUsername())) {
-            throw new BadRequestException("Er bestaat al een andere gebruiker met de naam " + userInputDto.getUsername());
-        }
-
-        String randomString = RandomStringGenerator.generateAlphaNumeric(20);
-        User user = transferUserInputDtoToUser(new User(), userInputDto, passwordEncoder);
-        user.setApikey(randomString);
-        user.addAuthority(new Authority(user.getUsername(), "ROLE_USER"));
-        userRepository.save(user);
-        return "Je user is succesvol aangemaakt, je kunt nu inloggen";
+    public Set<Authority> getUserAuthorities(String username) throws RecordNotFoundException {
+        User user = userRepository.findById(username).orElseThrow(() -> new RecordNotFoundException("Gebruiker met de gebruikersnaam " + username + " niet gevonden"));
+        UserOutputDto userOutputDto = transferUserToOutputDto(user);
+        userOutputDto.authorities = user.getAuthorities();
+        return userOutputDto.authorities;
     }
 
     @PreAuthorize("#username == authentication.getName()")
@@ -86,30 +110,6 @@ public class UserService {
         } else {
             throw new AccessDeniedException("Je hebt geen toegang tot deze user");
         }
-    }
-
-    public Set<Authority> getUserAuthorities(String username) throws RecordNotFoundException {
-        User user = userRepository.findById(username).orElseThrow(() -> new RecordNotFoundException("Gebruiker met de gebruikersnaam " + username + " niet gevonden"));
-        UserOutputDto userOutputDto = transferUserToOutputDto(user);
-        userOutputDto.authorities = user.getAuthorities();
-        return userOutputDto.authorities;
-    }
-
-    public UserOutputDto addUserAuthority(String username, String authority) throws RecordNotFoundException, BadRequestException {
-        if (!userRepository.existsById(username)) throw new RecordNotFoundException("Gebruiker met de gebruikersnaam " + username + " niet gevonden");
-        User user = userRepository.findById(username).get();
-        for (Authority a : user.getAuthorities()) {
-            if (a.getAuthority().equals("ROLE_" + authority)) {
-                throw new BadRequestException("Deze gebruiker heeft al de " + authority + " rol");
-            }
-        }
-        try {
-            user.addAuthority(new Authority(user.getUsername(), "ROLE_" + authority));
-        } catch (Exception e) {
-            throw new BadRequestException("Deze authoriteit kan niet worden toegevoegd.");
-        }
-        userRepository.save(user);
-        return transferUserToOutputDto(user);
     }
 
     public String removeAuthority(String username, String authority) throws RecordNotFoundException, BadRequestException {

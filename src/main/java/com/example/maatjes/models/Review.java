@@ -20,6 +20,7 @@ public class Review {
     private String description;
     private boolean verified;
 
+
     //todo private String feedbackAdmin?;
     //todo datum?
     //todo written for a username?

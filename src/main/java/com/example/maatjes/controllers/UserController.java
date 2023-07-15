@@ -25,12 +25,6 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/{username}")
-    public ResponseEntity<UserOutputDto> getUser(@PathVariable String username) {
-        UserOutputDto optionalUser = userService.getUser(username);
-        return ResponseEntity.ok().body(optionalUser);
-    }
-
     @PostMapping
     public ResponseEntity<String> createUser(@Valid @RequestBody UserInputDto userInputDto, BindingResult bindingResult) {
         if (bindingResult.hasFieldErrors()) {
@@ -38,6 +32,23 @@ public class UserController {
         }
         String message = userService.createUser(userInputDto);
         return ResponseEntity.ok().body(message);
+    }
+
+    @PostMapping("/{username}/authorities")
+    public ResponseEntity<UserOutputDto> addUserAuthority(@PathVariable String username, @RequestParam("authority") String authority) {
+        UserOutputDto userOutputDto = userService.addUserAuthority(username, authority.toUpperCase());
+        return new ResponseEntity<>(userOutputDto, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{username}")
+    public ResponseEntity<UserOutputDto> getUser(@PathVariable String username) {
+        UserOutputDto optionalUser = userService.getUser(username);
+        return ResponseEntity.ok().body(optionalUser);
+    }
+
+    @GetMapping("/{username}/authorities")
+    public ResponseEntity<Object> getUserAuthorities(@PathVariable String username) {
+        return ResponseEntity.ok().body(userService.getUserAuthorities(username));
     }
 
     @PutMapping("/{username}")
@@ -59,18 +70,8 @@ public class UserController {
         return ResponseEntity.ok().body(message);
     }
 
-    @GetMapping("/{username}/authorities")
-    public ResponseEntity<Object> getUserAuthorities(@PathVariable String username) {
-        return ResponseEntity.ok().body(userService.getUserAuthorities(username));
-    }
-
-    @PostMapping("/{username}/authorities")
-    public ResponseEntity<UserOutputDto> addUserAuthority(@PathVariable String username, @RequestParam("authority") String authority) {
-        UserOutputDto userOutputDto = userService.addUserAuthority(username, authority.toUpperCase());
-        return new ResponseEntity<>(userOutputDto, HttpStatus.CREATED);
-    }
     @DeleteMapping("/{username}/authorities/{authority}")
-    public ResponseEntity<String> deleteUserAuthority(@PathVariable String username, @PathVariable("authority") String authority) {
+    public ResponseEntity<String> removeAuthority(@PathVariable String username, @PathVariable("authority") String authority) {
         String message = userService.removeAuthority(username, authority);
         return ResponseEntity.ok().body(message);
     }
