@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -20,7 +22,8 @@ public class ReviewInputDto {
     public String description;
     public boolean verified = false;
     public Long matchId;
-    //todo private String feedbackAdmin?;
+    public String feedbackAdmin;
+    public LocalDate date;
 }
 
 

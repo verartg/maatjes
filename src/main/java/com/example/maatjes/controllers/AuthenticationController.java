@@ -28,17 +28,11 @@ public class AuthenticationController {
         this.jwtUtil = jwtUtil;
     }
 
-    /*
-         Deze methode geeft de principal (basis user gegevens) terug van de ingelogde gebruiker. niet vergeten JWT token mee te sturen
-     */
     @GetMapping("/authenticated")
     public ResponseEntity<Object> authenticated(Authentication authentication, Principal principal) {
         return ResponseEntity.ok().body(principal);
     }
 
-    /*
-    Deze methode geeft het JWT token terug wanneer de gebruiker de juiste inloggegevens op geeft.
-     oftewel: inloggen*/
     @PostMapping("/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws BadCredentialsException {
         String username = authenticationRequest.getUsername();

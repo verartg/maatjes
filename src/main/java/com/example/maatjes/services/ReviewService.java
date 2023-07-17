@@ -114,13 +114,16 @@ public class ReviewService {
         return reviewOutputDtosToVerify;
     }
 
-    public ReviewOutputDto verifyReview(Long reviewId) throws RecordNotFoundException, BadRequestException {
+    public ReviewOutputDto verifyReview(Long reviewId, String feedbackAdmin, boolean verify) throws RecordNotFoundException, BadRequestException {
         Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new RecordNotFoundException("Review niet gevonden"));
-        //todo if review niet goed is, dan setten we een feedback met een string. dan blijft review.setVerified(false). in het andere geval:
 
         if (review.isVerified()) {
             throw new BadRequestException("Review is al geverifieerd");
+        } else if (!verify) {
+            review.setFeedbackAdmin(feedbackAdmin);
+            review.setVerified(false);
         } else {
+            review.setFeedbackAdmin(null);
             review.setVerified(true);
         }
         reviewRepository.save(review);
@@ -164,9 +167,11 @@ public class ReviewService {
         reviewOutputDto.verified = review.isVerified();
         reviewOutputDto.activities = review.getMatch().getActivities();
         reviewOutputDto.writtenBy = review.getWrittenBy().getName();
-        String writtenBy = review.getWrittenBy().getName();
-        String helpGiver = review.getMatch().getHelpGiver().getName();
-        String helpReceiver = review.getMatch().getHelpReceiver().getName();
+        reviewOutputDto.date = review.getDate();
+        reviewOutputDto.feedbackAdmin = review.getFeedbackAdmin();
+        String writtenBy = review.getWrittenBy().getUser().getUsername();
+        String helpGiver = review.getMatch().getHelpGiver().getUser().getUsername();
+        String helpReceiver = review.getMatch().getHelpReceiver().getUser().getUsername();
         reviewOutputDto.setWrittenFor(writtenBy.equals(helpGiver) ? helpReceiver : helpGiver);
         return reviewOutputDto;
     }
@@ -176,6 +181,7 @@ public class ReviewService {
         review.setRating(reviewInputDto.getRating());
         review.setDescription(reviewInputDto.getDescription());
         review.setVerified(reviewInputDto.isVerified());
+        review.setDate(reviewInputDto.getDate());
         return review;
         }
     }

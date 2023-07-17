@@ -5,17 +5,11 @@ import com.example.maatjes.dtos.outputDtos.AccountOutputDto;
 import com.example.maatjes.dtos.inputDtos.AccountInputDto;
 import com.example.maatjes.exceptions.AccessDeniedException;
 import com.example.maatjes.exceptions.BadRequestException;
-//import com.example.maatjes.exceptions.MaxUploadSizeExceededException;
 import com.example.maatjes.exceptions.RecordNotFoundException;
 import com.example.maatjes.models.Account;
 import com.example.maatjes.models.User;
 import com.example.maatjes.repositories.AccountRepository;
 import com.example.maatjes.repositories.UserRepository;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -35,12 +29,10 @@ import java.util.Optional;
 public class AccountService {
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
-    private final UserController userController;
 
-    public AccountService(AccountRepository accountRepository, UserRepository userRepository, UserController userController) {
+    public AccountService(AccountRepository accountRepository, UserRepository userRepository) {
         this.accountRepository = accountRepository;
         this.userRepository = userRepository;
-        this.userController = userController;
     }
 
     public AccountOutputDto createAccount(AccountInputDto accountInputDto) {
@@ -53,12 +45,21 @@ public class AccountService {
             throw new BadRequestException("Je hebt al een account.");
         }
 
+        boolean givesHelp = accountInputDto.isGivesHelp();
+        boolean needsHelp = accountInputDto.isNeedsHelp();
+
+        if (givesHelp && (accountInputDto.getActivitiesToGive() == null || accountInputDto.getActivitiesToGive().isEmpty())) {
+            throw new BadRequestException("Je moet activiteiten opgeven als je hulp biedt.");
+        }
+
+        if (needsHelp && (accountInputDto.getActivitiesToReceive() == null || accountInputDto.getActivitiesToReceive().isEmpty())) {
+            throw new BadRequestException("Je moet activiteiten opgeven als je hulp nodig hebt.");
+        }
+
         Account account = transferInputDtoToAccount(accountInputDto);
         account.setUser(user);
         user.setAccount(account);
         accountRepository.save(account);
-
-//        user.getAccount().setAccountId(account.getAccountId());
         userRepository.save(user);
         return transferAccountToOutputDto(account);
     }
@@ -218,11 +219,8 @@ public class AccountService {
             if (account == null) {
                 throw new RecordNotFoundException("Account niet gevonden");
             } else {
-                // Remove the account association from the user
                 user.setAccount(null);
                 userRepository.save(user);
-
-                // Delete the account
                 //todo bij deze stap wordt ook de user verwijderd...whyyyyyy
                 accountRepository.deleteById(account.getAccountId());
             }
@@ -231,8 +229,6 @@ public class AccountService {
         }
         return "Account succesvol verwijderd";
     }
-
-
 
     public AccountOutputDto transferAccountToOutputDto(Account account) {
         AccountOutputDto accountOutputDto = new AccountOutputDto();
@@ -249,8 +245,8 @@ public class AccountService {
         accountOutputDto.frequency = account.getFrequency();
         accountOutputDto.givenReviews = account.getGivenReviews();
         accountOutputDto.receivedReviews = account.getReceivedReviews();
-//        accountOutputDto.user = account.getUser();
-//        accountOutputDto.setUser(UserService.transferUserToOutputDto(account.getUser()));
+//todo        accountOutputDto.user = account.getUser();
+//todo        accountOutputDto.setUser(UserService.transferUserToOutputDto(account.getUser()));
         return accountOutputDto;
         }
 

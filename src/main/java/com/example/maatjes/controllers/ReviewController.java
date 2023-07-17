@@ -53,8 +53,8 @@ public class ReviewController {
     }
 
     @PutMapping("/verify/{reviewId}")
-    public ResponseEntity<Object> verifyReview(@PathVariable("reviewId") Long reviewId) {
-        return new ResponseEntity<>(reviewService.verifyReview(reviewId), HttpStatus.ACCEPTED);
+    public ResponseEntity<Object> verifyReview(@PathVariable Long reviewId, @RequestParam String feedbackAdmin, @RequestParam boolean verify) {
+        return new ResponseEntity<>(reviewService.verifyReview(reviewId, feedbackAdmin, verify), HttpStatus.ACCEPTED);
     }
 
     @PutMapping("/{reviewId}")

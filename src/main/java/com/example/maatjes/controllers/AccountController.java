@@ -49,7 +49,7 @@ public class AccountController {
     }
 
     @GetMapping("/{username}/identification")
-    public ResponseEntity<byte[]> getIdentificationDocument(@PathVariable("username") String username) throws RecordNotFoundException {
+    public ResponseEntity<byte[]> getIdentificationDocument(@PathVariable String username) throws RecordNotFoundException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!username.equals(authentication.getName())) {
             throw new AccessDeniedException("Je kunt alleen je eigen identificatie document opvragen");

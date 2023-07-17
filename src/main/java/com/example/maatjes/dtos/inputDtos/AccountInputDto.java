@@ -35,9 +35,7 @@ public class AccountInputDto {
     public byte[] document;
     public boolean givesHelp;
     public boolean needsHelp;
-    //todo if boolean givesHelp == true, then @NotNull
     public List<Activities> activitiesToGive;
-    //todo if boolean needsHelp == true, then @NotNull
     public List<Activities> activitiesToReceive;
     public Availability availability;
     public Frequency frequency;

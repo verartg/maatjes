@@ -20,7 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MatchOutputDto {
-    public Long id;
+    public Long matchId;
     public boolean giverAccepted = false;
     public boolean receiverAccepted = false;
     public ContactPerson contactPerson;
@@ -32,9 +32,6 @@ public class MatchOutputDto {
     public String helpGiverName;
     public List<Activities> activities;
     public List<Review> matchReviews;
-    //todo onderstaanden nog implementern.
-    //todo additionele vraag, moeten deze hier wel staan? Aangezien ik toch geen lijsten kan weergeven in PgAdmin? ik kan hier toch alleen maar bij met requests?
     public List<Appointment> appointments;
     public List<Message> messages;
-
 }

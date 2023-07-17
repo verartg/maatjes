@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -19,11 +21,8 @@ public class Review {
     private double rating;
     private String description;
     private boolean verified;
-
-
-    //todo private String feedbackAdmin?;
-    //todo datum?
-    //todo written for a username?
+    private String feedbackAdmin;
+    private LocalDate date;
 
     @ManyToOne
     @JsonIgnore

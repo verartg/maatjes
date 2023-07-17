@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -17,8 +18,9 @@ public class ReviewOutputDto {
     public double rating;
     public String description;
     public boolean verified;
-    //todo private String feedbackAdmin?
     public String writtenBy;
     public String writtenFor;
     public List<Activities> activities;
+    public String feedbackAdmin;
+    public LocalDate date;
 }

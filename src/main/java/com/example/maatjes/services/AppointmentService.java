@@ -13,7 +13,6 @@ import com.example.maatjes.repositories.MatchRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -63,8 +62,7 @@ public class AppointmentService {
         return transferAppointmentToOutputDto(appointment);
     }
 
-
-    //    private Account determineLoggedInAccount() {
+    //todo om shorter code te schrijven    private Account determineLoggedInAccount() {
 //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 //        if (authentication != null && authentication.getPrincipal() instanceof Account) {
 //            return (Account) authentication.getPrincipal();
@@ -172,13 +170,6 @@ public class AppointmentService {
         appointmentRepository.deleteById(appointmentId);
         return "Afspraak succesvol verwijderd";
     }
-
-//    public void removeAppointment(@RequestBody Long appointmentId) throws RecordNotFoundException {
-//        Optional<Appointment> optionalAppointment = appointmentRepository.findById(appointmentId);
-//        if (optionalAppointment.isEmpty()) {
-//            throw new RecordNotFoundException("Afspraak niet gevonden");}
-//        appointmentRepository.deleteById(appointmentId);
-//    }
 
     public AppointmentOutputDto transferAppointmentToOutputDto(Appointment appointment) {
         AppointmentOutputDto appointmentOutputDto = new AppointmentOutputDto();

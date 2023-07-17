@@ -51,7 +51,7 @@ public class MatchService {
 
             for (Match match : matches) {
                 if (match.getHelpGiver().equals(giver) && match.getHelpReceiver().equals(receiver)
-                        && match.getActivities().containsAll(sharedActivities)) {
+                        && new HashSet<>(match.getActivities()).containsAll(sharedActivities)) {
                     isDuplicateMatch = true;
                     break;
                 }
@@ -225,7 +225,7 @@ public class MatchService {
 
     public MatchOutputDto transferMatchToOutputDto(Match match) {
         MatchOutputDto matchOutputDto = new MatchOutputDto();
-        matchOutputDto.id = match.getId();
+        matchOutputDto.matchId = match.getMatchId();
         matchOutputDto.giverAccepted = match.isGiverAccepted();
         matchOutputDto.receiverAccepted = match.isReceiverAccepted();
         matchOutputDto.startMatch = match.getStartMatch();

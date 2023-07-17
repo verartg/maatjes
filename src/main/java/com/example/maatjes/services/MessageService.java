@@ -6,7 +6,6 @@ import com.example.maatjes.exceptions.AccessDeniedException;
 import com.example.maatjes.exceptions.RecordNotFoundException;
 import com.example.maatjes.models.Match;
 import com.example.maatjes.models.Message;
-import com.example.maatjes.models.User;
 import com.example.maatjes.repositories.AccountRepository;
 import com.example.maatjes.repositories.MatchRepository;
 import com.example.maatjes.repositories.MessageRepository;
@@ -16,7 +15,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -27,14 +25,10 @@ import java.util.List;
 public class MessageService {
     private final MessageRepository messageRepository;
     private final MatchRepository matchRepository;
-    private final AccountRepository accountRepository;
-    private final UserRepository userRepository;
 
-    public MessageService(MessageRepository messageRepository, MatchRepository matchRepository, AccountRepository accountRepository, UserRepository userRepository) {
+    public MessageService(MessageRepository messageRepository, MatchRepository matchRepository) {
         this.messageRepository = messageRepository;
         this.matchRepository = matchRepository;
-        this.accountRepository = accountRepository;
-        this.userRepository = userRepository;
     }
 
     public MessageOutputDto writeMessage(Long matchId, MessageInputDto messageInputDto) throws RecordNotFoundException, AccessDeniedException {

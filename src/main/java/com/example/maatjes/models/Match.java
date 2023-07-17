@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -22,8 +23,8 @@ import java.util.List;
 @Table(name = "Match")
 public class Match {
     @Id
-    @GeneratedValue
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long matchId;
     private boolean giverAccepted = false;
     private boolean receiverAccepted = false;
     @Enumerated(EnumType.STRING)
@@ -44,7 +45,11 @@ public class Match {
     @JoinColumn(name = "helpReceiver_id")
     private Account helpReceiver;
 
-    private List<Activities> activities;
+    @ElementCollection
+    @CollectionTable(name = "match_activities")
+    @Column(name = "activities")
+    @Enumerated(EnumType.STRING)
+    private List<Activities> activities = new ArrayList<>();
 
     @OneToMany(mappedBy = "match", cascade = CascadeType.ALL)
     @JsonIgnore

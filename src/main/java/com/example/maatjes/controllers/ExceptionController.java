@@ -21,12 +21,6 @@ public class ExceptionController {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-//    @ExceptionHandler(FileSizeExceededException.class)
-//    public ResponseEntity<Object> handleFileSizeExceededException(FileSizeExceededException exception) {
-//        String errorMessage = exception.getMessage();
-//        return new ResponseEntity<>(errorMessage, HttpStatus.PAYLOAD_TOO_LARGE);
-//    }
-
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<Object> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException exception) {
         String errorMessage = "Je bestand is te groot, upload een document van maximaal 1MB";

@@ -24,7 +24,6 @@ public class AppointmentInputDto {
     public LocalTime endTime;
     @NotBlank(message = "Er moet een beschrijving worden ingevuld.")
     public String description;
-    //todo matchId eigenlijk via pathvariable meegeven?
     public Long matchId;
 }
 
