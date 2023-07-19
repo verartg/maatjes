@@ -23,7 +23,6 @@ public class ReviewInputDto {
     public boolean verified = false;
     public Long matchId;
     public String feedbackAdmin;
-    public LocalDate date;
 }
 
 

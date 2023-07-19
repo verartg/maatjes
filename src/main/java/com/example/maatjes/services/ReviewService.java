@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.time.LocalDate;
 
 @Service
 public class ReviewService {
@@ -65,6 +66,7 @@ public class ReviewService {
                 review.setWrittenBy(writer);
 
                 review.setWrittenFor(match.getHelpReceiver().equals(writer) ? match.getHelpGiver() : match.getHelpReceiver());
+                review.setDate(LocalDate.now());
                 reviewRepository.save(review);
                 return transferReviewToOutputDto(review);
             }
@@ -106,7 +108,7 @@ public class ReviewService {
         List<Review> reviews = reviewRepository.findAll();
         List<ReviewOutputDto> reviewOutputDtosToVerify = new ArrayList<>();
         for (Review review : reviews) {
-            if (!review.isVerified()) {
+            if (!review.isVerified() && review.getFeedbackAdmin() == null) {
                 ReviewOutputDto reviewOutputDto = transferReviewToOutputDto(review);
                 reviewOutputDtosToVerify.add(reviewOutputDto);
             }
@@ -120,6 +122,9 @@ public class ReviewService {
         if (review.isVerified()) {
             throw new BadRequestException("Review is al geverifieerd");
         } else if (!verify) {
+            if (feedbackAdmin == null) {
+                throw new BadRequestException("FeedbackAdmin is vereist wanneer de review niet is geverifieerd.");
+            }
             review.setFeedbackAdmin(feedbackAdmin);
             review.setVerified(false);
         } else {
@@ -141,6 +146,7 @@ public class ReviewService {
         review.setRating(reviewInputDto.getRating());
         review.setDescription(reviewInputDto.getDescription());
         review.setVerified(false);
+        review.setFeedbackAdmin(null);
         Review returnReview = reviewRepository.save(review);
         return  transferReviewToOutputDto(returnReview);
     }
@@ -166,10 +172,10 @@ public class ReviewService {
         reviewOutputDto.description = review.getDescription();
         reviewOutputDto.verified = review.isVerified();
         reviewOutputDto.activities = review.getMatch().getActivities();
-        reviewOutputDto.writtenBy = review.getWrittenBy().getName();
         reviewOutputDto.date = review.getDate();
         reviewOutputDto.feedbackAdmin = review.getFeedbackAdmin();
         String writtenBy = review.getWrittenBy().getUser().getUsername();
+        reviewOutputDto.writtenBy = writtenBy;
         String helpGiver = review.getMatch().getHelpGiver().getUser().getUsername();
         String helpReceiver = review.getMatch().getHelpReceiver().getUser().getUsername();
         reviewOutputDto.setWrittenFor(writtenBy.equals(helpGiver) ? helpReceiver : helpGiver);
@@ -181,7 +187,6 @@ public class ReviewService {
         review.setRating(reviewInputDto.getRating());
         review.setDescription(reviewInputDto.getDescription());
         review.setVerified(reviewInputDto.isVerified());
-        review.setDate(reviewInputDto.getDate());
         return review;
         }
     }

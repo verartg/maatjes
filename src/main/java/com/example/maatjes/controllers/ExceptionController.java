@@ -2,6 +2,7 @@ package com.example.maatjes.controllers;
 
 import com.example.maatjes.exceptions.*;
 import com.example.maatjes.exceptions.IllegalArgumentException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -46,5 +47,4 @@ public class ExceptionController {
     public ResponseEntity<Object> exception(BadCredentialsException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
-
 }

@@ -25,7 +25,7 @@ public class Account {
     private Long accountId;
     private String name;
     private int age;
-    private char sex;
+    private Character sex;
     private String phoneNumber;
     private String street;
     private String houseNumber;

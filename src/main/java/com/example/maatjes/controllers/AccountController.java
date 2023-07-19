@@ -4,6 +4,7 @@ import com.example.maatjes.dtos.outputDtos.AccountOutputDto;
 import com.example.maatjes.dtos.inputDtos.AccountInputDto;
 import com.example.maatjes.exceptions.AccessDeniedException;
 import com.example.maatjes.exceptions.RecordNotFoundException;
+
 import com.example.maatjes.services.AccountService;
 import com.example.maatjes.util.FieldErrorHandling;
 import jakarta.validation.Valid;
@@ -68,10 +69,13 @@ public class AccountController {
         if (!username.equals(authentication.getName())) {
             throw new AccessDeniedException("Je kunt alleen je eigen account aanpassen");
         }
-        if (bindingResult.hasFieldErrors()){
+
+        if (bindingResult.hasFieldErrors()) {
             return ResponseEntity.badRequest().body(FieldErrorHandling.getErrorToStringHandling(bindingResult));
         }
-        return new ResponseEntity<>(accountService.updateAccount(username, accountInputDto), HttpStatus.ACCEPTED);
+
+        AccountOutputDto updatedAccount = accountService.updateAccount(username, accountInputDto);
+        return ResponseEntity.accepted().body(updatedAccount);
     }
 
     @PutMapping("/{username}/identification")

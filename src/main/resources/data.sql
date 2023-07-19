@@ -132,48 +132,48 @@ INSERT INTO activities_to_give (account_account_id, activity) VALUES (1015, 'BRE
 INSERT INTO activities_to_give (account_account_id, activity) VALUES (1015, 'BOODSCHAPPEN');
 
 --creating matches
-INSERT INTO match (match_id, giver_accepted, receiver_accepted, contact_person, start_match, end_match, availability, frequency, help_giver_id, help_receiver_id) VALUES (1, false, false, 'THOMAS', '2023-08-01', '2023-09-01', 'MAANDAGOCHTEND', 'EEN_KEER_PER_WEEK', 1001, 1002);
-INSERT INTO match (match_id, giver_accepted, receiver_accepted, contact_person, start_match, end_match, availability, frequency, help_giver_id, help_receiver_id) VALUES (2, false, false, 'THOMAS', '2023-08-01', '2023-09-01', 'MAANDAGOCHTEND', 'EEN_KEER_PER_WEEK', 1001, 1003);
-INSERT INTO match (match_id, giver_accepted, receiver_accepted, contact_person, start_match, end_match, availability, frequency, help_giver_id, help_receiver_id) VALUES (3, false, false, 'ESMEE', '2023-08-02', '2023-09-02', 'MAANDAGMIDDAG', 'TWEE_KEER_PER_WEEK', 1003, 1004);
-INSERT INTO match (match_id, giver_accepted, receiver_accepted, contact_person, start_match, end_match, availability, frequency, help_giver_id, help_receiver_id) VALUES (4, false, false, 'KEVIN', '2023-08-03', '2023-09-03', 'MAANDAGAVOND', 'EEN_KEER_PER_MAAND', 1005, 1006);
-INSERT INTO match (match_id, giver_accepted, receiver_accepted, contact_person, start_match, end_match, availability, frequency, help_giver_id, help_receiver_id) VALUES (5, false, false, 'MAAMKE', '2023-08-01', '2023-09-01', 'VRIJDAGMIDDAG', 'TWEE_KEER_PER_WEEK', 1007, 1008);
+INSERT INTO match (match_id, giver_accepted, receiver_accepted, contact_person, start_match, end_match, availability, frequency, help_giver_id, help_receiver_id) VALUES (1001, true, true, 'THOMAS', '2023-08-01', '2023-09-01', 'MAANDAGOCHTEND', 'EEN_KEER_PER_WEEK', 1001, 1002);
+INSERT INTO match (match_id, giver_accepted, receiver_accepted, contact_person, start_match, end_match, availability, frequency, help_giver_id, help_receiver_id) VALUES (1002, false, false, 'THOMAS', '2023-08-01', '2023-09-01', 'MAANDAGOCHTEND', 'EEN_KEER_PER_WEEK', 1001, 1003);
+INSERT INTO match (match_id, giver_accepted, receiver_accepted, contact_person, start_match, end_match, availability, frequency, help_giver_id, help_receiver_id) VALUES (1003, true, false, 'ESMEE', '2023-08-02', '2023-09-02', 'MAANDAGMIDDAG', 'TWEE_KEER_PER_WEEK', 1003, 1004);
+INSERT INTO match (match_id, giver_accepted, receiver_accepted, contact_person, start_match, end_match, availability, frequency, help_giver_id, help_receiver_id) VALUES (1004, false, false, 'KEVIN', '2023-08-03', '2023-09-03', 'MAANDAGAVOND', 'EEN_KEER_PER_MAAND', 1005, 1006);
+INSERT INTO match (match_id, giver_accepted, receiver_accepted, contact_person, start_match, end_match, availability, frequency, help_giver_id, help_receiver_id) VALUES (1005, true, true, 'MAAMKE', '2023-08-01', '2023-09-01', 'VRIJDAGMIDDAG', 'TWEE_KEER_PER_WEEK', 1007, 1008);
 
 --assigning sharedActivities to matches
-INSERT INTO match_activities (match_match_id, activities) VALUES (4, 'VOORLEZEN');
-INSERT INTO match_activities (match_match_id, activities) VALUES (5, 'KLUSSEN');
-INSERT INTO match_activities (match_match_id, activities) VALUES (5, 'TUINIEREN');
-INSERT INTO match_activities (match_match_id, activities) VALUES (5, 'SCHOONMAKEN');
-INSERT INTO match_activities (match_match_id, activities) VALUES (3, 'SCHOONMAKEN');
-INSERT INTO match_activities (match_match_id, activities) VALUES (3, 'HOND_UITLATEN');
-INSERT INTO match_activities (match_match_id, activities) VALUES (2, 'GEZELSCHAP');
-INSERT INTO match_activities (match_match_id, activities) VALUES (1, 'TUINIEREN');
+INSERT INTO match_activities (match_match_id, activities) VALUES (1004, 'VOORLEZEN');
+INSERT INTO match_activities (match_match_id, activities) VALUES (1005, 'KLUSSEN');
+INSERT INTO match_activities (match_match_id, activities) VALUES (1005, 'TUINIEREN');
+INSERT INTO match_activities (match_match_id, activities) VALUES (1005, 'SCHOONMAKEN');
+INSERT INTO match_activities (match_match_id, activities) VALUES (1003, 'SCHOONMAKEN');
+INSERT INTO match_activities (match_match_id, activities) VALUES (1003, 'HOND_UITLATEN');
+INSERT INTO match_activities (match_match_id, activities) VALUES (1002, 'GEZELSCHAP');
+INSERT INTO match_activities (match_match_id, activities) VALUES (1001, 'TUINIEREN');
 
 -- creating appointments
-INSERT INTO appointment (id, date, start_time, end_time, description, created_by_name, created_for_name, match_id) VALUES (1, '2023-08-01', '09:00:00', '10:00:00', 'Tuinieren', 'lisa', 'peter1991', 1);
-INSERT INTO appointment (id, date, start_time, end_time, description, created_by_name, created_for_name, match_id) VALUES (2, '2023-08-02', '14:30:00', '15:30:00', 'Boodschappen doen', 'peter1991', 'lisa', 1);
-INSERT INTO appointment (id, date, start_time, end_time, description, created_by_name, created_for_name, match_id) VALUES (3, '2023-08-05', '11:00:00', '12:00:00', 'Tuinieren', 'lisa', 'peter1991', 1);
-INSERT INTO appointment (id, date, start_time, end_time, description, created_by_name, created_for_name, match_id) VALUES (4, '2023-08-07', '16:00:00', '17:00:00', 'Voorlezen', 'sophievandermeer', 'tomdevries', 4);
-INSERT INTO appointment (id, date, start_time, end_time, description, created_by_name, created_for_name, match_id) VALUES (5, '2023-08-01', '13:30:00', '14:30:00', 'Klussen', 'emmasanders', 'davidvandenberg', 5);
-INSERT INTO appointment (id, date, start_time, end_time, description, created_by_name, created_for_name, match_id) VALUES (6, '2023-08-01', '13:30:00', '14:30:00', 'Tuinieren', 'emmasanders', 'davidvandenberg', 5);
-INSERT INTO appointment (id, date, start_time, end_time, description, created_by_name, created_for_name, match_id) VALUES (7, '2023-08-01', '13:30:00', '14:30:00', 'Schoonmaken', 'emmasanders', 'davidvandenberg', 5);
+INSERT INTO appointment (id, date, start_time, end_time, description, created_by_name, created_for_name, match_id) VALUES (1001, '2023-08-01', '09:00:00', '10:00:00', 'Tuinieren', 'lisa', 'peter1991', 1001);
+INSERT INTO appointment (id, date, start_time, end_time, description, created_by_name, created_for_name, match_id) VALUES (1002, '2023-08-02', '14:30:00', '15:30:00', 'Boodschappen doen', 'peter1991', 'lisa', 1001);
+INSERT INTO appointment (id, date, start_time, end_time, description, created_by_name, created_for_name, match_id) VALUES (1003, '2023-08-05', '11:00:00', '12:00:00', 'Tuinieren', 'lisa', 'peter1991', 1001);
+INSERT INTO appointment (id, date, start_time, end_time, description, created_by_name, created_for_name, match_id) VALUES (1004, '2023-08-07', '16:00:00', '17:00:00', 'Voorlezen', 'sophievandermeer', 'tomdevries', 1004);
+INSERT INTO appointment (id, date, start_time, end_time, description, created_by_name, created_for_name, match_id) VALUES (1005, '2023-08-01', '13:30:00', '14:30:00', 'Klussen', 'emmasanders', 'davidvandenberg', 1005);
+INSERT INTO appointment (id, date, start_time, end_time, description, created_by_name, created_for_name, match_id) VALUES (1006, '2023-08-01', '13:30:00', '14:30:00', 'Tuinieren', 'emmasanders', 'davidvandenberg', 1005);
+INSERT INTO appointment (id, date, start_time, end_time, description, created_by_name, created_for_name, match_id) VALUES (1007, '2023-08-01', '13:30:00', '14:30:00', 'Schoonmaken', 'emmasanders', 'davidvandenberg', 1005);
 
 -- creating reviews
-INSERT INTO review (id, rating, description, verified, feedback_admin, date, match_id, written_by_id, written_for_id) VALUES (1, 4.5, 'Geweldige match! Samenwerken was een plezier.', false, null, '2023-07-15', 1, 1001, 1002);
-INSERT INTO review (id, rating, description, verified, feedback_admin, date, match_id, written_by_id, written_for_id) VALUES (2, 3.8, 'Goede communicatie, maar kan de tijd beter beheren.', false, null, '2023-07-17', 2, 1003, 1001);
-INSERT INTO review (id, rating, description, verified, feedback_admin, date, match_id, written_by_id, written_for_id) VALUES (3, 5.0, 'Uitstekende match! Een aanrader.', true, null, '2023-07-20', 3, 1004, 1003);
-INSERT INTO review (id, rating, description, verified, feedback_admin, date, match_id, written_by_id, written_for_id) VALUES (4, 1, 'Wat een @£$%^&*', false, 'Je kunt geen scheldwoorden gebruiken, je review is niet goedgekeurd.', '2023-07-22', 4, 1005, 1006);
-INSERT INTO review (id, rating, description, verified, feedback_admin, date, match_id, written_by_id, written_for_id) VALUES (5, 4.9, 'Fantastische ervaring! Ging boven verwachting.', true, null, '2023-07-25', 5, 1007, 1008);
+INSERT INTO review (id, rating, description, verified, feedback_admin, date, match_id, written_by_id, written_for_id) VALUES (1001, 4.5, 'Geweldige match! Samenwerken was een plezier.', false, null, '2023-07-15', 1001, 1001, 1002);
+INSERT INTO review (id, rating, description, verified, feedback_admin, date, match_id, written_by_id, written_for_id) VALUES (1002, 3.8, 'Goede communicatie, maar kan de tijd beter beheren.', false, null, '2023-07-17', 1002, 1003, 1001);
+INSERT INTO review (id, rating, description, verified, feedback_admin, date, match_id, written_by_id, written_for_id) VALUES (1003, 5.0, 'Uitstekende match! Een aanrader.', true, null, '2023-07-20', 1003, 1004, 1003);
+INSERT INTO review (id, rating, description, verified, feedback_admin, date, match_id, written_by_id, written_for_id) VALUES (1004, 1, 'Wat een @£$%^&*', false, 'Je kunt geen scheldwoorden gebruiken, je review is niet goedgekeurd.', '2023-07-22', 1004, 1005, 1006);
+INSERT INTO review (id, rating, description, verified, feedback_admin, date, match_id, written_by_id, written_for_id) VALUES (1005, 4.9, 'Fantastische ervaring! Ging boven verwachting.', true, null, '2023-07-25', 1005, 1007, 1008);
 
 --creating messages
-INSERT INTO message (id, written_by_name, content, created_at, created_at_date, match_id) VALUES (1, 'lisa', 'Hoi, hoe gaat het? Binnenkort weer eens afpsreken?', '09:30:00', '2023-07-26', 1);
-INSERT INTO message (id, written_by_name, content, created_at, created_at_date, match_id) VALUES (2, 'lisa', 'Hoe is het afgelopen week gegaan?', '09:30:00', '2023-07-26', 2);
-INSERT INTO message (id, written_by_name, content, created_at, created_at_date, match_id) VALUES (3, 'sanneb1', 'Prima, super bedankt nog voor je hulp. Hoe gaat het met jou?', '09:30:00', '2023-07-26', 2);
-INSERT INTO message (id, written_by_name, content, created_at, created_at_date, match_id) VALUES (4, 'lisa', 'Goed hoor, bedankt!', '10:00:00', '2023-07-26', 2);
-INSERT INTO message (id, written_by_name, content, created_at, created_at_date, match_id) VALUES (5, 'markjansen', 'Hoi, hoe gaat het?', '09:30:00', '2023-07-26', 3);
-INSERT INTO message (id, written_by_name, content, created_at, created_at_date, match_id) VALUES (6, 'sanneb1', 'Goed hoor, bedankt!', '10:00:00', '2023-07-26', 3);
-INSERT INTO message (id, written_by_name, content, created_at, created_at_date, match_id) VALUES (7, 'sophievandermeer', 'Hoi, heb je nog kunnen oefenen?', '09:30:00', '2023-07-26', 4);
-INSERT INTO message (id, written_by_name, content, created_at, created_at_date, match_id) VALUES (8, 'tomdevries', 'Nee, geen tijd gehad deze week. Volgende week!', '10:00:00', '2023-07-26', 4);
-INSERT INTO message (id, written_by_name, content, created_at, created_at_date, match_id) VALUES (9, 'davidvandenberg', 'Hoi, hoe gaat het?', '09:30:00', '2023-07-26', 5);
-INSERT INTO message (id, written_by_name, content, created_at, created_at_date, match_id) VALUES (10, 'emmasanders', 'Goed hoor, bedankt!', '10:00:00', '2023-07-26', 5);
+INSERT INTO message (id, written_by_name, content, created_at, created_at_date, match_id) VALUES (1001, 'lisa', 'Hoi, hoe gaat het? Binnenkort weer eens afpsreken?', '09:30:00', '2023-07-26', 1001);
+INSERT INTO message (id, written_by_name, content, created_at, created_at_date, match_id) VALUES (1002, 'lisa', 'Hoe is het afgelopen week gegaan?', '09:30:00', '2023-07-26', 1002);
+INSERT INTO message (id, written_by_name, content, created_at, created_at_date, match_id) VALUES (1003, 'sanneb1', 'Prima, super bedankt nog voor je hulp. Hoe gaat het met jou?', '09:30:00', '2023-07-26', 1002);
+INSERT INTO message (id, written_by_name, content, created_at, created_at_date, match_id) VALUES (1004, 'lisa', 'Goed hoor, bedankt!', '10:00:00', '2023-07-26', 1002);
+INSERT INTO message (id, written_by_name, content, created_at, created_at_date, match_id) VALUES (1005, 'markjansen', 'Hoi, hoe gaat het?', '09:30:00', '2023-07-26', 1003);
+INSERT INTO message (id, written_by_name, content, created_at, created_at_date, match_id) VALUES (1006, 'sanneb1', 'Goed hoor, bedankt!', '10:00:00', '2023-07-26', 1003);
+INSERT INTO message (id, written_by_name, content, created_at, created_at_date, match_id) VALUES (1007, 'sophievandermeer', 'Hoi, heb je nog kunnen oefenen?', '09:30:00', '2023-07-26', 1004);
+INSERT INTO message (id, written_by_name, content, created_at, created_at_date, match_id) VALUES (1008, 'tomdevries', 'Nee, geen tijd gehad deze week. Volgende week!', '10:00:00', '2023-07-26', 1004);
+INSERT INTO message (id, written_by_name, content, created_at, created_at_date, match_id) VALUES (1009, 'davidvandenberg', 'Hoi, hoe gaat het?', '09:30:00', '2023-07-26', 1005);
+INSERT INTO message (id, written_by_name, content, created_at, created_at_date, match_id) VALUES (1010, 'emmasanders', 'Goed hoor, bedankt!', '10:00:00', '2023-07-26', 1005);
 
 --accepting matches

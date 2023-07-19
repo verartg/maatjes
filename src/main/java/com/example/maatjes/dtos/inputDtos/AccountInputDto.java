@@ -22,7 +22,7 @@ public class AccountInputDto {
     public LocalDate birthdate;
     @NotBlank(message = "Je moet je naam invullen.")
     public String name;
-    public char sex;
+    public Character sex;
     public String phoneNumber;
     public String street;
     public String houseNumber;

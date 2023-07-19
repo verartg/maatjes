@@ -1,10 +1,10 @@
 package com.example.maatjes.services;
 
-import com.example.maatjes.controllers.UserController;
 import com.example.maatjes.dtos.outputDtos.AccountOutputDto;
 import com.example.maatjes.dtos.inputDtos.AccountInputDto;
 import com.example.maatjes.exceptions.AccessDeniedException;
 import com.example.maatjes.exceptions.BadRequestException;
+import com.example.maatjes.exceptions.IllegalArgumentException;
 import com.example.maatjes.exceptions.RecordNotFoundException;
 import com.example.maatjes.models.Account;
 import com.example.maatjes.models.User;
@@ -124,33 +124,75 @@ public class AccountService {
         if (account == null) {
             throw new RecordNotFoundException("Account niet gevonden");
         }
+
+        if (accountInputDto.getName() != null) {
             account.setName(accountInputDto.getName());
-            LocalDate currentDate = LocalDate.now();
-            Period age = Period.between(accountInputDto.getBirthdate(), currentDate);
-            int ageYears = age.getYears();
-
-            if (ageYears < 18) {
-                throw new IllegalArgumentException("Only adults can create an account.");
-            }
-
-            account.setAge(ageYears);
-            account.setSex(accountInputDto.getSex());
-            account.setPhoneNumber(accountInputDto.getPhoneNumber());
-            account.setStreet(accountInputDto.getStreet());
-            account.setHouseNumber(accountInputDto.getHouseNumber());
-            account.setPostalCode(accountInputDto.getPostalCode());
-            account.setCity(accountInputDto.getCity());
-            account.setBio(accountInputDto.getBio());
-            account.setDocument(accountInputDto.getDocument());
-            account.setGivesHelp(accountInputDto.isGivesHelp());
-            account.setNeedsHelp(accountInputDto.isNeedsHelp());
-            account.setActivitiesToGive(accountInputDto.getActivitiesToGive());
-            account.setActivitiesToReceive(accountInputDto.getActivitiesToReceive());
-            account.setAvailability(accountInputDto.getAvailability());
-            account.setFrequency(accountInputDto.getFrequency());
-            Account returnAccount = accountRepository.save(account);
-            return transferAccountToOutputDto(returnAccount);
         }
+
+        LocalDate currentDate = LocalDate.now();
+        Period age = Period.between(accountInputDto.getBirthdate(), currentDate);
+        int ageYears = age.getYears();
+
+        if (ageYears < 18) {
+            throw new IllegalArgumentException("Alleen volwassenen kunnen een account aanmaken");
+        }
+
+        account.setAge(ageYears);
+
+        if (accountInputDto.getSex() != null) {
+            account.setSex(accountInputDto.getSex());
+        }
+
+        if (accountInputDto.getPhoneNumber() != null) {
+            account.setPhoneNumber(accountInputDto.getPhoneNumber());
+        }
+
+        if (accountInputDto.getStreet() != null) {
+            account.setStreet(accountInputDto.getStreet());
+        }
+
+        if (accountInputDto.getHouseNumber() != null) {
+            account.setHouseNumber(accountInputDto.getHouseNumber());
+        }
+
+        if (accountInputDto.getPostalCode() != null) {
+            account.setPostalCode(accountInputDto.getPostalCode());
+        }
+
+        if (accountInputDto.getCity() != null) {
+            account.setCity(accountInputDto.getCity());
+        }
+
+        if (accountInputDto.getBio() != null) {
+            account.setBio(accountInputDto.getBio());
+        }
+
+        if (accountInputDto.getDocument() != null) {
+            account.setDocument(accountInputDto.getDocument());
+        }
+
+        account.setGivesHelp(accountInputDto.isGivesHelp());
+        account.setNeedsHelp(accountInputDto.isNeedsHelp());
+
+        if (accountInputDto.getActivitiesToGive() != null) {
+            account.setActivitiesToGive(accountInputDto.getActivitiesToGive());
+        }
+
+        if (accountInputDto.getActivitiesToReceive() != null) {
+            account.setActivitiesToReceive(accountInputDto.getActivitiesToReceive());
+        }
+
+        if (accountInputDto.getAvailability() != null) {
+            account.setAvailability(accountInputDto.getAvailability());
+        }
+
+        if (accountInputDto.getFrequency() != null) {
+            account.setFrequency(accountInputDto.getFrequency());
+        }
+
+        Account returnAccount = accountRepository.save(account);
+        return transferAccountToOutputDto(returnAccount);
+    }
 
     @Transactional
     public AccountOutputDto uploadIdentificationDocument(String username, MultipartFile file)
@@ -221,7 +263,6 @@ public class AccountService {
             } else {
                 user.setAccount(null);
                 userRepository.save(user);
-                //todo bij deze stap wordt ook de user verwijderd...whyyyyyy
                 accountRepository.deleteById(account.getAccountId());
             }
         } else {

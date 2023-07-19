@@ -65,8 +65,8 @@ public class MatchService {
             match.setHelpGiver(giver);
             match.setHelpReceiver(receiver);
             match.setActivities(sharedActivities);
-            match = matchRepository.save(match);
 
+            match = matchRepository.save(match);
             return transferMatchToOutputDto(match);
         }
     }
@@ -195,6 +195,7 @@ public class MatchService {
 
     public MatchOutputDto updateMatch(Long matchId, MatchInputDto matchInputDto) throws RecordNotFoundException {
         Match match = matchRepository.findById(matchId).orElseThrow(() -> new RecordNotFoundException("De match met ID " + matchId + " is niet gevonden"));
+
             match.setReceiverAccepted(matchInputDto.isReceiverAccepted());
             match.setGiverAccepted(matchInputDto.isGiverAccepted());
             match.setContactPerson(matchInputDto.getContactPerson());

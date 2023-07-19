@@ -73,10 +73,12 @@ public class AppointmentService {
     public List<AppointmentOutputDto> getAppointmentsByMatchId(Long matchId) throws RecordNotFoundException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
+        System.out.println(username);
 
         Match match = matchRepository.findById(matchId)
                 .orElseThrow(() -> new RecordNotFoundException("Match niet gevonden"));
-
+        System.out.println(match.getHelpGiver().getUser().getUsername());
+        System.out.println(match.getHelpReceiver().getUser().getUsername());
         if (!username.equals(match.getHelpGiver().getUser().getUsername()) && !username.equals(match.getHelpReceiver().getUser().getUsername())) {
             throw new AccessDeniedException("Je hebt geen toegang tot deze gebruiker");
         }

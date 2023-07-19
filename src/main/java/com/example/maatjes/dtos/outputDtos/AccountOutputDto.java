@@ -19,7 +19,7 @@ import java.util.List;
 public class AccountOutputDto {
     public String name;
     public int age;
-    public char sex;
+    public Character sex;
     public String city;
     public String bio;
     public boolean givesHelp;
