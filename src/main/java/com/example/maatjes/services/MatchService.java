@@ -71,7 +71,7 @@ public class MatchService {
         }
     }
 
-    private List<Activities> getSharedActivities(List<Activities> giverActivitiesToGive, List<Activities> receiverActivitiesToReceive) {
+    public List<Activities> getSharedActivities(List<Activities> giverActivitiesToGive, List<Activities> receiverActivitiesToReceive) {
         List<Activities> sharedActivities = new ArrayList<>();
         for (Activities activity : giverActivitiesToGive) {
             if (receiverActivitiesToReceive.contains(activity)) {

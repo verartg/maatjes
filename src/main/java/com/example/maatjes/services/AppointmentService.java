@@ -33,7 +33,7 @@ public class AppointmentService {
         this.accountRepository = accountRepository;
     }
 
-    public AppointmentOutputDto createAppointment(AppointmentInputDto appointmentInputDto) throws RecordNotFoundException, BadRequestException {
+    public AppointmentOutputDto createAppointment(AppointmentInputDto appointmentInputDto) throws RecordNotFoundException, BadRequestException, AccessDeniedException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
 
@@ -54,7 +54,8 @@ public class AppointmentService {
         Appointment appointment = transferInputDtoToAppointment(appointmentInputDto);
         appointment.setMatch(match);
         appointment.setCreatedByName(username);
-        appointment.setCreatedForName(match.getHelpGiver().getUser().getUsername().equals(username) ? match.getHelpReceiver().getUser().getUsername() : match.getHelpGiver().getUser().getUsername());
+        appointment.setCreatedForName(match.getHelpGiver().getUser().getUsername().equals(username) ?
+                match.getHelpReceiver().getUser().getUsername() : match.getHelpGiver().getUser().getUsername());
         appointment = appointmentRepository.save(appointment);
         match.getAppointments().add(appointment);
         matchRepository.save(match);
@@ -73,12 +74,10 @@ public class AppointmentService {
     public List<AppointmentOutputDto> getAppointmentsByMatchId(Long matchId) throws RecordNotFoundException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        System.out.println(username);
 
         Match match = matchRepository.findById(matchId)
                 .orElseThrow(() -> new RecordNotFoundException("Match niet gevonden"));
-        System.out.println(match.getHelpGiver().getUser().getUsername());
-        System.out.println(match.getHelpReceiver().getUser().getUsername());
+
         if (!username.equals(match.getHelpGiver().getUser().getUsername()) && !username.equals(match.getHelpReceiver().getUser().getUsername())) {
             throw new AccessDeniedException("Je hebt geen toegang tot deze gebruiker");
         }
@@ -92,8 +91,7 @@ public class AppointmentService {
             }
         }
 
-        return appointmentOutputDtos;
-    }
+        return appointmentOutputDtos;}
 
     public List<AppointmentOutputDto> getAppointmentsByAccountId(Long accountId) throws RecordNotFoundException, AccessDeniedException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -103,8 +101,7 @@ public class AppointmentService {
                 .orElseThrow(() -> new RecordNotFoundException("Account niet gevonden"));
 
         if (!username.equals(account.getUser().getUsername())) {
-            throw new AccessDeniedException("Je hebt geen toegang tot deze gebruiker");
-        }
+            throw new AccessDeniedException("Je hebt geen toegang tot deze gebruiker");}
 
         LocalDate currentDate = LocalDate.now();
 
@@ -115,24 +112,18 @@ public class AppointmentService {
                 .map(this::transferAppointmentToOutputDto)
                 .collect(Collectors.toList());
 
-        return appointmentOutputDtos;
-    }
+        return appointmentOutputDtos;}
 
     public AppointmentOutputDto getAppointment(Long appointmentId) throws RecordNotFoundException, AccessDeniedException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-
         Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new RecordNotFoundException("Afspraak niet gevonden"));
-
         if (!username.equals(appointment.getCreatedByName()) && !username.equals(appointment.getCreatedForName())) {
-            throw new AccessDeniedException("Je hebt geen toegang tot deze afspraak");
-        }
+            throw new AccessDeniedException("Je hebt geen toegang tot deze afspraak");}
+        return transferAppointmentToOutputDto(appointment);}
 
-        return transferAppointmentToOutputDto(appointment);
-    }
-
-    public AppointmentOutputDto updateAppointment(Long appointmentId, AppointmentInputDto appointmentInputDto) throws RecordNotFoundException {
+    public AppointmentOutputDto updateAppointment(Long appointmentId, AppointmentInputDto appointmentInputDto) throws RecordNotFoundException, AccessDeniedException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
 
@@ -175,18 +166,19 @@ public class AppointmentService {
 
     public AppointmentOutputDto transferAppointmentToOutputDto(Appointment appointment) {
         AppointmentOutputDto appointmentOutputDto = new AppointmentOutputDto();
+        appointmentOutputDto.id = appointment.getId();
         appointmentOutputDto.date = appointment.getDate();
         appointmentOutputDto.startTime = appointment.getStartTime();
         appointmentOutputDto.endTime = appointment.getEndTime();
         appointmentOutputDto.description = appointment.getDescription();
         appointmentOutputDto.createdForName = appointment.getCreatedForName();
         appointmentOutputDto.createdByName = appointment.getCreatedByName();
-        //todo nog match vanwege de activiteiten
         return appointmentOutputDto;
     }
 
     public Appointment transferInputDtoToAppointment(AppointmentInputDto appointmentInputDto) throws IllegalArgumentException {
         Appointment appointment = new Appointment();
+        appointment.setId(appointmentInputDto.getId());
         appointment.setDate(appointmentInputDto.getDate());
         appointment.setStartTime(appointmentInputDto.getStartTime());
         int value = appointmentInputDto.getStartTime().compareTo(appointmentInputDto.getEndTime());

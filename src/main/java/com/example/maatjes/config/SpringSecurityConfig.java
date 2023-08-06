@@ -83,8 +83,8 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.DELETE, "/matches/expired").hasRole("ADMIN")
 
                 .requestMatchers(HttpMethod.POST, "/appointments/addappointment").hasRole("USER")
-                .requestMatchers(HttpMethod.GET, "/appointments/match/{matchId}").hasRole("USER") //todo werkt niet!
-                .requestMatchers(HttpMethod.GET, "/appointments/account/{accountId}").hasRole("USER") //todo werkt niet!
+                .requestMatchers(HttpMethod.GET, "/appointments/match/{matchId}").hasRole("USER") 
+                .requestMatchers(HttpMethod.GET, "/appointments/account/{accountId}").hasRole("USER")
                 .requestMatchers(HttpMethod.GET, "/appointments/{appointmentId}").hasRole("USER")
                 .requestMatchers(HttpMethod.PUT, "/appointments/{appointmentId}").hasRole("USER")
                 .requestMatchers(HttpMethod.DELETE, "/appointments/{appointmentId}").hasRole("USER")

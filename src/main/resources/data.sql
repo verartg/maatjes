@@ -176,4 +176,3 @@ INSERT INTO message (id, written_by_name, content, created_at, created_at_date, 
 INSERT INTO message (id, written_by_name, content, created_at, created_at_date, match_id) VALUES (1009, 'davidvandenberg', 'Hoi, hoe gaat het?', '09:30:00', '2023-07-26', 1005);
 INSERT INTO message (id, written_by_name, content, created_at, created_at_date, match_id) VALUES (1010, 'emmasanders', 'Goed hoor, bedankt!', '10:00:00', '2023-07-26', 1005);
 
---accepting matches

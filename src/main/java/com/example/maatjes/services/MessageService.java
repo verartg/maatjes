@@ -49,7 +49,7 @@ public class MessageService {
         match.getMessages().add(message);
         messageRepository.save(message);
 
-        return transferMessageOutputToDto(message);
+        return transferMessageToOutputDto(message);
     }
 
     public List<MessageOutputDto> getAllMessagesWithMatchId(Long matchId) throws RecordNotFoundException {
@@ -63,19 +63,19 @@ public class MessageService {
         List<Message> messages = match.getMessages();
         List<MessageOutputDto> messageOutputDtos = new ArrayList<>();
         for (Message message : messages) {
-                messageOutputDtos.add(transferMessageOutputToDto(message));
+                messageOutputDtos.add(transferMessageToOutputDto(message));
         }
         messageOutputDtos.sort(Comparator.comparing(MessageOutputDto::getCreatedAt));
         return messageOutputDtos;
     }
 
     public void deleteOldMessages() {
-        LocalDate currentDate = LocalDate.now().minusMonths(1);
-        List<Message> messagesToDelete = messageRepository.findByCreatedAtDateBefore(currentDate);
+        LocalDate oneMonthAgo = LocalDate.now().minusMonths(1);
+        List<Message> messagesToDelete = messageRepository.findByCreatedAtDateBefore(oneMonthAgo);
         messageRepository.deleteAll(messagesToDelete);
     }
 
-    public MessageOutputDto transferMessageOutputToDto(Message message) {
+    public MessageOutputDto transferMessageToOutputDto(Message message) {
         MessageOutputDto messageOutputDto = new MessageOutputDto();
         messageOutputDto.id = message.getId();
         messageOutputDto.content = message.getContent();

@@ -16,6 +16,7 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AppointmentInputDto {
+    public Long id;
     @Future(message = "De afspraak moet in de toekomst liggen.")
     public LocalDate date;
     @NotNull(message = "De begintijd moet worden ingevuld.")

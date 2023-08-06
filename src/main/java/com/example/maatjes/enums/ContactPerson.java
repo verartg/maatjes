@@ -7,5 +7,6 @@ public enum ContactPerson {
     NICK,
     MAAMKE,
     FENNE,
-    LOTTE
+    LOTTE,
+    STIJN
 }

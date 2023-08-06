@@ -32,7 +32,7 @@ public class AccountInputDto {
     public String city;
     @NotBlank(message = "Er moet een bio worden ingevuld.")
     public String bio;
-    public byte[] document;
+    public byte[] idDocument;
     public boolean givesHelp;
     public boolean needsHelp;
     public List<Activities> activitiesToGive;

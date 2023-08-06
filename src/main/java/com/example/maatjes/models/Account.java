@@ -33,7 +33,7 @@ public class Account {
     private String city;
     private String bio;
     @Lob
-    private byte[] document;
+    private byte[] idDocument;
     private boolean givesHelp;
     private boolean needsHelp;
 
@@ -58,6 +58,7 @@ public class Account {
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     private User user;
 
+    //todo benaming onderste twee te vaag
     @OneToMany(mappedBy = "helpGiver", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Match> helpReceivers;

@@ -13,6 +13,7 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AppointmentOutputDto {
+    public Long id;
     public LocalDate date;
     public LocalTime startTime;
     public LocalTime endTime;

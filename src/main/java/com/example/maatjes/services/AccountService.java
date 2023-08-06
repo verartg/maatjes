@@ -107,7 +107,7 @@ public class AccountService {
         if (account == null) {
             throw new RecordNotFoundException("Account niet gevonden");
         }
-        byte[] document = account.getDocument();
+        byte[] document = account.getIdDocument();
         if (document == null) {
             throw new RecordNotFoundException("Document niet gevonden");
         }
@@ -167,8 +167,8 @@ public class AccountService {
             account.setBio(accountInputDto.getBio());
         }
 
-        if (accountInputDto.getDocument() != null) {
-            account.setDocument(accountInputDto.getDocument());
+        if (accountInputDto.getIdDocument() != null) {
+            account.setIdDocument(accountInputDto.getIdDocument());
         }
 
         account.setGivesHelp(accountInputDto.isGivesHelp());
@@ -219,7 +219,7 @@ public class AccountService {
         }
 
         byte[] documentData = file.getBytes();
-        account.setDocument(documentData);
+        account.setIdDocument(documentData);
         Account returnAccount = accountRepository.save(account);
 
         return transferAccountToOutputDto(returnAccount);
@@ -237,10 +237,10 @@ public class AccountService {
             throw new RecordNotFoundException("Account niet gevonden");
         }
 
-        if (account.getDocument() == null) {
+        if (account.getIdDocument() == null) {
             throw new RecordNotFoundException("De gebruiker heeft nog geen document geüpload");
         }
-            account.setDocument(null);
+            account.setIdDocument(null);
         return "Document succesvol verwijderd";
     }
 
@@ -286,8 +286,6 @@ public class AccountService {
         accountOutputDto.frequency = account.getFrequency();
         accountOutputDto.givenReviews = account.getGivenReviews();
         accountOutputDto.receivedReviews = account.getReceivedReviews();
-//todo        accountOutputDto.user = account.getUser();
-//todo        accountOutputDto.setUser(UserService.transferUserToOutputDto(account.getUser()));
         return accountOutputDto;
         }
 
@@ -310,7 +308,7 @@ public class AccountService {
         account.setPostalCode(accountInputDto.getPostalCode());
         account.setCity(accountInputDto.getCity());
         account.setBio(accountInputDto.getBio());
-        account.setDocument(accountInputDto.getDocument());
+        account.setIdDocument(accountInputDto.getIdDocument());
         account.setGivesHelp(accountInputDto.isGivesHelp());
         account.setNeedsHelp(accountInputDto.isNeedsHelp());
         account.setActivitiesToGive(accountInputDto.getActivitiesToGive());
