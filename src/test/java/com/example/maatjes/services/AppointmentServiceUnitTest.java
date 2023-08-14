@@ -35,7 +35,6 @@ import org.junit.jupiter.api.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.test.context.support.WithMockUser;
 import static org.mockito.Mockito.when;
 
 import org.mockito.InjectMocks;
@@ -45,7 +44,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class AppointmentServiceTest {
+class AppointmentServiceUnitTest {
 
     @Mock
     AppointmentRepository appointmentRepository;
@@ -170,7 +169,6 @@ class AppointmentServiceTest {
 
     @Test
     @DisplayName("Should create appointment")
-    @WithMockUser(username = "testUser")
     void createAppointment()  {
         when(matchRepository.findById(1L)).thenReturn(Optional.of(match1));
         when(appointmentRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
@@ -189,7 +187,6 @@ class AppointmentServiceTest {
 
     @Test
     @DisplayName("Should throw RecordNotFoundException when match/account/appointment is not found")
-    @WithMockUser(username = "testUser")
     void recordNotFoundException() {
         when(matchRepository.findById(1L)).thenReturn(Optional.empty());
         when(accountRepository.findById(1L)).thenReturn(Optional.empty());
@@ -204,7 +201,6 @@ class AppointmentServiceTest {
 
     @Test
     @DisplayName("Should throw AccessDeniedException when user is not associated with the match/account/appointment")
-    @WithMockUser(username = "testUser")
     void accessDeniedException() {
         when(matchRepository.findById(1L)).thenReturn(Optional.of(match1));
         when(accountRepository.findById(1L)).thenReturn(Optional.of(helpGiver));
@@ -223,7 +219,6 @@ class AppointmentServiceTest {
 
     @Test
     @DisplayName("Should throw BadRequestException when match is not accepted")
-    @WithMockUser(username = "testUser")
     void badRequestException() {
         match1.setGiverAccepted(false);
         match1.setReceiverAccepted(false);
@@ -242,8 +237,7 @@ class AppointmentServiceTest {
     }
 
     @Test
-    @DisplayName("should return all appointments associated with match")
-    @WithMockUser(username = "testUser")
+    @DisplayName("Should return all appointments associated with match")
     void getAppointmentsByMatchId() {
         when(matchRepository.findById(1L)).thenReturn(Optional.of(match1));
 
@@ -262,7 +256,7 @@ class AppointmentServiceTest {
     }
 
     @Test
-    @WithMockUser(username = "testUser")
+    @DisplayName("Should return all appointments associated with account")
     void getAppointmentsByAccountId() {
         when(accountRepository.findById(1L)).thenReturn(Optional.of(helpGiver));
 
@@ -289,7 +283,6 @@ class AppointmentServiceTest {
 
     @Test
     @DisplayName("Should return appointment with appointmentId")
-    @WithMockUser(username = "testUser")
     void getAppointment() {
         when(appointmentRepository.findById(1050L)).thenReturn(Optional.of(appointment1));
 
@@ -307,7 +300,6 @@ class AppointmentServiceTest {
 
     @Test
     @DisplayName("should update the appointment")
-    @WithMockUser(username = "testUser")
     void updateAppointment() {
         when(appointmentRepository.findById(1050L)).thenReturn(Optional.of(appointment1));
         when(appointmentRepository.save(any())).thenReturn(appointment1);
@@ -323,7 +315,7 @@ class AppointmentServiceTest {
     }
 
     @Test
-    @WithMockUser(username = "testUser")
+    @DisplayName("Should remove appointment")
     void removeAppointment() {
         when(appointmentRepository.findById(1050L)).thenReturn(Optional.of(appointment1));
 

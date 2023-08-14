@@ -20,7 +20,7 @@ public class MessageController {
     @PostMapping("/{matchId}")
     public ResponseEntity<Object> writeMessage(@PathVariable Long matchId, @RequestBody MessageInputDto messageInputDto) {
         MessageOutputDto messageOutputDto = messageService.writeMessage(matchId, messageInputDto);
-        return new ResponseEntity<>(messageOutputDto, HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(messageOutputDto, HttpStatus.OK);
     }
 
     @GetMapping("/{matchId}")

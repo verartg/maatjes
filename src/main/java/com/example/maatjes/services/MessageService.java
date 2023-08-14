@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -52,7 +53,7 @@ public class MessageService {
         return transferMessageToOutputDto(message);
     }
 
-    public List<MessageOutputDto> getAllMessagesWithMatchId(Long matchId) throws RecordNotFoundException {
+    public List<MessageOutputDto> getAllMessagesWithMatchId(Long matchId) throws RecordNotFoundException, AccessDeniedException {
         Match match = matchRepository.findById(matchId).orElseThrow(() -> new RecordNotFoundException("Match niet gevonden"));
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
