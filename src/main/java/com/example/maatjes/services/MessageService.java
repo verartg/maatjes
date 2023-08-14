@@ -6,17 +6,14 @@ import com.example.maatjes.exceptions.AccessDeniedException;
 import com.example.maatjes.exceptions.RecordNotFoundException;
 import com.example.maatjes.models.Match;
 import com.example.maatjes.models.Message;
-import com.example.maatjes.repositories.AccountRepository;
 import com.example.maatjes.repositories.MatchRepository;
 import com.example.maatjes.repositories.MessageRepository;
-import com.example.maatjes.repositories.UserRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;

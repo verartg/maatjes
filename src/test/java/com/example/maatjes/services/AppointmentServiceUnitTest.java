@@ -59,15 +59,12 @@ class AppointmentServiceUnitTest {
     AppointmentService appointmentService;
 
     Match match1;
-    Match match2;
     AppointmentInputDto appointmentInputDto;
     AppointmentInputDto appointmentInputDto2;
     Appointment appointment1;
     Appointment appointment2;
     String username;
     Account helpGiver;
-    Account helpReceiver;
-    Account helpGiver2;
 
     @BeforeEach
     void setUp() {
@@ -79,7 +76,6 @@ class AppointmentServiceUnitTest {
 
         username = "testUser";
         Long matchId = 1L;
-        Long matchId2 = 2L;
         Long accountId = 1L;
 
         appointmentInputDto = new AppointmentInputDto();
@@ -119,8 +115,8 @@ class AppointmentServiceUnitTest {
         appointment2.setDescription("Example appointment 2");
 
         helpGiver = new Account();
-        helpReceiver = new Account();
-        helpGiver2 = new Account();
+        Account helpReceiver = new Account();
+        Account helpGiver2 = new Account();
 
         match1 = new Match();
         match1.setMatchId(matchId);
@@ -134,19 +130,6 @@ class AppointmentServiceUnitTest {
         match1.setMatchReviews(new ArrayList<>());
         match1.getAppointments().add(appointment1);
         match1.getAppointments().add(appointment2);
-
-        match2 = new Match();
-        match2.setMatchId(matchId2);
-        match2.setGiverAccepted(true);
-        match2.setReceiverAccepted(true);
-        match2.setHelpGiver(helpGiver2);
-        match2.setHelpReceiver(helpGiver);
-        match2.setActivities(Arrays.asList(Activities.KLUSSEN));
-        match2.setAppointments(new ArrayList<>());
-        match2.setMessages(new ArrayList<>());
-        match2.setMatchReviews(new ArrayList<>());
-        match2.getAppointments().add(appointment1);
-        match2.getAppointments().add(appointment2);
 
         User giverUser = new User();
         giverUser.setUsername("testUser");

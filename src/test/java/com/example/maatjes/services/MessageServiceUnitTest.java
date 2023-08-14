@@ -33,17 +33,11 @@ class MessageServiceUnitTest {
     @InjectMocks
     MessageService messageService;
 
-    Match match;
-    Match match2;
-    User giverUser;
-    User receiverUser;
-    User receiverUser2;
-    Account helpGiver;
-    Account helpReceiver;
-    Account helpReceiver2;
+    Match match, match2;
+    User giverUser, receiverUser, receiverUser2;
+    Account helpGiver, helpReceiver, helpReceiver2;
     MessageInputDto messageInputDto;
-    Message message;
-    Message message2;
+    Message message, message2;
 
     @BeforeEach
     void setUp() {
@@ -87,7 +81,6 @@ class MessageServiceUnitTest {
 
         receiverUser2 = new User();
         receiverUser2.setUsername("lisa");
-
         helpReceiver2 = new Account();
         helpReceiver2.setUser(receiverUser2);
 
@@ -119,63 +112,61 @@ class MessageServiceUnitTest {
         SecurityContextHolder.setContext(securityContext);
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.getName()).thenReturn("testUser");
-
         when(matchRepository.findById(1L)).thenReturn(Optional.of(match));
 
         MessageOutputDto result = messageService.writeMessage(1L, messageInputDto);
-
-        assertNotNull(result);
-        assertEquals("testUser", result.getWrittenByName());
-        assertEquals(messageInputDto.getContent(), result.getContent());
-        assertEquals(2, match.getMessages().size());
+        assertAll("Write message",
+                () -> assertNotNull(result),
+                () -> assertEquals("testUser", result.getWrittenByName()),
+                () -> assertEquals(messageInputDto.getContent(), result.getContent()),
+                () -> assertEquals(2, match.getMessages().size())
+        );
     }
 
-    @Test
-    @DisplayName("Should throw AccessDeniedException when user is not associated with the match")
+    @Test @DisplayName("Should throw AccessDeniedException when user is not associated with the match")
     void accessDeniedException() {
-        Authentication authentication = mock(Authentication.class);
+        Authentication auth = mock(Authentication.class);
         SecurityContext securityContext = mock(SecurityContext.class);
         SecurityContextHolder.setContext(securityContext);
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(authentication.getName()).thenReturn("testUser");
-
+        when(securityContext.getAuthentication()).thenReturn(auth);
+        when(auth.getName()).thenReturn("testUser");
         when(matchRepository.findById(1L)).thenReturn(Optional.of(match));
+        when(auth.getName()).thenReturn("anotherUser");
 
-        when(authentication.getName()).thenReturn("anotherUser");
-
-        assertThrows(AccessDeniedException.class, () -> messageService.writeMessage(1L, messageInputDto));
-        assertThrows(AccessDeniedException.class, () -> messageService.getAllMessagesWithMatchId(1L));
+        assertAll("Access denied exception",
+                () -> assertThrows(AccessDeniedException.class, () -> messageService.writeMessage(1L, messageInputDto)),
+                () -> assertThrows(AccessDeniedException.class, () -> messageService.getAllMessagesWithMatchId(1L))
+        );
     }
 
 
-    @Test
-    @DisplayName("Should return all messages associated with match")
+    @Test @DisplayName("Should return all messages associated with match")
     void getAllMessagesWithMatchId() {
-        Authentication authentication = mock(Authentication.class);
+        Authentication auth = mock(Authentication.class);
         SecurityContext securityContext = mock(SecurityContext.class);
         SecurityContextHolder.setContext(securityContext);
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(authentication.getName()).thenReturn("testUser");
-
+        when(securityContext.getAuthentication()).thenReturn(auth);
+        when(auth.getName()).thenReturn("testUser");
         when(matchRepository.findById(1L)).thenReturn(Optional.of(match));
 
         List<MessageOutputDto> result = messageService.getAllMessagesWithMatchId(1L);
-
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals(message.getId(), result.get(0).getId());
-        assertEquals(message.getContent(), result.get(0).getContent());
-        assertEquals(message.getCreatedAt(), result.get(0).getCreatedAt());
-        assertEquals(message.getCreatedAtDate(), result.get(0).getCreatedAtDate());
-        assertEquals(message.getWrittenByName(), result.get(0).getWrittenByName());
+        MessageOutputDto outputDto = result.get(0);
+
+        assertAll("Get all messages",
+                () -> assertEquals(message.getId(), outputDto.getId()),
+                () -> assertEquals(message.getContent(), outputDto.getContent()),
+                () -> assertEquals(message.getCreatedAt(), outputDto.getCreatedAt()),
+                () -> assertEquals(message.getCreatedAtDate(), outputDto.getCreatedAtDate()),
+                () -> assertEquals(message.getWrittenByName(), outputDto.getWrittenByName())
+        );
 
         verify(matchRepository, times(1)).findById(1L);
-
-        assertFalse(result.stream().anyMatch(messageOutputDto -> messageOutputDto.getId().equals(message2.getId())));
+        assertFalse(result.stream().anyMatch(dto -> dto.getId().equals(message2.getId())));
     }
 
-    @Test
-    @DisplayName("Should delete messages older than one month")
+    @Test @DisplayName("Should delete messages older than one month")
     void deleteOldMessages() {
         LocalDate currentDate = LocalDate.now();
         LocalDate oneMonthAgo = currentDate.minusMonths(1);
