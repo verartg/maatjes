@@ -12,12 +12,14 @@ import com.example.maatjes.models.User;
 import com.example.maatjes.repositories.AccountRepository;
 import com.example.maatjes.repositories.MatchRepository;
 import com.example.maatjes.repositories.UserRepository;
+import com.example.maatjes.util.SecurityUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -98,8 +100,8 @@ public class MatchService {
 
     public MatchOutputDto getMatch(Long matchId) throws RecordNotFoundException, AccessDeniedException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        boolean isAdmin = authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
         String username = authentication.getName();
+        boolean isAdmin = authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
 
         Match match = matchRepository.findById(matchId).orElseThrow(() -> new RecordNotFoundException("Match niet gevonden"));
 
@@ -112,53 +114,31 @@ public class MatchService {
         }
     }
 
-    public List<MatchOutputDto> getAcceptedMatchesByUsername(String username) throws RecordNotFoundException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!username.equals(authentication.getName())) {
-            throw new AccessDeniedException("Je kunt alleen je eigen matches inzien");
-        }
-        User user = userRepository.findById(username).orElseThrow(() -> new RecordNotFoundException("De gebruiker met gebruikersnaam " + username + " bestaat niet."));
-        Account account = accountRepository.findById(user.getAccount().getAccountId()).orElseThrow(() -> new RecordNotFoundException("De account met ID " + user.getAccount().getAccountId() + " bestaat niet."));
-        List<Match> helpGivers = account.getHelpGivers();
-        List<Match> helpReceivers = account.getHelpReceivers();
-        List<MatchOutputDto> accountMatchOutputDtos = new ArrayList<>();
-        for (Match m : helpGivers) {
-        if (m.isGiverAccepted() && m.isReceiverAccepted()) {
-            MatchOutputDto accountMatchOutputDto = transferMatchToOutputDto(m);
-            accountMatchOutputDtos.add(accountMatchOutputDto);
-        }
-    }
-        for (Match m : helpReceivers) {
-        if (m.isGiverAccepted() && m.isReceiverAccepted()) {
-            MatchOutputDto accountMatchOutputDto = transferMatchToOutputDto(m);
-            accountMatchOutputDtos.add(accountMatchOutputDto);
-        }
-    }
-        return accountMatchOutputDtos;
-    }
+    public List<MatchOutputDto> getMatchesByUsername(String username, boolean accepted) throws RecordNotFoundException {
+        User user = userRepository.findById(username)
+                .orElseThrow(() -> new RecordNotFoundException("De gebruiker met gebruikersnaam " + username + " bestaat niet."));
+        Account account = accountRepository.findById(user.getAccount().getAccountId())
+                .orElseThrow(() -> new RecordNotFoundException("De account met ID " + user.getAccount().getAccountId() + " bestaat niet."));
 
-    public List<MatchOutputDto> getProposedMatchesByUsername(String username) throws RecordNotFoundException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!username.equals(authentication.getName())) {
-            throw new AccessDeniedException("Je kunt alleen je eigen matches inzien");
-        }
-        User user = userRepository.findById(username).orElseThrow(() -> new RecordNotFoundException("De gebruiker met gebruikersnaam " + username + " bestaat niet."));
-        Account account = accountRepository.findById(user.getAccount().getAccountId()).orElseThrow(() -> new RecordNotFoundException("De account met ID " + user.getAccount().getAccountId() + " bestaat niet."));
-        List<Match> helpGivers = account.getHelpGivers();
-        List<Match> helpReceivers = account.getHelpReceivers();
+        List<Match> helpGivers = account.getMatchesWhereAccountIsHelpGiver();
+        List<Match> helpReceivers = account.getMatchesWhereAccountIsHelpReceiver();
+
         List<MatchOutputDto> accountMatchOutputDtos = new ArrayList<>();
+
         for (Match m : helpGivers) {
-            if (!m.isGiverAccepted() || !m.isReceiverAccepted()) {
+            if (accepted ? (m.isGiverAccepted() && m.isReceiverAccepted()) : (!m.isGiverAccepted() || !m.isReceiverAccepted())) {
                 MatchOutputDto accountMatchOutputDto = transferMatchToOutputDto(m);
                 accountMatchOutputDtos.add(accountMatchOutputDto);
             }
         }
+
         for (Match m : helpReceivers) {
-            if (!m.isGiverAccepted() || !m.isReceiverAccepted()) {
+            if (accepted ? (m.isGiverAccepted() && m.isReceiverAccepted()) : (!m.isGiverAccepted() || !m.isReceiverAccepted())) {
                 MatchOutputDto accountMatchOutputDto = transferMatchToOutputDto(m);
                 accountMatchOutputDtos.add(accountMatchOutputDto);
             }
         }
+
         return accountMatchOutputDtos;
     }
 
@@ -196,16 +176,41 @@ public class MatchService {
     public MatchOutputDto updateMatch(Long matchId, MatchInputDto matchInputDto) throws RecordNotFoundException {
         Match match = matchRepository.findById(matchId).orElseThrow(() -> new RecordNotFoundException("De match met ID " + matchId + " is niet gevonden"));
 
-            match.setReceiverAccepted(matchInputDto.isReceiverAccepted());
-            match.setGiverAccepted(matchInputDto.isGiverAccepted());
-            match.setContactPerson(matchInputDto.getContactPerson());
-            match.setStartMatch(matchInputDto.getStartMatch());
-            match.setEndMatch(matchInputDto.getEndMatch());
-            match.setAvailability(matchInputDto.getAvailability());
-            match.setFrequency(matchInputDto.getFrequency());
-            Match returnMatch = matchRepository.save(match);
-            return transferMatchToOutputDto(returnMatch);
+        LocalDateTime startMatch = matchInputDto.getStartMatch().atStartOfDay();
+        LocalDateTime endMatch = matchInputDto.getEndMatch().atStartOfDay();
+
+        if (startMatch.isAfter(endMatch)) {
+            throw new IllegalArgumentException("De einddatum moet na de startdatum liggen.");
         }
+
+        match.setReceiverAccepted(matchInputDto.isReceiverAccepted());
+        match.setGiverAccepted(matchInputDto.isGiverAccepted());
+        match.setContactPerson(matchInputDto.getContactPerson());
+        match.setStartMatch(LocalDate.from(startMatch));
+        match.setEndMatch(LocalDate.from(endMatch));
+        match.setAvailability(matchInputDto.getAvailability());
+        match.setFrequency(matchInputDto.getFrequency());
+
+        Match returnMatch = matchRepository.save(match);
+        return transferMatchToOutputDto(returnMatch);
+    }
+    public Match transferInputDtoToMatch(MatchInputDto matchInputDto) throws IllegalArgumentException {
+        Match match = new Match();
+        LocalDateTime startMatch = matchInputDto.getStartMatch().atStartOfDay();
+        LocalDateTime endMatch = matchInputDto.getEndMatch().atStartOfDay();
+
+        if (startMatch.isAfter(endMatch)) {
+            throw new IllegalArgumentException("De einddatum moet na de startdatum liggen.");
+        }
+        match.setReceiverAccepted(matchInputDto.isReceiverAccepted());
+        match.setGiverAccepted(matchInputDto.isGiverAccepted());
+        match.setContactPerson(matchInputDto.getContactPerson());
+        match.setStartMatch(LocalDate.from(startMatch));
+        match.setEndMatch(LocalDate.from(endMatch));
+        match.setAvailability(matchInputDto.getAvailability());
+        match.setFrequency(matchInputDto.getFrequency());
+        return match;
+    }
 
     public String removeMatch(@RequestBody Long matchId) throws RecordNotFoundException {
         Optional<Match> optionalMatch = matchRepository.findById(matchId);
@@ -241,20 +246,6 @@ public class MatchService {
         return matchOutputDto;
     }
 
-    public Match transferInputDtoToMatch(MatchInputDto matchInputDto) throws IllegalArgumentException {
-        Match match = new Match();
-        match.setGiverAccepted(matchInputDto.isGiverAccepted());
-        match.setReceiverAccepted(matchInputDto.isReceiverAccepted());
-        match.setContactPerson(matchInputDto.getContactPerson());
-        match.setStartMatch(matchInputDto.getStartMatch());
-        int value = matchInputDto.getStartMatch().compareTo(matchInputDto.getEndMatch());
-        if (value >= 0) {
-            throw new IllegalArgumentException("De einddatum moet na de startdatum liggen.");
-        }
-        match.setEndMatch(matchInputDto.getEndMatch());
-        match.setAvailability(matchInputDto.getAvailability());
-        match.setFrequency(matchInputDto.getFrequency());
-        return match;
-    }
+
 }
 

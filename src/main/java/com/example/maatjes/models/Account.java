@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,14 +57,13 @@ public class Account {
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     private User user;
 
-    //todo benaming onderste twee te vaag
     @OneToMany(mappedBy = "helpGiver", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<Match> helpReceivers;
+    private List<Match> matchesWhereAccountIsHelpReceiver;
 
     @OneToMany(mappedBy = "helpReceiver", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<Match> helpGivers;
+    private List<Match> matchesWhereAccountIsHelpGiver;
 
     @OneToMany (mappedBy = "writtenBy", cascade = CascadeType.ALL)
     @JsonIgnore
@@ -74,5 +72,4 @@ public class Account {
     @OneToMany (mappedBy = "writtenFor", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Review> receivedReviews;
-
 }

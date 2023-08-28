@@ -5,6 +5,7 @@ import com.example.maatjes.dtos.outputDtos.UserOutputDto;
 import com.example.maatjes.exceptions.AccessDeniedException;
 import com.example.maatjes.services.UserService;
 import com.example.maatjes.util.FieldErrorHandling;
+import com.example.maatjes.util.SecurityUtils;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,10 +54,7 @@ public class UserController {
 
     @PutMapping("/{username}")
     public ResponseEntity<Object> updateUser(@PathVariable String username, @Valid @RequestBody UserInputDto dto, BindingResult bindingResult) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!username.equals(authentication.getName())) {
-            throw new AccessDeniedException("Je hebt geen toegang tot deze user");
-        }
+        SecurityUtils.validateUsername(username, "user");
         if (bindingResult.hasFieldErrors()) {
             return ResponseEntity.badRequest().body(FieldErrorHandling.getErrorToStringHandling(bindingResult));
         }

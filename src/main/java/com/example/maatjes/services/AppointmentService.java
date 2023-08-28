@@ -106,8 +106,8 @@ public class AppointmentService {
         LocalDate currentDate = LocalDate.now();
 
         List<AppointmentOutputDto> appointmentOutputDtos = Stream.concat(
-                        account.getHelpReceivers().stream().flatMap(match -> match.getAppointments().stream()),
-                        account.getHelpGivers().stream().flatMap(match -> match.getAppointments().stream()))
+                        account.getMatchesWhereAccountIsHelpReceiver().stream().flatMap(match -> match.getAppointments().stream()),
+                        account.getMatchesWhereAccountIsHelpGiver().stream().flatMap(match -> match.getAppointments().stream()))
                 .filter(appointment -> appointment.getDate().isAfter(currentDate))
                 .map(this::transferAppointmentToOutputDto)
                 .collect(Collectors.toList());

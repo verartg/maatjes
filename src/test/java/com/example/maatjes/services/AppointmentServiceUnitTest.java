@@ -246,8 +246,8 @@ class AppointmentServiceUnitTest {
         List<Match> helpGiversMatches = new ArrayList<>();
         helpGiversMatches.add(match1);
         List<Match> helpReceiversMatches = new ArrayList<>();
-        helpGiver.setHelpGivers(helpGiversMatches);
-        helpGiver.setHelpReceivers(helpReceiversMatches);
+        helpGiver.setMatchesWhereAccountIsHelpGiver(helpGiversMatches);
+        helpGiver.setMatchesWhereAccountIsHelpReceiver(helpReceiversMatches);
 
         List<AppointmentOutputDto> result = appointmentService.getAppointmentsByAccountId(1L);
 

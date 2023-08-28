@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Period;
@@ -64,6 +63,19 @@ public class AccountService {
         return transferAccountToOutputDto(account);
     }
 
+    private User getUserAndAccount(String username) throws RecordNotFoundException {
+        Optional<User> optionalUser = userRepository.findById(username);
+        if (optionalUser.isEmpty()) {
+            throw new RecordNotFoundException("Gebruiker niet gevonden");
+        }
+        User user = optionalUser.get();
+        Account account = user.getAccount();
+        if (account == null) {
+            throw new RecordNotFoundException("Account niet gevonden");
+        }
+        return user;
+    }
+
     public List<AccountOutputDto> getAccountsByFilters(String city, Boolean givesHelp) {
         List<Account> accounts;
 
@@ -85,28 +97,14 @@ public class AccountService {
     }
 
     public AccountOutputDto getAccount(String username) throws RecordNotFoundException {
-        Optional<User> optionalUser = userRepository.findById(username);
-        if (optionalUser.isEmpty()) {
-            throw new RecordNotFoundException("Gebruiker niet gevonden");
-        }
-        User user = optionalUser.get();
+        User user = getUserAndAccount(username);
         Account account = user.getAccount();
-        if (account == null) {
-            throw new RecordNotFoundException("Account niet gevonden");
-        }
         return transferAccountToOutputDto(account);
     }
 
     public byte[] getIdentificationDocument(String username) throws RecordNotFoundException {
-        Optional<User> optionalUser = userRepository.findById(username);
-        if (optionalUser.isEmpty()) {
-            throw new RecordNotFoundException("Gebruiker niet gevonden");
-        }
-        User user = optionalUser.get();
+        User user = getUserAndAccount(username);
         Account account = user.getAccount();
-        if (account == null) {
-            throw new RecordNotFoundException("Account niet gevonden");
-        }
         byte[] document = account.getIdDocument();
         if (document == null) {
             throw new RecordNotFoundException("Document niet gevonden");
@@ -115,15 +113,8 @@ public class AccountService {
     }
 
     public AccountOutputDto updateAccount(String username, AccountInputDto accountInputDto) throws RecordNotFoundException {
-        Optional<User> optionalUser = userRepository.findById(username);
-        if (optionalUser.isEmpty()) {
-            throw new RecordNotFoundException("Gebruiker niet gevonden");
-        }
-        User user = optionalUser.get();
+        User user = getUserAndAccount(username);
         Account account = user.getAccount();
-        if (account == null) {
-            throw new RecordNotFoundException("Account niet gevonden");
-        }
 
         if (accountInputDto.getName() != null) {
             account.setName(accountInputDto.getName());
@@ -197,15 +188,8 @@ public class AccountService {
     @Transactional
     public AccountOutputDto uploadIdentificationDocument(String username, MultipartFile file)
             throws MaxUploadSizeExceededException, IOException, RecordNotFoundException, BadRequestException {
-        Optional<User> optionalUser = userRepository.findById(username);
-        if (optionalUser.isEmpty()) {
-            throw new RecordNotFoundException("Gebruiker niet gevonden");
-        }
-        User user = optionalUser.get();
+        User user = getUserAndAccount(username);
         Account account = user.getAccount();
-        if (account == null) {
-            throw new RecordNotFoundException("Account niet gevonden");
-        }
 
         long fileSize = file.getSize();
         long maxFileSize = 1000000; // 1MB in bytes
@@ -227,15 +211,8 @@ public class AccountService {
 
     @Transactional
     public String removeIdentificationDocument (@RequestBody String username) throws RecordNotFoundException {
-        Optional<User> optionalUser = userRepository.findById(username);
-        if (optionalUser.isEmpty()) {
-            throw new RecordNotFoundException("Gebruiker niet gevonden");
-        }
-        User user = optionalUser.get();
+        User user = getUserAndAccount(username);
         Account account = user.getAccount();
-        if (account == null) {
-            throw new RecordNotFoundException("Account niet gevonden");
-        }
 
         if (account.getIdDocument() == null) {
             throw new RecordNotFoundException("De gebruiker heeft nog geen document geüpload");
@@ -244,31 +221,26 @@ public class AccountService {
         return "Document succesvol verwijderd";
     }
 
-    public String removeAccount(@RequestBody String username) throws RecordNotFoundException {
+    public String removeAccount(String username) throws RecordNotFoundException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         boolean isAdmin = authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
         boolean isSelf = authentication.getName().equals(username);
 
         if (isAdmin || isSelf) {
-            Optional<User> optionalUser = userRepository.findById(username);
-            if (optionalUser.isEmpty()) {
-                throw new RecordNotFoundException("Gebruiker niet gevonden");
-            }
-
-            User user = optionalUser.get();
+            User user = getUserAndAccount(username);
             Account account = user.getAccount();
 
-            if (account == null) {
-                throw new RecordNotFoundException("Account niet gevonden");
-            } else {
+            if (account != null) {
                 user.setAccount(null);
                 userRepository.save(user);
                 accountRepository.deleteById(account.getAccountId());
+                return "Account succesvol verwijderd";
+            } else {
+                throw new RecordNotFoundException("Account niet gevonden");
             }
         } else {
             throw new AccessDeniedException("Je hebt geen toegang tot deze gebruiker");
         }
-        return "Account succesvol verwijderd";
     }
 
     public AccountOutputDto transferAccountToOutputDto(Account account) {
