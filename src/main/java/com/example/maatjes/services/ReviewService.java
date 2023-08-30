@@ -13,11 +13,11 @@ import com.example.maatjes.repositories.AccountRepository;
 import com.example.maatjes.repositories.MatchRepository;
 import com.example.maatjes.repositories.ReviewRepository;
 import com.example.maatjes.repositories.UserRepository;
+import com.example.maatjes.util.SecurityUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -38,29 +38,25 @@ public class ReviewService {
     }
 
     public ReviewOutputDto createReview (ReviewInputDto reviewInputDto) throws RecordNotFoundException, AccessDeniedException, BadRequestException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
+        Match match = matchRepository.findById(reviewInputDto.getMatchId()).orElseThrow(() -> new RecordNotFoundException("Match niet gevonden"));
 
-                Match match = matchRepository.findById(reviewInputDto.getMatchId()).orElseThrow(() -> new RecordNotFoundException("Match niet gevonden"));
-        boolean isAssociatedUser = username.equals(match.getHelpGiver().getUser().getUsername())
-                || username.equals(match.getHelpReceiver().getUser().getUsername());
+        String helpGiverName = match.getHelpGiver().getUser().getUsername();
+        String helpReceiverName = match.getHelpReceiver().getUser().getUsername();
 
-        if (!isAssociatedUser) {
-            throw new AccessDeniedException("Je kunt alleen een beoordeling schrijven over je eigen matches");
-        }
+        SecurityUtils.validateUsernames(helpGiverName, helpReceiverName, "matches");
 
         if (!match.isGiverAccepted() || !match.isReceiverAccepted()) {
             throw new BadRequestException("Match moet eerst worden geaccepteerd voordat er een review kan worden geschreven");
         }
 
         for (Review r: match.getMatchReviews()) {
-            if (Objects.equals(r.getWrittenBy().getUser().getUsername(), username)){
+            if (Objects.equals(r.getWrittenBy().getUser().getUsername(), SecurityContextHolder.getContext().getAuthentication().getName())){
                 throw new BadRequestException("Je kunt maar één review schrijven over je match");
             }
         }
                 Review review = transferInputDtoToReview(reviewInputDto);
                 review.setMatch(match);
-                User user = userRepository.findById(username)
+                User user = userRepository.findById(SecurityContextHolder.getContext().getAuthentication().getName())
                         .orElseThrow(() -> new RecordNotFoundException("User niet gevonden"));
                 Account writer = user.getAccount();
                 review.setWrittenBy(writer);
@@ -136,33 +132,41 @@ public class ReviewService {
     }
 
     public ReviewOutputDto updateReview(Long reviewId, ReviewInputDto reviewInputDto) throws RecordNotFoundException, AccessDeniedException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-
         Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new RecordNotFoundException("De review met ID " + reviewId + " bestaat niet."));
-        if (!review.getWrittenBy().getUser().getUsername().equals(username)) {
-            throw new AccessDeniedException("Je kunt alleen je eigen review aanpassen");
-        }
-        review.setRating(reviewInputDto.getRating());
-        review.setDescription(reviewInputDto.getDescription());
-        review.setVerified(false);
+
+        String username = review.getWrittenBy().getUser().getUsername();
+        SecurityUtils.validateUsername(username, "reviews om aan te passen");
+
         review.setFeedbackAdmin(null);
-        Review returnReview = reviewRepository.save(review);
-        return  transferReviewToOutputDto(returnReview);
+        review = reviewRepository.save(transferInputDtoToReview(review, reviewInputDto));
+        return  transferReviewToOutputDto(review);
     }
 
     public String removeReview(@RequestBody Long reviewId) throws RecordNotFoundException {
+        Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new RecordNotFoundException("Review niet gevonden"));
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         boolean isAdmin = authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
-
-        Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new RecordNotFoundException("Review niet gevonden"));
         boolean isSelf = review.getWrittenBy().getUser().getUsername().equals(authentication.getName());
+
         if (isAdmin || isSelf) {
             reviewRepository.deleteById(reviewId);
         } else {
             throw new AccessDeniedException("Je hebt geen toegang tot deze review");
         }
         return "Review succesvol verwijderd";
+    }
+
+    public Review transferInputDtoToReview(ReviewInputDto reviewInputDto) {
+        Review review = new Review();
+        return transferInputDtoToReview(review, reviewInputDto);
+    }
+
+    public Review transferInputDtoToReview(Review review, ReviewInputDto reviewInputDto) {
+        review.setRating(reviewInputDto.getRating());
+        review.setDescription(reviewInputDto.getDescription());
+        review.setVerified(reviewInputDto.isVerified());
+        return review;
     }
 
     public ReviewOutputDto transferReviewToOutputDto(Review review) {
@@ -182,12 +186,5 @@ public class ReviewService {
         return reviewOutputDto;
     }
 
-        public Review transferInputDtoToReview(ReviewInputDto reviewInputDto) {
-        Review review = new Review();
-        review.setRating(reviewInputDto.getRating());
-        review.setDescription(reviewInputDto.getDescription());
-        review.setVerified(reviewInputDto.isVerified());
-        return review;
-        }
-    }
+}
 

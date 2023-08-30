@@ -3,15 +3,12 @@ package com.example.maatjes.controllers;
 import com.example.maatjes.dtos.outputDtos.MatchOutputDto;
 import com.example.maatjes.dtos.inputDtos.MatchInputDto;
 import com.example.maatjes.enums.ContactPerson;
-import com.example.maatjes.exceptions.AccessDeniedException;
 import com.example.maatjes.services.MatchService;
 import com.example.maatjes.util.FieldErrorHandling;
 import com.example.maatjes.util.SecurityUtils;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -48,13 +45,11 @@ public class MatchController {
 
     @GetMapping("/{username}/accepted")
     public ResponseEntity<List<MatchOutputDto>> getAcceptedMatchesByUsername(@PathVariable String username) {
-        SecurityUtils.validateUsername(username, "matches");
         return new ResponseEntity<>(matchService.getMatchesByUsername(username, true), HttpStatus.OK);
     }
 
     @GetMapping("/{username}/proposed")
     public ResponseEntity<List<MatchOutputDto>> getProposedMatchesByUsername(@PathVariable String username) {
-        SecurityUtils.validateUsername(username, "matches");
         return new ResponseEntity<>(matchService.getMatchesByUsername(username, false), HttpStatus.OK);
     }
 

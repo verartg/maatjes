@@ -11,4 +11,11 @@ public class SecurityUtils {
             throw new AccessDeniedException("Je hebt alleen toegang tot je eigen " + entity);
         }
     }
+
+    public static void validateUsernames(String username1, String username2, String entity) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!username1.equals(authentication.getName()) && !username2.equals(authentication.getName())) {
+            throw new AccessDeniedException("Je hebt alleen toegang tot je eigen " + entity);
+        }
+    }
 }

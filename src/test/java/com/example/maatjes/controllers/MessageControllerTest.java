@@ -7,7 +7,6 @@ import com.example.maatjes.repositories.AccountRepository;
 import com.example.maatjes.repositories.MatchRepository;
 import com.example.maatjes.repositories.MessageRepository;
 import com.example.maatjes.repositories.UserRepository;
-import com.example.maatjes.services.MessageService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,9 +40,6 @@ class MessageControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private MessageService messageService;
 
     @Autowired
     private MessageRepository messageRepository;

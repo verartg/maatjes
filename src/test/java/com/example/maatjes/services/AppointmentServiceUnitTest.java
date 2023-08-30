@@ -68,11 +68,6 @@ class AppointmentServiceUnitTest {
 
     @BeforeEach
     void setUp() {
-        Authentication authentication = mock(Authentication.class);
-        SecurityContext securityContext = mock(SecurityContext.class);
-        SecurityContextHolder.setContext(securityContext);
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(authentication.getName()).thenReturn("testUser");
 
         username = "testUser";
         Long matchId = 1L;
@@ -153,6 +148,12 @@ class AppointmentServiceUnitTest {
     @Test
     @DisplayName("Should create appointment")
     void createAppointment()  {
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        SecurityContextHolder.setContext(securityContext);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getName()).thenReturn("testUser");
+
         when(matchRepository.findById(1L)).thenReturn(Optional.of(match1));
         when(appointmentRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -185,12 +186,15 @@ class AppointmentServiceUnitTest {
     @Test
     @DisplayName("Should throw AccessDeniedException when user is not associated with the match/account/appointment")
     void accessDeniedException() {
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        SecurityContextHolder.setContext(securityContext);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getName()).thenReturn("anotherUser");
+
         when(matchRepository.findById(1L)).thenReturn(Optional.of(match1));
         when(accountRepository.findById(1L)).thenReturn(Optional.of(helpGiver));
         when(appointmentRepository.findById(1050L)).thenReturn(Optional.of(appointment1));
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        when(authentication.getName()).thenReturn("anotherUser");
 
         assertThrows(AccessDeniedException.class, () -> appointmentService.createAppointment(appointmentInputDto));
         assertThrows(AccessDeniedException.class, () -> appointmentService.getAppointmentsByMatchId(1L));
@@ -203,6 +207,12 @@ class AppointmentServiceUnitTest {
     @Test
     @DisplayName("Should throw BadRequestException when match is not accepted")
     void badRequestException() {
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        SecurityContextHolder.setContext(securityContext);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getName()).thenReturn("testUser");
+
         match1.setGiverAccepted(false);
         match1.setReceiverAccepted(false);
         when(matchRepository.findById(1L)).thenReturn(Optional.of(match1));
@@ -213,6 +223,12 @@ class AppointmentServiceUnitTest {
     @Test
     @DisplayName("Should throw IllegalArgumentException for invalid appointment time")
     void invalidAppointmentTime_ThrowsIllegalArgumentException() throws RecordNotFoundException, BadRequestException, AccessDeniedException {
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        SecurityContextHolder.setContext(securityContext);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getName()).thenReturn("testUser");
+
         when(matchRepository.findById(1L)).thenReturn(Optional.of(match1));
         appointmentInputDto.setEndTime(LocalTime.of(12, 0));
 
@@ -222,6 +238,12 @@ class AppointmentServiceUnitTest {
     @Test
     @DisplayName("Should return all appointments associated with match")
     void getAppointmentsByMatchId() {
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        SecurityContextHolder.setContext(securityContext);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getName()).thenReturn("testUser");
+
         when(matchRepository.findById(1L)).thenReturn(Optional.of(match1));
 
         List<AppointmentOutputDto> result = appointmentService.getAppointmentsByMatchId(1L);
@@ -241,6 +263,12 @@ class AppointmentServiceUnitTest {
     @Test
     @DisplayName("Should return all appointments associated with account")
     void getAppointmentsByAccountId() {
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        SecurityContextHolder.setContext(securityContext);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getName()).thenReturn("testUser");
+
         when(accountRepository.findById(1L)).thenReturn(Optional.of(helpGiver));
 
         List<Match> helpGiversMatches = new ArrayList<>();
@@ -267,6 +295,12 @@ class AppointmentServiceUnitTest {
     @Test
     @DisplayName("Should return appointment with appointmentId")
     void getAppointment() {
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        SecurityContextHolder.setContext(securityContext);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getName()).thenReturn("testUser");
+
         when(appointmentRepository.findById(1050L)).thenReturn(Optional.of(appointment1));
 
         AppointmentOutputDto result = appointmentService.getAppointment(1050L);
@@ -284,6 +318,12 @@ class AppointmentServiceUnitTest {
     @Test
     @DisplayName("should update the appointment")
     void updateAppointment() {
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        SecurityContextHolder.setContext(securityContext);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getName()).thenReturn("testUser");
+
         when(appointmentRepository.findById(1050L)).thenReturn(Optional.of(appointment1));
         when(appointmentRepository.save(any())).thenReturn(appointment1);
 
@@ -300,6 +340,12 @@ class AppointmentServiceUnitTest {
     @Test
     @DisplayName("Should remove appointment")
     void removeAppointment() {
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        SecurityContextHolder.setContext(securityContext);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getName()).thenReturn("testUser");
+
         when(appointmentRepository.findById(1050L)).thenReturn(Optional.of(appointment1));
 
         String result = appointmentService.removeAppointment(1050L);

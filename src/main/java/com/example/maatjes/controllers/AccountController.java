@@ -47,7 +47,6 @@ public class AccountController {
 
     @GetMapping("/{username}/identification")
     public ResponseEntity<byte[]> getIdentificationDocument(@PathVariable String username) throws RecordNotFoundException {
-        SecurityUtils.validateUsername(username, "account");
         byte[] document = accountService.getIdentificationDocument(username);
 
         HttpHeaders headers = new HttpHeaders();
@@ -57,7 +56,6 @@ public class AccountController {
 
     @PutMapping("/{username}")
     public ResponseEntity<Object> updateAccount(@PathVariable String username, @Valid @RequestBody AccountInputDto accountInputDto, BindingResult bindingResult) {
-        SecurityUtils.validateUsername(username, "account");
         if (bindingResult.hasFieldErrors()) {
             return ResponseEntity.badRequest().body(FieldErrorHandling.getErrorToStringHandling(bindingResult));
         }
@@ -68,13 +66,11 @@ public class AccountController {
 
     @PutMapping("/{username}/identification")
     public ResponseEntity<Object> uploadIdentificationDocument(@PathVariable String username, @RequestParam("file") MultipartFile file) throws Exception{
-        SecurityUtils.validateUsername(username, "account");
         return new ResponseEntity<>(accountService.uploadIdentificationDocument(username, file), HttpStatus.ACCEPTED);
     }
 
     @DeleteMapping("/{username}/identification")
     public ResponseEntity<String> removeIdentificationDocument(@PathVariable String username) {
-        SecurityUtils.validateUsername(username, "account");
         String message = accountService.removeIdentificationDocument(username);
         return ResponseEntity.ok().body(message);
     }

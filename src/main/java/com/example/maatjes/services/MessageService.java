@@ -8,6 +8,7 @@ import com.example.maatjes.models.Match;
 import com.example.maatjes.models.Message;
 import com.example.maatjes.repositories.MatchRepository;
 import com.example.maatjes.repositories.MessageRepository;
+import com.example.maatjes.util.SecurityUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -31,17 +32,16 @@ public class MessageService {
 
     public MessageOutputDto writeMessage(Long matchId, MessageInputDto messageInputDto) throws RecordNotFoundException, AccessDeniedException {
         Match match = matchRepository.findById(matchId).orElseThrow(() -> new RecordNotFoundException("Match niet gevonden"));
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
 
-        if (!match.getHelpGiver().getUser().getUsername().equals(username) && !match.getHelpReceiver().getUser().getUsername().equals(username)) {
-            throw new AccessDeniedException("Je hebt geen toegang tot deze match");
-        }
+        String helpGiverName = match.getHelpGiver().getUser().getUsername();
+        String helpReceiverName = match.getHelpReceiver().getUser().getUsername();
+
+        SecurityUtils.validateUsernames(helpGiverName, helpReceiverName, "matches");
 
         Message message = transferInputDtoToMessage(messageInputDto);
         message.setCreatedAt(LocalTime.now().truncatedTo(ChronoUnit.SECONDS));
         message.setCreatedAtDate(LocalDate.now());
-        message.setWrittenByName(username);
+        message.setWrittenByName(SecurityContextHolder.getContext().getAuthentication().getName());
         message.setMatch(match);
 
         match.getMessages().add(message);
@@ -52,12 +52,12 @@ public class MessageService {
 
     public List<MessageOutputDto> getAllMessagesWithMatchId(Long matchId) throws RecordNotFoundException, AccessDeniedException {
         Match match = matchRepository.findById(matchId).orElseThrow(() -> new RecordNotFoundException("Match niet gevonden"));
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
 
-        if (!match.getHelpGiver().getUser().getUsername().equals(username) && !match.getHelpReceiver().getUser().getUsername().equals(username)) {
-            throw new AccessDeniedException("Je hebt geen toegang tot deze berichten");
-        }
+        String helpGiverName = match.getHelpGiver().getUser().getUsername();
+        String helpReceiverName = match.getHelpReceiver().getUser().getUsername();
+
+        SecurityUtils.validateUsernames(helpGiverName, helpReceiverName, "matches");
+
         List<Message> messages = match.getMessages();
         List<MessageOutputDto> messageOutputDtos = new ArrayList<>();
         for (Message message : messages) {

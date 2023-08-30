@@ -22,7 +22,7 @@ INSERT INTO users(username, password, enabled, apikey, email) VALUES ('sanneb1',
 INSERT INTO users(username, password, enabled, apikey, email) VALUES ('peter1991', '$2a$12$zR4nKDSL/ob18z.z9nlvg./AM7llclJSb0ujAjUwkHKCeu.Zladee',true,null,'peter@user.nl' );
 INSERT INTO users(username, password, enabled, apikey, email) VALUES ('markjansen', '$2a$12$zR4nKDSL/ob18z.z9nlvg./AM7llclJSb0ujAjUwkHKCeu.Zladee', true, null, 'mark@user.nl');
 INSERT INTO users(username, password, enabled, apikey, email) VALUES ('sophievandermeer', '$2a$12$zR4nKDSL/ob18z.z9nlvg./AM7llclJSb0ujAjUwkHKCeu.Zladee', true, null, 'sophie@user.nl');
-INSERT INTO users(username, password, enabled, apikey, email) VALUES ('tomdevries', '$2a$12$zR4nKDSL/ob18z.z9nlvg./AM7llclJSb0ujAjUwkHKCeu.Zladee', true, null, 'tom@user.nl');
+INSERT INTO users(username, password, enabled, apikey, email) VALUES ('tomdevries', '$2a$12$zR4nKDSL/ob18z.z9nlvg./AM7llclJSb0ujAjUwkHKCeu.Zladee', true, '1234567890', 'tom@user.nl');
 INSERT INTO users(username, password, enabled, apikey, email) VALUES ('emmasanders', '$2a$12$zR4nKDSL/ob18z.z9nlvg./AM7llclJSb0ujAjUwkHKCeu.Zladee', true, null, 'emma@user.nl');
 INSERT INTO users(username, password, enabled, apikey, email) VALUES ('davidvandenberg', '$2a$12$zR4nKDSL/ob18z.z9nlvg./AM7llclJSb0ujAjUwkHKCeu.Zladee', true, null, 'david@user.nl');
 INSERT INTO users(username, password, enabled, apikey, email) VALUES ('annajacobs', '$2a$12$zR4nKDSL/ob18z.z9nlvg./AM7llclJSb0ujAjUwkHKCeu.Zladee', true, null, 'anna@user.nl');
@@ -52,7 +52,7 @@ UPDATE users SET account_id = 1015 WHERE username = 'juliahendriks';
 
 --assigning authorities to users.
 INSERT INTO authorities(username, authority) VALUES ('admin', 'ROLE_ADMIN');
-INSERT INTO authorities(username, authority) VALUES ('admin', 'ROLE_USER');
+INSERT INTO authorities(username, authority) VALUES ('user', 'ROLE_USER');
 INSERT INTO authorities(username, authority) VALUES ('lisa', 'ROLE_USER');
 INSERT INTO authorities(username, authority) VALUES ('sanneb1', 'ROLE_USER');
 INSERT INTO authorities(username, authority) VALUES ('peter1991', 'ROLE_USER');

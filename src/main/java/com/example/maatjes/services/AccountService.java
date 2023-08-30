@@ -7,9 +7,11 @@ import com.example.maatjes.exceptions.BadRequestException;
 import com.example.maatjes.exceptions.IllegalArgumentException;
 import com.example.maatjes.exceptions.RecordNotFoundException;
 import com.example.maatjes.models.Account;
+import com.example.maatjes.models.Match;
 import com.example.maatjes.models.User;
 import com.example.maatjes.repositories.AccountRepository;
 import com.example.maatjes.repositories.UserRepository;
+import com.example.maatjes.util.SecurityUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -35,11 +37,12 @@ public class AccountService {
     }
 
     public AccountOutputDto createAccount(AccountInputDto accountInputDto) {
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
+
         User user = userRepository.findById(username)
                 .orElseThrow(() -> new RecordNotFoundException("Deze gebruiker bestaat niet."));
+
         if (user.getAccount() != null) {
             throw new BadRequestException("Je hebt al een account.");
         }
@@ -68,6 +71,7 @@ public class AccountService {
         if (optionalUser.isEmpty()) {
             throw new RecordNotFoundException("Gebruiker niet gevonden");
         }
+
         User user = optionalUser.get();
         Account account = user.getAccount();
         if (account == null) {
@@ -103,16 +107,25 @@ public class AccountService {
     }
 
     public byte[] getIdentificationDocument(String username) throws RecordNotFoundException {
-        User user = getUserAndAccount(username);
-        Account account = user.getAccount();
-        byte[] document = account.getIdDocument();
-        if (document == null) {
-            throw new RecordNotFoundException("Document niet gevonden");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+        boolean isSelf = authentication.getName().equals(username);
+
+        if (isAdmin || isSelf) {
+            User user = getUserAndAccount(username);
+            Account account = user.getAccount();
+            byte[] document = account.getIdDocument();
+            if (document == null) {
+                throw new RecordNotFoundException("Document niet gevonden");
+            }
+            return document;
+        } else {
+            throw new AccessDeniedException("Je hebt geen toegang tot deze match");
         }
-        return document;
     }
 
     public AccountOutputDto updateAccount(String username, AccountInputDto accountInputDto) throws RecordNotFoundException {
+        SecurityUtils.validateUsername(username, "account");
         User user = getUserAndAccount(username);
         Account account = user.getAccount();
 
@@ -188,6 +201,7 @@ public class AccountService {
     @Transactional
     public AccountOutputDto uploadIdentificationDocument(String username, MultipartFile file)
             throws MaxUploadSizeExceededException, IOException, RecordNotFoundException, BadRequestException {
+        SecurityUtils.validateUsername(username, "account");
         User user = getUserAndAccount(username);
         Account account = user.getAccount();
 
@@ -211,6 +225,7 @@ public class AccountService {
 
     @Transactional
     public String removeIdentificationDocument (@RequestBody String username) throws RecordNotFoundException {
+        SecurityUtils.validateUsername(username, "account");
         User user = getUserAndAccount(username);
         Account account = user.getAccount();
 
