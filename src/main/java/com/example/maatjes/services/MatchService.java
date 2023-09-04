@@ -1,14 +1,15 @@
 package com.example.maatjes.services;
 
+import com.example.maatjes.dtos.outputDtos.AppointmentOutputDto;
 import com.example.maatjes.dtos.outputDtos.MatchOutputDto;
 import com.example.maatjes.dtos.inputDtos.MatchInputDto;
+import com.example.maatjes.dtos.outputDtos.MessageOutputDto;
+import com.example.maatjes.dtos.outputDtos.ReviewOutputDto;
 import com.example.maatjes.enums.Activities;
 import com.example.maatjes.enums.ContactPerson;
 import com.example.maatjes.exceptions.*;
 import com.example.maatjes.exceptions.IllegalArgumentException;
-import com.example.maatjes.models.Account;
-import com.example.maatjes.models.Match;
-import com.example.maatjes.models.User;
+import com.example.maatjes.models.*;
 import com.example.maatjes.repositories.AccountRepository;
 import com.example.maatjes.repositories.MatchRepository;
 import com.example.maatjes.repositories.UserRepository;
@@ -27,11 +28,17 @@ public class MatchService {
     private final MatchRepository matchRepository;
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
+    private final ReviewService reviewService;
+    private final AppointmentService appointmentService;
+    private final MessageService messageService;
 
-    public MatchService(MatchRepository matchRepository, AccountRepository accountRepository, UserRepository userRepository) {
+    public MatchService(MatchRepository matchRepository, AccountRepository accountRepository, UserRepository userRepository, ReviewService reviewService, AppointmentService appointmentService, MessageService messageService) {
         this.matchRepository = matchRepository;
         this.accountRepository = accountRepository;
         this.userRepository = userRepository;
+        this.reviewService = reviewService;
+        this.appointmentService = appointmentService;
+        this.messageService = messageService;
     }
 
     public MatchOutputDto proposeMatch(MatchInputDto matchInputDto) throws RecordNotFoundException, BadRequestException {
@@ -209,25 +216,48 @@ public class MatchService {
         match.setEndMatch(LocalDate.from(endMatch));
         match.setAvailability(matchInputDto.getAvailability());
         match.setFrequency(matchInputDto.getFrequency());
+        match.setMatchReviews(new ArrayList<>());
+        match.setAppointments(new ArrayList<>());
+        match.setMessages(new ArrayList<>());
         return match;
     }
 
     public MatchOutputDto transferMatchToOutputDto(Match match) {
         MatchOutputDto matchOutputDto = new MatchOutputDto();
-        matchOutputDto.matchId = match.getMatchId();
-        matchOutputDto.giverAccepted = match.isGiverAccepted();
-        matchOutputDto.receiverAccepted = match.isReceiverAccepted();
-        matchOutputDto.startMatch = match.getStartMatch();
-        matchOutputDto.contactPerson = match.getContactPerson();
-        matchOutputDto.endMatch = match.getEndMatch();
-        matchOutputDto.frequency = match.getFrequency();
-        matchOutputDto.availability = match.getAvailability();
-        matchOutputDto.helpGiverName = match.getHelpGiver().getName();
-        matchOutputDto.helpReceiverName = match.getHelpReceiver().getName();
-        matchOutputDto.activities = match.getActivities();
-        matchOutputDto.matchReviews = match.getMatchReviews();
+        matchOutputDto.setMatchId(match.getMatchId());
+        matchOutputDto.setGiverAccepted(match.isGiverAccepted());
+        matchOutputDto.setReceiverAccepted(match.isReceiverAccepted());
+        matchOutputDto.setContactPerson(match.getContactPerson());
+        matchOutputDto.setStartMatch(match.getStartMatch());
+        matchOutputDto.setEndMatch(match.getEndMatch());
+        matchOutputDto.setAvailability(match.getAvailability());
+        matchOutputDto.setFrequency(match.getFrequency());
+        matchOutputDto.setHelpReceiverName(match.getHelpReceiver().getUser().getUsername());
+        matchOutputDto.setHelpGiverName(match.getHelpGiver().getUser().getUsername());
+        matchOutputDto.setActivities(match.getActivities());
+
+        List<ReviewOutputDto> reviewOutputDtos = new ArrayList<>();
+        for (Review review : match.getMatchReviews()) {
+            ReviewOutputDto reviewOutputDto = reviewService.transferReviewToOutputDto(review);
+            reviewOutputDtos.add(reviewOutputDto);
+        }
+        matchOutputDto.setMatchReviews(reviewOutputDtos);
+
+        List<AppointmentOutputDto> appointmentOutputDtos = new ArrayList<>();
+        for (Appointment appointment : match.getAppointments()) {
+            AppointmentOutputDto appointmentOutputDto = appointmentService.transferAppointmentToOutputDto(appointment);
+            appointmentOutputDtos.add(appointmentOutputDto);
+        }
+        matchOutputDto.setAppointments(appointmentOutputDtos);
+
+        List<MessageOutputDto> messageOutputDtos = new ArrayList<>();
+        for (Message message : match.getMessages()) {
+            MessageOutputDto messageOutputDto = messageService.transferMessageToOutputDto(message);
+            messageOutputDtos.add(messageOutputDto);
+        }
+        matchOutputDto.setMessages(messageOutputDtos);
+
         return matchOutputDto;
     }
-
 }
 

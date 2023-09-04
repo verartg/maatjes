@@ -4,9 +4,6 @@ import com.example.maatjes.enums.Activities;
 import com.example.maatjes.enums.Availability;
 import com.example.maatjes.enums.ContactPerson;
 import com.example.maatjes.enums.Frequency;
-import com.example.maatjes.models.Appointment;
-import com.example.maatjes.models.Message;
-import com.example.maatjes.models.Review;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,7 +27,7 @@ public class MatchOutputDto {
     public String helpReceiverName;
     public String helpGiverName;
     public List<Activities> activities;
-    public List<Review> matchReviews;
-    public List<Appointment> appointments;
-    public List<Message> messages;
+    public List<ReviewOutputDto> matchReviews;
+    public List<AppointmentOutputDto> appointments;
+    public List<MessageOutputDto> messages;
 }

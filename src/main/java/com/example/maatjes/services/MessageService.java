@@ -9,7 +9,6 @@ import com.example.maatjes.models.Message;
 import com.example.maatjes.repositories.MatchRepository;
 import com.example.maatjes.repositories.MessageRepository;
 import com.example.maatjes.util.SecurityUtils;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 

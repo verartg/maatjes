@@ -2,6 +2,7 @@ package com.example.maatjes.services;
 
 import com.example.maatjes.dtos.outputDtos.ReviewOutputDto;
 import com.example.maatjes.dtos.inputDtos.ReviewInputDto;
+import com.example.maatjes.enums.Activities;
 import com.example.maatjes.exceptions.AccessDeniedException;
 import com.example.maatjes.exceptions.BadRequestException;
 import com.example.maatjes.exceptions.RecordNotFoundException;
@@ -69,6 +70,8 @@ public class ReviewService {
 
     public ReviewOutputDto getReview(Long reviewId) throws RecordNotFoundException {
         Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new RecordNotFoundException("Review niet gevonden"));
+        String username = review.getWrittenBy().getUser().getUsername();
+        SecurityUtils.validateUsername(username, "review");
         return transferReviewToOutputDto(review);
     }
 
@@ -175,9 +178,13 @@ public class ReviewService {
         reviewOutputDto.rating = review.getRating();
         reviewOutputDto.description = review.getDescription();
         reviewOutputDto.verified = review.isVerified();
-        reviewOutputDto.activities = review.getMatch().getActivities();
         reviewOutputDto.date = review.getDate();
         reviewOutputDto.feedbackAdmin = review.getFeedbackAdmin();
+        Match match = review.getMatch();
+        if (match != null) {
+            List<Activities> activities = match.getActivities();
+            reviewOutputDto.setActivities(activities);
+        }
         String writtenBy = review.getWrittenBy().getUser().getUsername();
         reviewOutputDto.writtenBy = writtenBy;
         String helpGiver = review.getMatch().getHelpGiver().getUser().getUsername();

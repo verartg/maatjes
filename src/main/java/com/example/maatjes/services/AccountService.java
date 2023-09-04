@@ -2,12 +2,13 @@ package com.example.maatjes.services;
 
 import com.example.maatjes.dtos.outputDtos.AccountOutputDto;
 import com.example.maatjes.dtos.inputDtos.AccountInputDto;
+import com.example.maatjes.dtos.outputDtos.ReviewOutputDto;
 import com.example.maatjes.exceptions.AccessDeniedException;
 import com.example.maatjes.exceptions.BadRequestException;
 import com.example.maatjes.exceptions.IllegalArgumentException;
 import com.example.maatjes.exceptions.RecordNotFoundException;
 import com.example.maatjes.models.Account;
-import com.example.maatjes.models.Match;
+import com.example.maatjes.models.Review;
 import com.example.maatjes.models.User;
 import com.example.maatjes.repositories.AccountRepository;
 import com.example.maatjes.repositories.UserRepository;
@@ -30,10 +31,12 @@ import java.util.Optional;
 public class AccountService {
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
+    private final ReviewService reviewService;
 
-    public AccountService(AccountRepository accountRepository, UserRepository userRepository) {
+    public AccountService(AccountRepository accountRepository, UserRepository userRepository, ReviewService reviewService) {
         this.accountRepository = accountRepository;
         this.userRepository = userRepository;
+        this.reviewService = reviewService;
     }
 
     public AccountOutputDto createAccount(AccountInputDto accountInputDto) {
@@ -124,6 +127,7 @@ public class AccountService {
         }
     }
 
+    @Transactional
     public AccountOutputDto updateAccount(String username, AccountInputDto accountInputDto) throws RecordNotFoundException {
         SecurityUtils.validateUsername(username, "account");
         User user = getUserAndAccount(username);
@@ -258,24 +262,6 @@ public class AccountService {
         }
     }
 
-    public AccountOutputDto transferAccountToOutputDto(Account account) {
-        AccountOutputDto accountOutputDto = new AccountOutputDto();
-        accountOutputDto.name = account.getName();
-        accountOutputDto.age = account.getAge();
-        accountOutputDto.sex = account.getSex();
-        accountOutputDto.city = account.getCity();
-        accountOutputDto.bio = account.getBio();
-        accountOutputDto.givesHelp = account.isGivesHelp();
-        accountOutputDto.needsHelp = account.isNeedsHelp();
-        accountOutputDto.activitiesToGive = account.getActivitiesToGive();
-        accountOutputDto.activitiesToReceive = account.getActivitiesToReceive();
-        accountOutputDto.availability = account.getAvailability();
-        accountOutputDto.frequency = account.getFrequency();
-        accountOutputDto.givenReviews = account.getGivenReviews();
-        accountOutputDto.receivedReviews = account.getReceivedReviews();
-        return accountOutputDto;
-        }
-
     public Account transferInputDtoToAccount(AccountInputDto accountInputDto) {
         Account account = new Account();
         account.setName(accountInputDto.getName());
@@ -302,6 +288,37 @@ public class AccountService {
         account.setActivitiesToReceive(accountInputDto.getActivitiesToReceive());
         account.setAvailability(accountInputDto.getAvailability());
         account.setFrequency(accountInputDto.getFrequency());
+        account.setGivenReviews(new ArrayList<>());
         return account;
+    }
+
+    public AccountOutputDto transferAccountToOutputDto(Account account) {
+        AccountOutputDto accountOutputDto = new AccountOutputDto();
+        accountOutputDto.name = account.getName();
+        accountOutputDto.age = account.getAge();
+        accountOutputDto.sex = account.getSex();
+        accountOutputDto.city = account.getCity();
+        accountOutputDto.bio = account.getBio();
+        accountOutputDto.givesHelp = account.isGivesHelp();
+        accountOutputDto.needsHelp = account.isNeedsHelp();
+        accountOutputDto.activitiesToGive = account.getActivitiesToGive();
+        accountOutputDto.activitiesToReceive = account.getActivitiesToReceive();
+        accountOutputDto.availability = account.getAvailability();
+        accountOutputDto.frequency = account.getFrequency();
+
+        List<ReviewOutputDto> givenReviewDtos = new ArrayList<>();
+        for (Review review : account.getGivenReviews()) {
+            ReviewOutputDto reviewOutputDto = reviewService.transferReviewToOutputDto(review);
+            givenReviewDtos.add(reviewOutputDto);
+        }
+        accountOutputDto.setGivenReviews(givenReviewDtos);
+
+        List<ReviewOutputDto> receivedReviewDtos = new ArrayList<>();
+        for (Review review : account.getGivenReviews()) {
+            ReviewOutputDto reviewOutputDto = reviewService.transferReviewToOutputDto(review);
+            givenReviewDtos.add(reviewOutputDto);
+        }
+        accountOutputDto.setReceivedReviews(receivedReviewDtos);
+        return accountOutputDto;
         }
 }

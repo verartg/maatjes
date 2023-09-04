@@ -5,7 +5,6 @@ import com.example.maatjes.dtos.inputDtos.AccountInputDto;
 import com.example.maatjes.exceptions.RecordNotFoundException;
 import com.example.maatjes.services.AccountService;
 import com.example.maatjes.util.FieldErrorHandling;
-import com.example.maatjes.util.SecurityUtils;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

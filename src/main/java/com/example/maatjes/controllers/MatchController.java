@@ -5,7 +5,6 @@ import com.example.maatjes.dtos.inputDtos.MatchInputDto;
 import com.example.maatjes.enums.ContactPerson;
 import com.example.maatjes.services.MatchService;
 import com.example.maatjes.util.FieldErrorHandling;
-import com.example.maatjes.util.SecurityUtils;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

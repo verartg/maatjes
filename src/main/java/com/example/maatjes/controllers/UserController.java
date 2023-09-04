@@ -2,15 +2,12 @@ package com.example.maatjes.controllers;
 
 import com.example.maatjes.dtos.inputDtos.UserInputDto;
 import com.example.maatjes.dtos.outputDtos.UserOutputDto;
-import com.example.maatjes.exceptions.AccessDeniedException;
 import com.example.maatjes.services.UserService;
 import com.example.maatjes.util.FieldErrorHandling;
 import com.example.maatjes.util.SecurityUtils;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 

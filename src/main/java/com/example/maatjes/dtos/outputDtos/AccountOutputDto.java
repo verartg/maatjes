@@ -3,7 +3,6 @@ package com.example.maatjes.dtos.outputDtos;
 import com.example.maatjes.enums.Activities;
 import com.example.maatjes.enums.Availability;
 import com.example.maatjes.enums.Frequency;
-import com.example.maatjes.models.Review;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,6 +25,6 @@ public class AccountOutputDto {
     public Frequency frequency;
     public List<Activities> activitiesToGive;
     public List<Activities> activitiesToReceive;
-    public List<Review> givenReviews;
-    public List<Review> receivedReviews;
+    public List<ReviewOutputDto> givenReviews;
+    public List<ReviewOutputDto> receivedReviews;
 }
