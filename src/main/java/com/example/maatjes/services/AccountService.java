@@ -83,6 +83,7 @@ public class AccountService {
         return user;
     }
 
+    @Transactional
     public List<AccountOutputDto> getAccountsByFilters(String city, Boolean givesHelp) {
         List<Account> accounts;
 
@@ -103,12 +104,14 @@ public class AccountService {
         return accountOutputDtos;
     }
 
+    @Transactional
     public AccountOutputDto getAccount(String username) throws RecordNotFoundException {
         User user = getUserAndAccount(username);
         Account account = user.getAccount();
         return transferAccountToOutputDto(account);
     }
 
+    @Transactional
     public byte[] getIdentificationDocument(String username) throws RecordNotFoundException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         boolean isAdmin = authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
